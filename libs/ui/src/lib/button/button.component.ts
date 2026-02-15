@@ -89,6 +89,9 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
     :host([data-variant="filled"][data-severity="secondary"]:hover:not(.disabled)) {
       background: color-mix(in oklch, var(--glint-color-secondary), black 10%);
     }
+    :host([data-variant="filled"][data-severity="secondary"]:active:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-secondary), black 20%);
+    }
 
     :host([data-variant="filled"][data-severity="success"]) {
       background: var(--glint-color-success);
@@ -140,6 +143,9 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
     :host([data-variant="filled"][data-severity="neutral"]:hover:not(.disabled)) {
       background: color-mix(in oklch, var(--glint-color-surface-variant), black 5%);
     }
+    :host([data-variant="filled"][data-severity="neutral"]:active:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-surface-variant), black 12%);
+    }
 
     /* ── Outlined variant ───────────────────────── */
     :host([data-variant="outlined"]) {
@@ -152,35 +158,50 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
       color: var(--glint-color-primary);
     }
     :host([data-variant="outlined"][data-severity="primary"]:hover:not(.disabled)) {
-      background: color-mix(in oklch, var(--glint-color-primary), transparent 90%);
+      background: var(--glint-color-surface-variant);
+    }
+    :host([data-variant="outlined"][data-severity="primary"]:active:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-surface-variant), var(--glint-color-border) 15%);
     }
     :host([data-variant="outlined"][data-severity="secondary"]) {
       border-color: var(--glint-color-border);
       color: var(--glint-color-secondary-contrast);
     }
     :host([data-variant="outlined"][data-severity="secondary"]:hover:not(.disabled)) {
-      background: color-mix(in oklch, var(--glint-color-secondary-contrast), transparent 90%);
+      background: var(--glint-color-surface-variant);
+    }
+    :host([data-variant="outlined"][data-severity="secondary"]:active:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-surface-variant), var(--glint-color-border) 15%);
     }
     :host([data-variant="outlined"][data-severity="success"]) {
       border-color: var(--glint-color-success);
       color: var(--glint-color-success);
     }
     :host([data-variant="outlined"][data-severity="success"]:hover:not(.disabled)) {
-      background: color-mix(in oklch, var(--glint-color-success), transparent 90%);
+      background: color-mix(in oklch, var(--glint-color-success), white 90%);
+    }
+    :host([data-variant="outlined"][data-severity="success"]:active:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-success), white 80%);
     }
     :host([data-variant="outlined"][data-severity="warning"]) {
       border-color: var(--glint-color-warning);
       color: var(--glint-color-warning);
     }
     :host([data-variant="outlined"][data-severity="warning"]:hover:not(.disabled)) {
-      background: color-mix(in oklch, var(--glint-color-warning), transparent 90%);
+      background: color-mix(in oklch, var(--glint-color-warning), white 90%);
+    }
+    :host([data-variant="outlined"][data-severity="warning"]:active:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-warning), white 80%);
     }
     :host([data-variant="outlined"][data-severity="danger"]) {
       border-color: var(--glint-color-error);
       color: var(--glint-color-error);
     }
     :host([data-variant="outlined"][data-severity="danger"]:hover:not(.disabled)) {
-      background: color-mix(in oklch, var(--glint-color-error), transparent 90%);
+      background: color-mix(in oklch, var(--glint-color-error), white 90%);
+    }
+    :host([data-variant="outlined"][data-severity="danger"]:active:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-error), white 80%);
     }
 
     /* ── Ghost variant ──────────────────────────── */
@@ -202,7 +223,28 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
       color: var(--glint-color-error);
     }
     :host([data-variant="ghost"]:hover:not(.disabled)) {
-      background: color-mix(in oklch, var(--glint-color-text), transparent 90%);
+      background: var(--glint-color-surface-variant);
+    }
+    :host([data-variant="ghost"]:active:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-surface-variant), var(--glint-color-border) 15%);
+    }
+    :host([data-variant="ghost"][data-severity="success"]:hover:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-success), white 90%);
+    }
+    :host([data-variant="ghost"][data-severity="success"]:active:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-success), white 80%);
+    }
+    :host([data-variant="ghost"][data-severity="warning"]:hover:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-warning), white 90%);
+    }
+    :host([data-variant="ghost"][data-severity="warning"]:active:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-warning), white 80%);
+    }
+    :host([data-variant="ghost"][data-severity="danger"]:hover:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-error), white 90%);
+    }
+    :host([data-variant="ghost"][data-severity="danger"]:active:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-error), white 80%);
     }
 
     /* ── Loading state ──────────────────────────── */
