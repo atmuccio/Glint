@@ -1,0 +1,18 @@
+/**
+ * @glint/ui — Global Stylesheet Entry Point
+ *
+ * Import this file in your application's styles.scss:
+ *   @use '@glint/ui/styles/glint-ui';
+ *
+ * This establishes the CSS layer order and applies a minimal reset.
+ * Component styles are handled inline or via component CSS files.
+ */
+@use 'layers';
+
+@layer glint.reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+}

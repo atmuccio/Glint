@@ -1,0 +1,12 @@
+/**
+ * @glint/ui — CSS Layer Declaration Order
+ *
+ * Layers are ordered by specificity (lowest → highest):
+ * 1. reset      — Minimal box-sizing reset
+ * 2. tokens     — CSS custom property defaults (registered via JS)
+ * 3. components — All component styles
+ * 4. utilities  — Visibility helpers, sr-only, etc.
+ *
+ * Consumer (unlayered) styles always beat library layers by design.
+ */
+@layer glint.reset, glint.tokens, glint.components, glint.utilities;
