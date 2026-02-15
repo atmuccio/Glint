@@ -3,8 +3,9 @@ import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { GlintInputComponent } from './input.component';
 
+/** Host with FormControl — no [disabled] binding (use ctrl.disable() instead) */
 @Component({
-  selector: 'glint-test-input-host',
+  selector: 'glint-test-input-form-host',
   standalone: true,
   imports: [GlintInputComponent, ReactiveFormsModule],
   template: `
@@ -14,27 +15,40 @@ import { GlintInputComponent } from './input.component';
       [variant]="variant"
       [invalid]="invalid"
       [errorMessage]="errorMessage"
-      [disabled]="disabled"
       [formControl]="ctrl"
     />
   `,
 })
-class TestInputHostComponent {
+class TestInputFormHostComponent {
   ctrl = new FormControl('');
   label = 'Test Label';
   placeholder = 'Enter text';
   variant: 'outline' | 'filled' | 'underline' = 'outline';
   invalid = false;
   errorMessage = '';
+}
+
+/** Host without FormControl — for testing [disabled] input prop */
+@Component({
+  selector: 'glint-test-input-standalone-host',
+  standalone: true,
+  imports: [GlintInputComponent],
+  template: `
+    <glint-input
+      [label]="label"
+      [disabled]="disabled"
+    />
+  `,
+})
+class TestInputStandaloneHostComponent {
+  label = 'Standalone';
   disabled = false;
 }
 
 describe('GlintInputComponent', () => {
   it('should render label', async () => {
-    TestBed.configureTestingModule({
-      imports: [TestInputHostComponent],
-    });
-    const fixture = TestBed.createComponent(TestInputHostComponent);
+    TestBed.configureTestingModule({ imports: [TestInputFormHostComponent] });
+    const fixture = TestBed.createComponent(TestInputFormHostComponent);
     fixture.detectChanges();
     await fixture.whenStable();
 
@@ -44,10 +58,8 @@ describe('GlintInputComponent', () => {
   });
 
   it('should render with outline variant by default', async () => {
-    TestBed.configureTestingModule({
-      imports: [TestInputHostComponent],
-    });
-    const fixture = TestBed.createComponent(TestInputHostComponent);
+    TestBed.configureTestingModule({ imports: [TestInputFormHostComponent] });
+    const fixture = TestBed.createComponent(TestInputFormHostComponent);
     fixture.detectChanges();
     await fixture.whenStable();
 
@@ -56,11 +68,9 @@ describe('GlintInputComponent', () => {
   });
 
   it('should show all three variants', async () => {
-    TestBed.configureTestingModule({
-      imports: [TestInputHostComponent],
-    });
+    TestBed.configureTestingModule({ imports: [TestInputFormHostComponent] });
     for (const variant of ['outline', 'filled', 'underline'] as const) {
-      const fixture = TestBed.createComponent(TestInputHostComponent);
+      const fixture = TestBed.createComponent(TestInputFormHostComponent);
       fixture.componentInstance.variant = variant;
       fixture.detectChanges();
       await fixture.whenStable();
@@ -71,10 +81,8 @@ describe('GlintInputComponent', () => {
   });
 
   it('should work with FormControl (CVA write)', async () => {
-    TestBed.configureTestingModule({
-      imports: [TestInputHostComponent],
-    });
-    const fixture = TestBed.createComponent(TestInputHostComponent);
+    TestBed.configureTestingModule({ imports: [TestInputFormHostComponent] });
+    const fixture = TestBed.createComponent(TestInputFormHostComponent);
     fixture.componentInstance.ctrl.setValue('hello');
     fixture.detectChanges();
     await fixture.whenStable();
@@ -84,10 +92,8 @@ describe('GlintInputComponent', () => {
   });
 
   it('should propagate input changes back to FormControl', async () => {
-    TestBed.configureTestingModule({
-      imports: [TestInputHostComponent],
-    });
-    const fixture = TestBed.createComponent(TestInputHostComponent);
+    TestBed.configureTestingModule({ imports: [TestInputFormHostComponent] });
+    const fixture = TestBed.createComponent(TestInputFormHostComponent);
     fixture.detectChanges();
     await fixture.whenStable();
 
@@ -100,10 +106,8 @@ describe('GlintInputComponent', () => {
   });
 
   it('should show error message when invalid', async () => {
-    TestBed.configureTestingModule({
-      imports: [TestInputHostComponent],
-    });
-    const fixture = TestBed.createComponent(TestInputHostComponent);
+    TestBed.configureTestingModule({ imports: [TestInputFormHostComponent] });
+    const fixture = TestBed.createComponent(TestInputFormHostComponent);
     fixture.componentInstance.invalid = true;
     fixture.componentInstance.errorMessage = 'Required field';
     fixture.detectChanges();
@@ -116,10 +120,8 @@ describe('GlintInputComponent', () => {
   });
 
   it('should set aria-invalid when invalid', async () => {
-    TestBed.configureTestingModule({
-      imports: [TestInputHostComponent],
-    });
-    const fixture = TestBed.createComponent(TestInputHostComponent);
+    TestBed.configureTestingModule({ imports: [TestInputFormHostComponent] });
+    const fixture = TestBed.createComponent(TestInputFormHostComponent);
     fixture.componentInstance.invalid = true;
     fixture.detectChanges();
     await fixture.whenStable();
@@ -129,10 +131,8 @@ describe('GlintInputComponent', () => {
   });
 
   it('should set disabled state from FormControl', async () => {
-    TestBed.configureTestingModule({
-      imports: [TestInputHostComponent],
-    });
-    const fixture = TestBed.createComponent(TestInputHostComponent);
+    TestBed.configureTestingModule({ imports: [TestInputFormHostComponent] });
+    const fixture = TestBed.createComponent(TestInputFormHostComponent);
     fixture.componentInstance.ctrl.disable();
     fixture.detectChanges();
     await fixture.whenStable();
@@ -143,11 +143,9 @@ describe('GlintInputComponent', () => {
     expect(input.disabled).toBe(true);
   });
 
-  it('should set disabled state from input property', async () => {
-    TestBed.configureTestingModule({
-      imports: [TestInputHostComponent],
-    });
-    const fixture = TestBed.createComponent(TestInputHostComponent);
+  it('should set disabled state from input property (no FormControl)', async () => {
+    TestBed.configureTestingModule({ imports: [TestInputStandaloneHostComponent] });
+    const fixture = TestBed.createComponent(TestInputStandaloneHostComponent);
     fixture.componentInstance.disabled = true;
     fixture.detectChanges();
     await fixture.whenStable();
@@ -157,10 +155,8 @@ describe('GlintInputComponent', () => {
   });
 
   it('should link label to input via for/id', async () => {
-    TestBed.configureTestingModule({
-      imports: [TestInputHostComponent],
-    });
-    const fixture = TestBed.createComponent(TestInputHostComponent);
+    TestBed.configureTestingModule({ imports: [TestInputFormHostComponent] });
+    const fixture = TestBed.createComponent(TestInputFormHostComponent);
     fixture.detectChanges();
     await fixture.whenStable();
 
@@ -170,10 +166,8 @@ describe('GlintInputComponent', () => {
   });
 
   it('should track focus state', async () => {
-    TestBed.configureTestingModule({
-      imports: [TestInputHostComponent],
-    });
-    const fixture = TestBed.createComponent(TestInputHostComponent);
+    TestBed.configureTestingModule({ imports: [TestInputFormHostComponent] });
+    const fixture = TestBed.createComponent(TestInputFormHostComponent);
     fixture.detectChanges();
     await fixture.whenStable();
 

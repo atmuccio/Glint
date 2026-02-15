@@ -2,21 +2,27 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  forwardRef,
+  effect,
+  ElementRef,
+  inject,
   input,
   signal,
+  viewChild,
 } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ControlValueAccessor, NgControl } from '@angular/forms';
 
 let nextId = 0;
 
 /**
  * Input component with ControlValueAccessor, zone-aware styling, and validation support.
  *
+ * When used with reactive forms, disable via `ctrl.disable()` — or use the
+ * `disabled` input, which automatically syncs to the FormControl.
+ *
  * @example
  * ```html
  * <glint-input label="Email" placeholder="you@example.com" [formControl]="emailCtrl" />
- * <glint-input label="Name" variant="filled" [required]="true" />
+ * <glint-input label="Name" variant="filled" [disabled]="true" />
  * ```
  */
 @Component({
@@ -29,13 +35,6 @@ let nextId = 0;
     '[class.disabled]': 'isDisabled()',
     '[class.invalid]': 'invalid()',
   },
-  providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => GlintInputComponent),
-      multi: true,
-    },
-  ],
   styles: `
     :host {
       display: block;
@@ -138,10 +137,10 @@ let nextId = 0;
     <div class="input-wrapper">
       <ng-content select="[glintPrefix]" />
       <input
+        #inputEl
         [id]="inputId"
         [type]="type()"
         [placeholder]="placeholder()"
-        [disabled]="isDisabled()"
         [required]="required()"
         [value]="value()"
         [attr.aria-invalid]="invalid() || null"
@@ -166,8 +165,11 @@ export class GlintInputComponent implements ControlValueAccessor {
   placeholder = input<string>('');
   /** Input type */
   type = input<string>('text');
-  /** Disabled state (from template) */
-  disabled = input(false);
+  /**
+   * Disabled state (from template). When a FormControl is attached, this syncs to the control.
+   * Defaults to `undefined` so the effect only touches the control when explicitly bound.
+   */
+  disabled = input<boolean | undefined>(undefined);
   /** Required state */
   required = input(false);
   /** Invalid state */
@@ -184,12 +186,52 @@ export class GlintInputComponent implements ControlValueAccessor {
   /** Focus tracking */
   protected focused = signal(false);
 
-  /** CVA disabled state merged with input disabled */
+  /** Tracks disabled state driven by the CVA (FormControl) */
   private disabledFromCVA = signal(false);
-  isDisabled = computed(() => this.disabled() || this.disabledFromCVA());
+  /** Merged disabled: either the input prop OR the CVA says disabled */
+  isDisabled = computed(() => this.disabled() === true || this.disabledFromCVA());
+
+  /** Native input ref — disabled driven by effect, not template binding */
+  private inputRef = viewChild<ElementRef<HTMLInputElement>>('inputEl');
+
+  /**
+   * NgControl injected directly (no NG_VALUE_ACCESSOR provider needed).
+   * This avoids circular dependency and lets us sync disabled → control.
+   */
+  private ngControl = inject(NgControl, { optional: true, self: true });
 
   private onChange: (value: string) => void = () => {};
   private onTouched: () => void = () => {};
+
+  constructor() {
+    // Wire up CVA manually — avoids NG_VALUE_ACCESSOR provider + NgControl circular dep
+    if (this.ngControl) {
+      this.ngControl.valueAccessor = this;
+    }
+
+    // Sync disabled input → FormControl when a control is attached.
+    // Only acts when the input has been explicitly bound (not undefined default).
+    effect(() => {
+      const disabled = this.disabled();
+      const control = this.ngControl?.control;
+      if (control && disabled !== undefined) {
+        if (disabled && !control.disabled) {
+          control.disable({ emitEvent: false });
+        } else if (!disabled && control.disabled) {
+          control.enable({ emitEvent: false });
+        }
+      }
+    });
+
+    // Drive native <input> disabled from the merged signal
+    effect(() => {
+      const disabled = this.isDisabled();
+      const el = this.inputRef()?.nativeElement;
+      if (el) {
+        el.disabled = disabled;
+      }
+    });
+  }
 
   // ── ControlValueAccessor ─────────────────────
   writeValue(value: string): void {
