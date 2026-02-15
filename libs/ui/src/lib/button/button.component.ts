@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
   ElementRef,
   inject,
   input,
@@ -35,18 +36,18 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
       position: relative;
       font-family: var(--glint-font-family);
       font-size: var(--glint-font-size);
-      font-weight: 500;
+      font-weight: var(--glint-font-weight);
       line-height: 1.25;
       border: 1px solid transparent;
       border-radius: var(--glint-border-radius);
       padding-block: var(--glint-spacing-sm);
-      padding-inline: var(--glint-spacing-lg);
+      padding-inline: var(--glint-spacing-md);
       cursor: pointer;
       user-select: none;
       text-decoration: none;
       align-items: center;
       justify-content: center;
-      gap: var(--glint-spacing-xs);
+      gap: var(--glint-spacing-sm);
       outline: none;
       transition:
         background-color var(--glint-duration-normal) var(--glint-easing),
@@ -60,7 +61,7 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
     }
 
     :host(.disabled) {
-      opacity: 0.5;
+      opacity: 0.6;
       cursor: not-allowed;
       pointer-events: none;
     }
@@ -77,6 +78,7 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
     }
     :host([data-variant="filled"][data-severity="primary"]:active:not(.disabled)) {
       background: color-mix(in oklch, var(--glint-color-primary), black 20%);
+      border-color: color-mix(in oklch, var(--glint-color-primary), black 20%);
     }
 
     :host([data-variant="filled"][data-severity="secondary"]) {
@@ -86,6 +88,48 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
     }
     :host([data-variant="filled"][data-severity="secondary"]:hover:not(.disabled)) {
       background: color-mix(in oklch, var(--glint-color-secondary), black 10%);
+    }
+
+    :host([data-variant="filled"][data-severity="success"]) {
+      background: var(--glint-color-success);
+      color: white;
+      border-color: var(--glint-color-success);
+    }
+    :host([data-variant="filled"][data-severity="success"]:hover:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-success), black 10%);
+      border-color: color-mix(in oklch, var(--glint-color-success), black 10%);
+    }
+    :host([data-variant="filled"][data-severity="success"]:active:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-success), black 20%);
+      border-color: color-mix(in oklch, var(--glint-color-success), black 20%);
+    }
+
+    :host([data-variant="filled"][data-severity="warning"]) {
+      background: var(--glint-color-warning);
+      color: white;
+      border-color: var(--glint-color-warning);
+    }
+    :host([data-variant="filled"][data-severity="warning"]:hover:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-warning), black 10%);
+      border-color: color-mix(in oklch, var(--glint-color-warning), black 10%);
+    }
+    :host([data-variant="filled"][data-severity="warning"]:active:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-warning), black 20%);
+      border-color: color-mix(in oklch, var(--glint-color-warning), black 20%);
+    }
+
+    :host([data-variant="filled"][data-severity="danger"]) {
+      background: var(--glint-color-error);
+      color: white;
+      border-color: var(--glint-color-error);
+    }
+    :host([data-variant="filled"][data-severity="danger"]:hover:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-error), black 10%);
+      border-color: color-mix(in oklch, var(--glint-color-error), black 10%);
+    }
+    :host([data-variant="filled"][data-severity="danger"]:active:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-error), black 20%);
+      border-color: color-mix(in oklch, var(--glint-color-error), black 20%);
     }
 
     :host([data-variant="filled"][data-severity="neutral"]) {
@@ -104,18 +148,39 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
       color: var(--glint-color-text);
     }
     :host([data-variant="outlined"][data-severity="primary"]) {
-      border-color: var(--glint-color-primary);
+      border-color: var(--glint-color-border);
       color: var(--glint-color-primary);
     }
     :host([data-variant="outlined"][data-severity="primary"]:hover:not(.disabled)) {
       background: color-mix(in oklch, var(--glint-color-primary), transparent 90%);
     }
     :host([data-variant="outlined"][data-severity="secondary"]) {
-      border-color: var(--glint-color-secondary);
-      color: var(--glint-color-secondary);
+      border-color: var(--glint-color-border);
+      color: var(--glint-color-secondary-contrast);
     }
     :host([data-variant="outlined"][data-severity="secondary"]:hover:not(.disabled)) {
-      background: color-mix(in oklch, var(--glint-color-secondary), transparent 90%);
+      background: color-mix(in oklch, var(--glint-color-secondary-contrast), transparent 90%);
+    }
+    :host([data-variant="outlined"][data-severity="success"]) {
+      border-color: var(--glint-color-success);
+      color: var(--glint-color-success);
+    }
+    :host([data-variant="outlined"][data-severity="success"]:hover:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-success), transparent 90%);
+    }
+    :host([data-variant="outlined"][data-severity="warning"]) {
+      border-color: var(--glint-color-warning);
+      color: var(--glint-color-warning);
+    }
+    :host([data-variant="outlined"][data-severity="warning"]:hover:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-warning), transparent 90%);
+    }
+    :host([data-variant="outlined"][data-severity="danger"]) {
+      border-color: var(--glint-color-error);
+      color: var(--glint-color-error);
+    }
+    :host([data-variant="outlined"][data-severity="danger"]:hover:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-error), transparent 90%);
     }
 
     /* ── Ghost variant ──────────────────────────── */
@@ -126,6 +191,15 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
     }
     :host([data-variant="ghost"][data-severity="primary"]) {
       color: var(--glint-color-primary);
+    }
+    :host([data-variant="ghost"][data-severity="success"]) {
+      color: var(--glint-color-success);
+    }
+    :host([data-variant="ghost"][data-severity="warning"]) {
+      color: var(--glint-color-warning);
+    }
+    :host([data-variant="ghost"][data-severity="danger"]) {
+      color: var(--glint-color-error);
     }
     :host([data-variant="ghost"]:hover:not(.disabled)) {
       background: color-mix(in oklch, var(--glint-color-text), transparent 90%);
@@ -152,7 +226,7 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
       border: 2px solid currentColor;
       border-inline-end-color: transparent;
       border-radius: 50%;
-      animation: glint-spin 0.6s linear infinite;
+      animation: glint-spin var(--glint-duration-slow) linear infinite;
     }
 
     @keyframes glint-spin {
@@ -200,13 +274,18 @@ export class GlintButtonComponent {
 
   private zone = inject(ZONE_THEME);
   private elRef = inject(ElementRef<HTMLElement>);
+  private focusMonitor = inject(FocusMonitor);
 
   /** FocusMonitor for keyboard focus tracking */
   private focusOrigin = toSignal(
-    inject(FocusMonitor).monitor(this.elRef, true),
+    this.focusMonitor.monitor(this.elRef, true),
     { initialValue: null }
   );
 
   /** Resolved variant: uses zone default if not explicitly set */
   resolvedVariant = computed(() => this.variant() ?? this.zone().defaultVariant);
+
+  constructor() {
+    inject(DestroyRef).onDestroy(() => this.focusMonitor.stopMonitoring(this.elRef));
+  }
 }

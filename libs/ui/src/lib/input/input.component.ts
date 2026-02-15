@@ -7,6 +7,7 @@ import {
   inject,
   input,
   signal,
+  untracked,
   viewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
@@ -51,7 +52,7 @@ let nextId = 0;
     }
 
     :host(.invalid) .label {
-      color: color-mix(in oklch, var(--glint-color-text), red 40%);
+      color: color-mix(in oklch, var(--glint-color-text), var(--glint-color-error) 40%);
     }
 
     .input-wrapper {
@@ -70,13 +71,14 @@ let nextId = 0;
       border: 1px solid var(--glint-color-border);
       background: var(--glint-color-surface);
       padding-inline: var(--glint-spacing-md);
+      box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     }
     :host([data-variant="outline"].focused) .input-wrapper {
       border-color: var(--glint-color-focus-ring);
       box-shadow: 0 0 0 2px color-mix(in oklch, var(--glint-color-focus-ring), transparent 70%);
     }
     :host([data-variant="outline"].invalid) .input-wrapper {
-      border-color: red;
+      border-color: var(--glint-color-error);
     }
 
     /* ── Filled variant ────────────────────────── */
@@ -127,7 +129,7 @@ let nextId = 0;
     .error {
       margin-block-start: var(--glint-spacing-xs);
       font-size: 0.875em;
-      color: red;
+      color: var(--glint-color-error);
     }
   `,
   template: `
@@ -142,7 +144,6 @@ let nextId = 0;
         [type]="type()"
         [placeholder]="placeholder()"
         [required]="required()"
-        [value]="value()"
         [attr.aria-invalid]="invalid() || null"
         [attr.aria-describedby]="invalid() && errorMessage() ? errorId : null"
         (input)="onInput($event)"
@@ -181,7 +182,7 @@ export class GlintInputComponent implements ControlValueAccessor {
   readonly inputId = `glint-input-${nextId++}`;
   readonly errorId = `${this.inputId}-error`;
 
-  /** Internal value state */
+  /** Internal value state (for display text tracking) */
   protected value = signal('');
   /** Focus tracking */
   protected focused = signal(false);
@@ -191,7 +192,7 @@ export class GlintInputComponent implements ControlValueAccessor {
   /** Merged disabled: either the input prop OR the CVA says disabled */
   isDisabled = computed(() => this.disabled() === true || this.disabledFromCVA());
 
-  /** Native input ref — disabled driven by effect, not template binding */
+  /** Native input ref — value and disabled driven by effects, not template bindings */
   private inputRef = viewChild<ElementRef<HTMLInputElement>>('inputEl');
 
   /**
@@ -211,16 +212,21 @@ export class GlintInputComponent implements ControlValueAccessor {
 
     // Sync disabled input → FormControl when a control is attached.
     // Only acts when the input has been explicitly bound (not undefined default).
+    // Uses queueMicrotask to ensure ngControl.control is available (may be null during construction).
     effect(() => {
       const disabled = this.disabled();
-      const control = this.ngControl?.control;
-      if (control && disabled !== undefined) {
-        if (disabled && !control.disabled) {
-          control.disable({ emitEvent: false });
-        } else if (!disabled && control.disabled) {
-          control.enable({ emitEvent: false });
-        }
-      }
+      untracked(() => {
+        queueMicrotask(() => {
+          const control = this.ngControl?.control;
+          if (control && disabled !== undefined) {
+            if (disabled && !control.disabled) {
+              control.disable({ emitEvent: false });
+            } else if (!disabled && control.disabled) {
+              control.enable({ emitEvent: false });
+            }
+          }
+        });
+      });
     });
 
     // Drive native <input> disabled from the merged signal
@@ -234,8 +240,13 @@ export class GlintInputComponent implements ControlValueAccessor {
   }
 
   // ── ControlValueAccessor ─────────────────────
-  writeValue(value: string): void {
+  writeValue(value: string | null): void {
     this.value.set(value ?? '');
+    // Write directly to native element to avoid cursor-jump from template [value] binding
+    const el = this.inputRef()?.nativeElement;
+    if (el) {
+      el.value = value ?? '';
+    }
   }
 
   registerOnChange(fn: (value: string) => void): void {

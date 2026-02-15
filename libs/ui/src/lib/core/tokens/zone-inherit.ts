@@ -1,3 +1,16 @@
+import { CSSColor, CSSLength, CSSBorderRadius, CSSShadow, CSSFontFamily, CSSDuration } from '../types/branded';
+
+/**
+ * Sentinel type that is assignable to all branded CSS value types.
+ * Used by ZONE_INHERIT to be compatible with any ZoneTheme property.
+ */
+export type ZoneInheritSentinel = CSSColor &
+  CSSLength &
+  CSSBorderRadius &
+  CSSShadow &
+  CSSFontFamily &
+  CSSDuration;
+
 /**
  * Sentinel value for unsetting a zone theme property.
  *
@@ -13,4 +26,4 @@
  * </glint-style-zone>
  * ```
  */
-export const ZONE_INHERIT = Symbol('ZONE_INHERIT') as unknown as any;
+export const ZONE_INHERIT: ZoneInheritSentinel = Symbol('ZONE_INHERIT') as unknown as ZoneInheritSentinel;

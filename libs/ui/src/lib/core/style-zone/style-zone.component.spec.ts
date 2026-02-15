@@ -139,7 +139,7 @@ describe('GlintStyleZoneComponent', () => {
     expect(zoneEl.style.getPropertyValue('--glint-color-primary')).toBe('');
   });
 
-  it('should only set locally overridden CSS properties', async () => {
+  it('should set all resolved CSS properties including defaults', async () => {
     TestBed.configureTestingModule({
       imports: [TestHostComponent],
     });
@@ -150,7 +150,7 @@ describe('GlintStyleZoneComponent', () => {
 
     const zoneEl = fixture.nativeElement.querySelector('glint-style-zone') as HTMLElement;
     expect(zoneEl.style.getPropertyValue('--glint-color-primary')).toBe(GlintColor.Red.S500);
-    expect(zoneEl.style.getPropertyValue('--glint-color-surface')).toBe('');
+    expect(zoneEl.style.getPropertyValue('--glint-color-surface')).toBe(DEFAULT_ZONE_THEME.colorSurface);
   });
 
   it('should work outside any zone with default theme', async () => {

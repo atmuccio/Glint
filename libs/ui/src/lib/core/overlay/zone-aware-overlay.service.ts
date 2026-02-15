@@ -27,7 +27,17 @@ export interface ZoneAwareOverlayResult {
  */
 @Injectable({ providedIn: 'root' })
 export class ZoneAwareOverlayService {
-  private overlay = inject(Overlay);
+  private readonly cdkOverlay = inject(Overlay);
+
+  /** Public access to CDK position strategy builder */
+  position() {
+    return this.cdkOverlay.position();
+  }
+
+  /** Public access to CDK scroll strategies */
+  get scrollStrategies() {
+    return this.cdkOverlay.scrollStrategies;
+  }
 
   /**
    * Creates an overlay that inherits zone theme from the caller's injector.
@@ -39,7 +49,7 @@ export class ZoneAwareOverlayService {
     config: OverlayConfig,
     callerInjector: Injector
   ): ZoneAwareOverlayResult {
-    const overlayRef = this.overlay.create(config);
+    const overlayRef = this.cdkOverlay.create(config);
 
     // Capture the zone theme signal from the caller's context
     const zoneTheme: Signal<ZoneTheme> = callerInjector.get(ZONE_THEME);
@@ -52,24 +62,40 @@ export class ZoneAwareOverlayService {
       parent: callerInjector,
     });
 
+    // Track previously-set CSS keys for stale property cleanup
+    let previousKeys = new Set<string>();
+
     // Apply CSS variables reactively to the overlay pane
     const effectRef = effect(() => {
       const theme = zoneTheme();
       const el = untracked(() => overlayRef.overlayElement);
       if (!el) return;
 
+      const currentKeys = new Set<string>();
+
       for (const [key, cssVar] of Object.entries(THEME_TO_CSS_MAP)) {
         if (BEHAVIORAL_KEYS.has(key)) continue;
         const value = (theme as unknown as Record<string, string>)[key];
         if (value) {
           el.style.setProperty(cssVar, value);
+          currentKeys.add(cssVar);
         }
       }
+
+      // Clean up stale properties from previous evaluation
+      for (const cssVar of previousKeys) {
+        if (!currentKeys.has(cssVar)) {
+          el.style.removeProperty(cssVar);
+        }
+      }
+
+      previousKeys = currentKeys;
     }, { injector: callerInjector });
 
-    // Clean up effect when overlay is disposed
-    overlayRef.detachments().subscribe(() => {
+    // Clean up effect when overlay is disposed (detach is called by dispose internally)
+    const sub = overlayRef.detachments().subscribe(() => {
       effectRef.destroy();
+      sub.unsubscribe();
     });
 
     return { overlayRef, injector: childInjector };

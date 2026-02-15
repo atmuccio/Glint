@@ -15,9 +15,10 @@ import {
   viewChild,
   ViewContainerRef,
 } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ControlValueAccessor, NgControl } from '@angular/forms';
 import { OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
+import { takeUntil } from 'rxjs';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
 import { GLINT_SELECT, GlintSelectHost, DEFAULT_COMPARE_WITH, CompareWithFn } from './select.model';
 import { GlintSelectOptionComponent } from './select-option.component';
@@ -48,11 +49,6 @@ import { GlintSelectOptionComponent } from './select-option.component';
     '[class.disabled]': 'isDisabled()',
   },
   providers: [
-    {
-      provide: NG_VALUE_ACCESSOR,
-      useExisting: forwardRef(() => GlintSelectComponent),
-      multi: true,
-    },
     {
       provide: GLINT_SELECT,
       useExisting: forwardRef(() => GlintSelectComponent),
@@ -145,6 +141,12 @@ export class GlintSelectComponent implements ControlValueAccessor, GlintSelectHo
   private disabledFromCVA = signal(false);
   isDisabled = computed(() => this.disabled() || this.disabledFromCVA());
 
+  /**
+   * NgControl injected directly (no NG_VALUE_ACCESSOR provider needed).
+   * This avoids circular dependency and matches the Input component pattern.
+   */
+  private ngControl = inject(NgControl, { optional: true, self: true });
+
   private overlayRef: OverlayRef | null = null;
   private onChange: (value: unknown) => void = () => {};
   private onTouched: () => void = () => {};
@@ -166,6 +168,9 @@ export class GlintSelectComponent implements ControlValueAccessor, GlintSelectHo
   });
 
   constructor() {
+    if (this.ngControl) {
+      this.ngControl.valueAccessor = this;
+    }
     this.destroyRef.onDestroy(() => this.close());
   }
 
@@ -233,7 +238,7 @@ export class GlintSelectComponent implements ControlValueAccessor, GlintSelectHo
     const triggerEl = this.triggerEl().nativeElement;
 
     const config = new OverlayConfig({
-      positionStrategy: this.overlayService['overlay']
+      positionStrategy: this.overlayService
         .position()
         .flexibleConnectedTo(triggerEl)
         .withPositions([
@@ -241,7 +246,7 @@ export class GlintSelectComponent implements ControlValueAccessor, GlintSelectHo
           { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom', offsetY: -4 },
         ])
         .withPush(true),
-      scrollStrategy: this.overlayService['overlay'].scrollStrategies.reposition(),
+      scrollStrategy: this.overlayService.scrollStrategies.reposition(),
       width: triggerEl.offsetWidth,
       hasBackdrop: true,
       backdropClass: 'cdk-overlay-transparent-backdrop',
@@ -275,7 +280,7 @@ export class GlintSelectComponent implements ControlValueAccessor, GlintSelectHo
     }
 
     // Close on backdrop click
-    overlayRef.backdropClick().subscribe(() => this.close());
+    overlayRef.backdropClick().pipe(takeUntil(overlayRef.detachments())).subscribe(() => this.close());
   }
 
   close(): void {

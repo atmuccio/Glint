@@ -1,6 +1,7 @@
 import { inject, Injectable, Injector, Type } from '@angular/core';
 import { OverlayConfig } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
+import { takeUntil } from 'rxjs';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
 import { GlintDialogConfig, GLINT_DIALOG_DATA } from './dialog.config';
 import { GlintDialogRef } from './dialog-ref';
@@ -29,12 +30,11 @@ export class GlintDialogService {
     const overlayConfig = new OverlayConfig({
       hasBackdrop: mergedConfig.hasBackdrop,
       backdropClass: 'glint-dialog-backdrop',
-      positionStrategy: this.overlayService['overlay']
-        .position()
+      positionStrategy: this.overlayService.position()
         .global()
         .centerHorizontally()
         .centerVertically(),
-      scrollStrategy: this.overlayService['overlay'].scrollStrategies.block(),
+      scrollStrategy: this.overlayService.scrollStrategies.block(),
       width: mergedConfig.width,
       height: mergedConfig.height,
       maxWidth: mergedConfig.maxWidth,
@@ -65,6 +65,10 @@ export class GlintDialogService {
     );
     const containerRef = overlayRef.attach(containerPortal);
 
+    if (mergedConfig.ariaLabel) {
+      containerRef.location.nativeElement.setAttribute('aria-label', mergedConfig.ariaLabel);
+    }
+
     // Create the user component inside the container
     const componentRef = containerRef.instance.outlet.createComponent(component, {
       injector: dialogInjector,
@@ -73,8 +77,8 @@ export class GlintDialogService {
 
     // Handle backdrop click
     if (!mergedConfig.disableClose) {
-      overlayRef.backdropClick().subscribe(() => dialogRef.close());
-      overlayRef.keydownEvents().subscribe((event) => {
+      overlayRef.backdropClick().pipe(takeUntil(overlayRef.detachments())).subscribe(() => dialogRef.close());
+      overlayRef.keydownEvents().pipe(takeUntil(overlayRef.detachments())).subscribe((event) => {
         if (event.key === 'Escape') {
           dialogRef.close();
         }

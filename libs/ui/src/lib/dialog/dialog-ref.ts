@@ -7,10 +7,11 @@ import { Subject } from 'rxjs';
  * @example
  * ```typescript
  * const ref = dialog.open(MyComponent, { data: { id: 1 } });
- * ref.afterClosed().subscribe(result => console.log(result));
+ * ref.afterClosed$.subscribe(result => console.log(result));
  * ```
  */
 export class GlintDialogRef<T = unknown, R = unknown> {
+  private closed = false;
   private readonly afterClosedSubject = new Subject<R | undefined>();
 
   /** Observable that emits the result when the dialog is closed */
@@ -23,6 +24,8 @@ export class GlintDialogRef<T = unknown, R = unknown> {
 
   /** Close the dialog with an optional result */
   close(result?: R): void {
+    if (this.closed) return;
+    this.closed = true;
     this.afterClosedSubject.next(result);
     this.afterClosedSubject.complete();
     this.overlayRef.dispose();

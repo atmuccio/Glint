@@ -1,5 +1,6 @@
 import { CSSBorderRadius, CSSColor, CSSDuration, CSSFontFamily, CSSLength, CSSShadow } from '../types/branded';
 import { GlintColor } from '../palette/colors/index';
+import { GlintSemanticColor } from '../palette/semantic-colors';
 import { GlintSpacing } from '../palette/spacing';
 import { GlintRadius } from '../palette/radius';
 import { GlintShadow } from '../palette/shadows';
@@ -33,6 +34,9 @@ export interface ZoneTheme {
   colorTextMuted: CSSColor;
   colorBorder: CSSColor;
   colorFocusRing: CSSColor;
+  colorError: CSSColor;
+  colorSuccess: CSSColor;
+  colorWarning: CSSColor;
 
   // ── Spacing tokens ────────────────────────────────────────
   spacingXs: CSSLength;
@@ -66,16 +70,19 @@ export interface ZoneTheme {
  */
 export const DEFAULT_ZONE_THEME: ZoneTheme = {
   // Colors
-  colorPrimary: GlintColor.Blue.S500,
+  colorPrimary: GlintColor.Slate.S950,
   colorPrimaryContrast: GlintColor.White,
-  colorSecondary: GlintColor.Slate.S600,
-  colorSecondaryContrast: GlintColor.White,
+  colorSecondary: '#f1f5f9' as CSSColor,
+  colorSecondaryContrast: GlintColor.Slate.S500,
   colorSurface: GlintColor.White,
   colorSurfaceVariant: GlintColor.Slate.S50,
   colorText: GlintColor.Slate.S900,
   colorTextMuted: GlintColor.Slate.S500,
-  colorBorder: GlintColor.Slate.S200,
+  colorBorder: GlintColor.Slate.S300,
   colorFocusRing: GlintColor.Blue.S400,
+  colorError: GlintSemanticColor.Danger,
+  colorSuccess: GlintSemanticColor.Success,
+  colorWarning: GlintSemanticColor.Warning,
 
   // Spacing
   spacingXs: GlintSpacing.Xs,
@@ -86,7 +93,7 @@ export const DEFAULT_ZONE_THEME: ZoneTheme = {
 
   // Shape
   borderRadius: GlintRadius.Md,
-  shadow: GlintShadow.Sm,
+  shadow: GlintShadow.Md,
 
   // Typography
   fontFamily: GlintFont.Sans,
@@ -120,6 +127,9 @@ export const THEME_TO_CSS_MAP: Record<string, string> = {
   colorTextMuted: '--glint-color-text-muted',
   colorBorder: '--glint-color-border',
   colorFocusRing: '--glint-color-focus-ring',
+  colorError: '--glint-color-error',
+  colorSuccess: '--glint-color-success',
+  colorWarning: '--glint-color-warning',
   spacingXs: '--glint-spacing-xs',
   spacingSm: '--glint-spacing-sm',
   spacingMd: '--glint-spacing-md',
@@ -151,19 +161,22 @@ export const TOKEN_SYNTAX_MAP: Record<string, string> = {
   colorTextMuted: '<color>',
   colorBorder: '<color>',
   colorFocusRing: '<color>',
+  colorError: '<color>',
+  colorSuccess: '<color>',
+  colorWarning: '<color>',
   spacingXs: '<length>',
   spacingSm: '<length>',
   spacingMd: '<length>',
   spacingLg: '<length>',
   spacingXl: '<length>',
-  borderRadius: '<length>',
+  borderRadius: '<length-percentage>',
   shadow: '*',
   fontFamily: '*',
   fontSize: '<length>',
-  fontWeight: '*',
-  durationFast: '*',
-  durationNormal: '*',
-  durationSlow: '*',
+  fontWeight: '<number>',
+  durationFast: '<time>',
+  durationNormal: '<time>',
+  durationSlow: '<time>',
   easing: '*',
 };
 

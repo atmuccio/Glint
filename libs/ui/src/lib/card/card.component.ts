@@ -19,7 +19,10 @@ import {
 @Directive({
   selector: '[glintCardHeader]',
   standalone: true,
-  host: { 'class': 'glint-card-header' },
+  host: {
+    'class': 'glint-card-header',
+    'style': 'display: block; padding-block: 1rem; padding-inline: 1.25rem; border-block-end: 1px solid var(--glint-color-border); font-weight: 500; font-size: 1.125rem;',
+  },
 })
 export class GlintCardHeaderDirective {}
 
@@ -37,7 +40,10 @@ export class GlintCardHeaderDirective {}
 @Directive({
   selector: '[glintCardFooter]',
   standalone: true,
-  host: { 'class': 'glint-card-footer' },
+  host: {
+    'class': 'glint-card-footer',
+    'style': 'display: flex; align-items: center; gap: var(--glint-spacing-sm); padding-block: 1rem; padding-inline: 1.25rem; border-block-start: 1px solid var(--glint-color-border);',
+  },
 })
 export class GlintCardFooterDirective {}
 
@@ -70,7 +76,7 @@ export class GlintCardFooterDirective {}
       font-size: var(--glint-font-size);
       color: var(--glint-color-text);
       background: var(--glint-color-surface);
-      border-radius: var(--glint-border-radius);
+      border-radius: 0.75rem;
       overflow: hidden;
       transition:
         background-color var(--glint-duration-normal) var(--glint-easing),
@@ -97,25 +103,8 @@ export class GlintCardFooterDirective {}
       box-shadow: none;
     }
 
-    /* ── Content areas ──────────────────────────── */
-    ::ng-deep .glint-card-header {
-      padding-block: var(--glint-spacing-md);
-      padding-inline: var(--glint-spacing-lg);
-      border-block-end: 1px solid var(--glint-color-border);
-      font-weight: 600;
-    }
-
-    ::ng-deep .glint-card-footer {
-      padding-block: var(--glint-spacing-md);
-      padding-inline: var(--glint-spacing-lg);
-      border-block-start: 1px solid var(--glint-color-border);
-      display: flex;
-      align-items: center;
-      gap: var(--glint-spacing-sm);
-    }
-
     .body {
-      padding: var(--glint-spacing-lg);
+      padding: 1.25rem;
     }
   `,
   template: `

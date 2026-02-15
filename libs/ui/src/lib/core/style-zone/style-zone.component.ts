@@ -87,30 +87,31 @@ export class GlintStyleZoneComponent {
     return merged as ZoneTheme;
   });
 
-  /**
-   * Pre-computed CSS changes signal. Computes the exact set/remove operations
-   * needed based on the current local theme, and tracks which properties
-   * were previously set for cleanup.
-   */
-  private cssOps = (() => {
+  constructor() {
+    registerGlintTokens();
+
+    // Track previously-set CSS keys for cleanup (mutable state belongs in effect, not computed)
     let previousKeys = new Set<string>();
 
-    return computed(() => {
-      const local = this.theme();
-      const toSet: Array<[string, string]> = [];
-      const toRemove: string[] = [];
+    // Sync CSS custom properties to host element reactively.
+    // Uses resolvedTheme (parent + local overrides merged) so that all
+    // properties are set explicitly — including rem-based defaults that
+    // CSS.registerProperty() can't provide (it requires px initialValues).
+    effect(() => {
+      const source = this.resolvedTheme() as unknown as Record<string, unknown>;
+      const host = untracked(() => this.el.nativeElement);
       const currentKeys = new Set<string>();
 
       for (const [key, cssVar] of Object.entries(THEME_TO_CSS_MAP)) {
         if (BEHAVIORAL_KEYS.has(key)) continue;
 
-        const value = (local as Record<string, unknown>)[key];
+        const value = source[key];
 
         if (value === ZONE_INHERIT) {
-          toRemove.push(cssVar);
+          host.style.removeProperty(cssVar);
         } else if (value !== undefined) {
           validateThemeValue(key, value);
-          toSet.push([cssVar, value as string]);
+          host.style.setProperty(cssVar, value as string);
           currentKeys.add(cssVar);
         }
       }
@@ -118,29 +119,11 @@ export class GlintStyleZoneComponent {
       // Clean up properties from previous render that are no longer set
       for (const cssVar of previousKeys) {
         if (!currentKeys.has(cssVar)) {
-          toRemove.push(cssVar);
+          host.style.removeProperty(cssVar);
         }
       }
 
       previousKeys = currentKeys;
-      return { toSet, toRemove };
-    });
-  })();
-
-  constructor() {
-    registerGlintTokens();
-
-    // Sync CSS custom properties to host element reactively
-    effect(() => {
-      const ops = this.cssOps();
-      const host = untracked(() => this.el.nativeElement);
-
-      for (const [cssVar, value] of ops.toSet) {
-        host.style.setProperty(cssVar, value);
-      }
-      for (const cssVar of ops.toRemove) {
-        host.style.removeProperty(cssVar);
-      }
     });
   }
 }

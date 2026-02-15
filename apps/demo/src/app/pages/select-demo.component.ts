@@ -9,8 +9,9 @@ import { GlintSelectComponent, GlintSelectOptionComponent } from '@glint/ui';
   imports: [GlintSelectComponent, GlintSelectOptionComponent, ReactiveFormsModule, JsonPipe],
   template: `
     <h2>Select</h2>
+    <p class="page-desc">Select provides a dropdown list of options.</p>
 
-    <section>
+    <div class="demo-section">
       <h3>Single Select</h3>
       <div class="stack">
         <glint-select placeholder="Choose a fruit" [formControl]="fruitCtrl">
@@ -20,11 +21,11 @@ import { GlintSelectComponent, GlintSelectOptionComponent } from '@glint/ui';
           <glint-select-option [value]="'grape'">Grape</glint-select-option>
           <glint-select-option [value]="'mango'" [disabled]="true">Mango (disabled)</glint-select-option>
         </glint-select>
-        <p>Selected: {{ fruitCtrl.value || 'none' }}</p>
+        <p class="output">Selected: {{ fruitCtrl.value || 'none' }}</p>
       </div>
-    </section>
+    </div>
 
-    <section>
+    <div class="demo-section">
       <h3>Multi Select</h3>
       <div class="stack">
         <glint-select placeholder="Choose colors" [multiple]="true" [formControl]="colorsCtrl">
@@ -33,11 +34,11 @@ import { GlintSelectComponent, GlintSelectOptionComponent } from '@glint/ui';
           <glint-select-option [value]="'blue'">Blue</glint-select-option>
           <glint-select-option [value]="'yellow'">Yellow</glint-select-option>
         </glint-select>
-        <p>Selected: {{ colorsCtrl.value | json }}</p>
+        <p class="output">Selected: {{ colorsCtrl.value | json }}</p>
       </div>
-    </section>
+    </div>
 
-    <section>
+    <div class="demo-section">
       <h3>Searchable</h3>
       <div class="stack">
         <glint-select placeholder="Search countries" [searchable]="true" [formControl]="countryCtrl">
@@ -49,15 +50,25 @@ import { GlintSelectComponent, GlintSelectOptionComponent } from '@glint/ui';
           <glint-select-option [value]="'fr'">France</glint-select-option>
           <glint-select-option [value]="'jp'">Japan</glint-select-option>
         </glint-select>
-        <p>Selected: {{ countryCtrl.value || 'none' }}</p>
+        <p class="output">Selected: {{ countryCtrl.value || 'none' }}</p>
       </div>
-    </section>
+    </div>
   `,
   styles: `
     :host { display: block; }
-    section { margin-block-end: 2rem; }
-    .stack { display: flex; flex-direction: column; gap: 0.75rem; max-inline-size: 400px; }
-    p { margin: 0.25rem 0; font-size: 0.875rem; color: #64748b; }
+    h2 { margin-block: 0 0.25rem; font-size: 1.75rem; font-weight: 600; color: #1e293b; }
+    .page-desc { color: #64748b; margin-block: 0 2rem; font-size: 1.25rem; }
+    .demo-section {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 0.625rem;
+      padding: 2rem;
+      margin-block-end: 1.5rem;
+    }
+    .demo-section h3 { margin-block: 0 1rem; font-size: 1rem; font-weight: 600; color: #334155; }
+    .row { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+    .stack { display: flex; flex-direction: column; gap: 1rem; max-inline-size: 400px; }
+    .output { margin-block-start: 0.75rem; font-size: 0.875rem; color: #64748b; }
   `,
 })
 export class SelectDemoComponent {

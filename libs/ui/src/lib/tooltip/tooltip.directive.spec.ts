@@ -59,13 +59,30 @@ describe('GlintTooltipDirective', () => {
     expect(document.querySelector('glint-tooltip-panel')).toBeFalsy();
   });
 
-  it('should set aria-describedby on host', async () => {
+  it('should set aria-describedby on host when visible', async () => {
     const fixture = TestBed.createComponent(TestTooltipHostComponent);
     fixture.detectChanges();
     await fixture.whenStable();
 
     const button = fixture.nativeElement.querySelector('button') as HTMLElement;
+    // aria-describedby should NOT be set before tooltip is shown
+    expect(button.getAttribute('aria-describedby')).toBeNull();
+
+    // Show tooltip
+    button.dispatchEvent(new Event('mouseenter'));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    // aria-describedby should now reference the tooltip
     expect(button.getAttribute('aria-describedby')).toMatch(/^glint-tooltip-\d+$/);
+
+    // Hide tooltip
+    button.dispatchEvent(new Event('mouseleave'));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    // aria-describedby should be removed
+    expect(button.getAttribute('aria-describedby')).toBeNull();
   });
 
   it('should not show when disabled', async () => {

@@ -18,6 +18,8 @@ export interface GlintDialogConfig<D = unknown> {
   hasBackdrop?: boolean;
   /** Prevent close on backdrop click or Escape */
   disableClose?: boolean;
+  /** Aria label for the dialog container */
+  ariaLabel?: string;
 }
 
 /**

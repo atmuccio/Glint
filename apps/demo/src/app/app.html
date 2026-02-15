@@ -1,15 +1,31 @@
 <div class="layout">
   <nav class="sidebar">
-    <h1 class="logo">@glint/ui</h1>
-    <ul>
-      <li><a routerLink="/button" routerLinkActive="active">Button</a></li>
-      <li><a routerLink="/card" routerLinkActive="active">Card</a></li>
-      <li><a routerLink="/input" routerLinkActive="active">Input</a></li>
-      <li><a routerLink="/tooltip" routerLinkActive="active">Tooltip</a></li>
-      <li><a routerLink="/dialog" routerLinkActive="active">Dialog</a></li>
-      <li><a routerLink="/select" routerLinkActive="active">Select</a></li>
-      <li><a routerLink="/theme" routerLinkActive="active">Theme Zones</a></li>
-    </ul>
+    <div class="sidebar-header">
+      <h1 class="logo">@glint/ui</h1>
+      <span class="version">v0.1.0</span>
+    </div>
+    <div class="nav-group">
+      <span class="nav-label">General</span>
+      <a routerLink="/button" routerLinkActive="active">Button</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-label">Form</span>
+      <a routerLink="/input" routerLinkActive="active">Input</a>
+      <a routerLink="/select" routerLinkActive="active">Select</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-label">Overlay</span>
+      <a routerLink="/tooltip" routerLinkActive="active">Tooltip</a>
+      <a routerLink="/dialog" routerLinkActive="active">Dialog</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-label">Layout</span>
+      <a routerLink="/card" routerLinkActive="active">Card</a>
+    </div>
+    <div class="nav-group">
+      <span class="nav-label">Theming</span>
+      <a routerLink="/theme" routerLinkActive="active">Theme Zones</a>
+    </div>
   </nav>
   <main class="content">
     <router-outlet />

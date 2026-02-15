@@ -7,6 +7,7 @@ import {
   Injector,
   input,
   OnInit,
+  signal,
 } from '@angular/core';
 import { ConnectedPosition, OverlayConfig } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
@@ -38,7 +39,7 @@ const POSITIONS: ConnectedPosition[] = [
     '(mouseleave)': 'hide()',
     '(focus)': 'show()',
     '(blur)': 'hide()',
-    '[attr.aria-describedby]': 'tooltipId',
+    '[attr.aria-describedby]': 'isVisible() ? tooltipId : null',
   },
 })
 export class GlintTooltipDirective implements OnInit {
@@ -48,6 +49,8 @@ export class GlintTooltipDirective implements OnInit {
   glintTooltipDisabled = input(false);
 
   readonly tooltipId = `glint-tooltip-${nextTooltipId++}`;
+  /** Whether the tooltip is currently visible */
+  protected readonly isVisible = signal(false);
 
   private overlayService = inject(ZoneAwareOverlayService);
   private elRef = inject(ElementRef<HTMLElement>);
@@ -64,11 +67,11 @@ export class GlintTooltipDirective implements OnInit {
     if (this.glintTooltipDisabled() || !this.glintTooltip() || this.overlayRef) return;
 
     const config = new OverlayConfig({
-      positionStrategy: this.overlayService['overlay']
+      positionStrategy: this.overlayService
         .position()
         .flexibleConnectedTo(this.elRef)
         .withPositions(POSITIONS),
-      scrollStrategy: this.overlayService['overlay'].scrollStrategies.reposition(),
+      scrollStrategy: this.overlayService.scrollStrategies.reposition(),
     });
 
     const { overlayRef, injector } = this.overlayService.createZoneAwareOverlay(
@@ -77,6 +80,7 @@ export class GlintTooltipDirective implements OnInit {
     );
 
     this.overlayRef = overlayRef;
+    this.isVisible.set(true);
 
     const portal = new ComponentPortal(GlintTooltipPanelComponent, null, injector);
     this.panelRef = overlayRef.attach(portal);
@@ -92,6 +96,7 @@ export class GlintTooltipDirective implements OnInit {
       this.overlayRef.dispose();
       this.overlayRef = null;
       this.panelRef = null;
+      this.isVisible.set(false);
     }
   }
 }

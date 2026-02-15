@@ -39,7 +39,7 @@
 }
 
 :host(.disabled) .trigger {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: not-allowed;
   pointer-events: none;
 }
@@ -71,7 +71,7 @@
   background: var(--glint-color-surface);
   border: 1px solid var(--glint-color-border);
   border-radius: var(--glint-border-radius);
-  box-shadow: var(--glint-shadow);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
   overflow: auto;
   max-block-size: 16rem;
 }
