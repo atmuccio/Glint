@@ -7,6 +7,4 @@ import { RouterModule } from '@angular/router';
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
-export class App {
-  protected title = '@glint/ui Demo';
-}
+export class App {}

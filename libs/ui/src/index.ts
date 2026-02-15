@@ -16,3 +16,4 @@ export { GlintSelectComponent } from './lib/select/select.component';
 export { GlintSelectOptionComponent } from './lib/select/select-option.component';
 export { GLINT_SELECT } from './lib/select/select.model';
 export type { GlintSelectHost, CompareWithFn } from './lib/select/select.model';
+export { DARK_ZONE, COMPACT_ZONE, DANGER_ZONE, SOFT_ZONE, DARK_COMPACT_ZONE } from './lib/presets/theme-presets';

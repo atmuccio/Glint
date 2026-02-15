@@ -1,0 +1,58 @@
+.layout {
+  display: flex;
+  min-block-size: 100vh;
+}
+
+.sidebar {
+  inline-size: 220px;
+  flex-shrink: 0;
+  background: #1e293b;
+  color: #e2e8f0;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.logo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.sidebar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.sidebar a {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  color: #94a3b8;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 0.9375rem;
+  transition: background-color 150ms ease, color 150ms ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+  }
+
+  &.active {
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+    font-weight: 500;
+  }
+}
+
+.content {
+  flex: 1;
+  padding: 2rem 3rem;
+  overflow: auto;
+}

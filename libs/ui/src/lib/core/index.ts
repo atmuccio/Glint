@@ -32,3 +32,6 @@ export { ZoneAwareOverlayService } from './overlay/zone-aware-overlay.service';
 
 // Utilities
 export { mergeZoneThemes } from './utils/merge-zone-themes';
+
+// Provider
+export { provideGlintUI } from './provide-glint-ui';
