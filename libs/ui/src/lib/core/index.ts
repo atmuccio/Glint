@@ -27,5 +27,8 @@ export { GlintDuration, GlintEasing } from './palette/animation';
 // Style Zone
 export { GlintStyleZoneComponent } from './style-zone/style-zone.component';
 
+// Overlay
+export { ZoneAwareOverlayService } from './overlay/zone-aware-overlay.service';
+
 // Utilities
 export { mergeZoneThemes } from './utils/merge-zone-themes';
