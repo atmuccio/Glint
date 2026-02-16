@@ -32,6 +32,7 @@ let nextId = 0;
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[attr.data-variant]': 'variant()',
+    '[attr.data-size]': 'size()',
     '[class.focused]': 'focused()',
     '[class.disabled]': 'isDisabled()',
     '[class.invalid]': 'invalid()',
@@ -131,6 +132,21 @@ let nextId = 0;
       font-size: 0.875em;
       color: var(--glint-color-error);
     }
+
+    /* ── Sizes ─────────────────────────────────── */
+    :host([data-size="sm"]) {
+      font-size: 0.875rem;
+    }
+    :host([data-size="sm"]) input {
+      padding-block: var(--glint-spacing-xs);
+    }
+
+    :host([data-size="lg"]) {
+      font-size: 1.125rem;
+    }
+    :host([data-size="lg"]) input {
+      padding-block: var(--glint-spacing-md);
+    }
   `,
   template: `
     @if (label()) {
@@ -160,6 +176,8 @@ let nextId = 0;
 export class GlintInputComponent implements ControlValueAccessor {
   /** Input variant */
   variant = input<'outline' | 'filled' | 'underline'>('outline');
+  /** Size */
+  size = input<'sm' | 'md' | 'lg'>('md');
   /** Label text */
   label = input<string>('');
   /** Placeholder text */

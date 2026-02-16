@@ -45,6 +45,7 @@ import { GlintSelectOptionComponent } from './select-option.component';
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './select.component.css',
   host: {
+    '[attr.data-size]': 'size()',
     '[class.open]': 'isOpen()',
     '[class.disabled]': 'isDisabled()',
   },
@@ -106,6 +107,8 @@ import { GlintSelectOptionComponent } from './select-option.component';
 export class GlintSelectComponent implements ControlValueAccessor, GlintSelectHost {
   /** Placeholder text when no value selected */
   placeholder = input('');
+  /** Size */
+  size = input<'sm' | 'md' | 'lg'>('md');
   /** Enable multi-select mode */
   multiple = input(false);
   /** Enable search/filter input in dropdown */

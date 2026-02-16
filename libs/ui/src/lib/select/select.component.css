@@ -66,6 +66,25 @@
   transform: rotate(180deg);
 }
 
+/* ── Sizes ─────────────────────────────────────────── */
+:host([data-size="sm"]) {
+  font-size: 0.875rem;
+}
+:host([data-size="sm"]) .trigger {
+  padding-block: var(--glint-spacing-xs);
+  padding-inline: var(--glint-spacing-sm);
+  min-block-size: 2rem;
+}
+
+:host([data-size="lg"]) {
+  font-size: 1.125rem;
+}
+:host([data-size="lg"]) .trigger {
+  padding-block: var(--glint-spacing-md);
+  padding-inline: var(--glint-spacing-lg);
+  min-block-size: 3rem;
+}
+
 /* ── Panel (rendered in overlay via template portal) ── */
 .select-panel {
   background: var(--glint-color-surface);
