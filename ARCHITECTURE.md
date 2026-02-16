@@ -180,3 +180,51 @@ Components declare transition properties for smooth theme switching:
 
 ## Dev-Mode Validation
 Behind `ngDevMode` guard, `CSS.supports()` checks validate theme values at runtime with helpful error messages pointing to the correct palette constants.
+
+## Component Patterns (Detailed)
+
+### CVA Pattern (Form Controls)
+All form controls implement `ControlValueAccessor` without `NG_VALUE_ACCESSOR` provider. Instead, they self-inject `NgControl` and set `valueAccessor` manually:
+
+```typescript
+private ngControl = inject(NgControl, { optional: true, self: true });
+constructor() {
+  if (this.ngControl) this.ngControl.valueAccessor = this;
+}
+```
+
+Disabled state merges template input with CVA state:
+```typescript
+private disabledFromCVA = signal(false);
+isDisabled = computed(() => this.disabled() || this.disabledFromCVA());
+```
+
+Components with native elements (input, textarea) use `afterRenderEffect({ write })` to sync the disabled attribute to the DOM.
+
+### Content Projection (Tabs, Accordion, Stepper)
+Container components discover child panels via `contentChildren()`:
+```typescript
+panels = contentChildren(GlintTabPanelComponent);
+```
+
+Each panel wraps content in `<ng-template>` for lazy rendering. The container renders active panel(s) via `NgTemplateOutlet`.
+
+### CDK Overlay (Menu, Popover, Drawer, Dialog)
+All overlay components use `ZoneAwareOverlayService` to create zone-aware overlays:
+```typescript
+const { overlayRef, injector } = this.overlay.createZoneAwareOverlay(config, this.injector);
+```
+
+This ensures CSS custom properties from the current style zone are applied to the overlay element, maintaining theme consistency even though overlays render at body level.
+
+### Service-based (Toast, ConfirmDialog)
+These provide imperative APIs via injectable services:
+- `GlintToastService.show()` — adds toast to a signal-based message queue
+- `GlintConfirmDialogService.confirm()` — opens a dialog and returns `Promise<boolean>`
+
+### Data-driven (Table, Menu, Breadcrumb, Timeline)
+Components accept typed arrays as required inputs:
+```typescript
+items = input.required<GlintMenuItem[]>();
+events = input.required<GlintTimelineEvent[]>();
+```

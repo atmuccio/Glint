@@ -26,14 +26,54 @@ libs/ui/src/lib/
 │   ├── style-zone/          # StyleZoneComponent
 │   ├── overlay/             # ZoneAwareOverlayService
 │   └── utils/               # mergeZoneThemes, dev-validation
-├── button/                  # GlintButton
-├── card/                    # GlintCard + directives
-├── input/                   # GlintInput (CVA)
-├── tooltip/                 # GlintTooltip directive
-├── dialog/                  # GlintDialog service + container
-├── select/                  # GlintSelect + GlintSelectOption
-└── presets/                 # Theme presets (DARK_ZONE, etc.)
+├── accordion/               # Accordion + AccordionPanel (content projection)
+├── avatar/                  # Avatar + AvatarGroup
+├── badge/                   # Badge (severity, size)
+├── breadcrumb/              # Breadcrumb (data-driven)
+├── button/                  # GlintButton (severity, variant, size)
+├── card/                    # GlintCard + header/subtitle/footer directives
+├── checkbox/                # Checkbox (CVA)
+├── chip/                    # Chip (removable)
+├── confirm-dialog/          # ConfirmDialog service (imperative)
+├── dialog/                  # Dialog service + container (CDK overlay)
+├── divider/                 # Divider (horizontal/vertical, labeled)
+├── drawer/                  # Drawer (CDK overlay, positions)
+├── fieldset/                # Fieldset (toggleable)
+├── input/                   # GlintInput (CVA, variants)
+├── input-number/            # InputNumber (CVA, spinner)
+├── menu/                    # Menu (CDK overlay, data-driven)
+├── message/                 # Message (inline, severities)
+├── paginator/               # Paginator (rows, page events)
+├── password/                # Password (CVA, strength meter)
+├── popover/                 # Popover (CDK overlay)
+├── presets/                 # Theme presets (DARK_ZONE, etc.)
+├── progress-bar/            # ProgressBar (determinate/indeterminate)
+├── progress-spinner/        # ProgressSpinner
+├── radio-button/            # RadioButton (CVA)
+├── select/                  # Select + SelectOption (CDK overlay, CVA)
+├── skeleton/                # Skeleton (shapes)
+├── slider/                  # Slider (CVA, min/max/step)
+├── split-button/            # SplitButton (CDK overlay)
+├── stepper/                 # Stepper + Step (content projection)
+├── table/                   # Table + Column directive (data-driven)
+├── tabs/                    # Tabs + TabPanel (content projection)
+├── tag/                     # Tag (severity, removable)
+├── textarea/                # Textarea (CVA, auto-resize)
+├── timeline/                # Timeline (data-driven)
+├── toast/                   # Toast service + component (imperative)
+├── toggle-switch/           # ToggleSwitch (CVA)
+├── toolbar/                 # Toolbar (slot directives)
+└── tooltip/                 # Tooltip directive (CDK overlay)
 ```
+
+### Component Patterns
+Components follow five key architectural patterns:
+
+- **CVA (ControlValueAccessor)**: Form controls (Input, Checkbox, RadioButton, ToggleSwitch, Textarea, InputNumber, Password, Slider, Select) self-inject `NgControl`, use `disabledFromCVA` signal merged with `disabled` input via `computed()`
+- **Content Projection**: Container components (Tabs, Accordion, Stepper) use `contentChildren()` + `ng-template` + `NgTemplateOutlet` for lazy panel rendering
+- **CDK Overlay**: Components needing positioned popups (Menu, Popover, Drawer, SplitButton, Tooltip, Dialog) use `ZoneAwareOverlayService` for zone-aware overlays
+- **Service-based (Imperative)**: Toast and ConfirmDialog provide injectable services with `show()`/`confirm()` APIs
+- **Data-driven**: Components accepting structured input arrays (Table, Menu, Breadcrumb, Timeline) use `input.required<T[]>()`
 
 ## Coding Conventions
 
