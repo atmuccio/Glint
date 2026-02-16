@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   DestroyRef,
-  ElementRef,
   inject,
   Injector,
   input,
@@ -85,7 +84,7 @@ import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.serv
   `,
   template: `
     <ng-template #drawerTemplate>
-      <div class="drawer-container">
+      <div class="drawer-container" role="dialog" aria-modal="true">
         @if (header()) {
           <div class="drawer-header">
             <h2 class="drawer-title">{{ header() }}</h2>

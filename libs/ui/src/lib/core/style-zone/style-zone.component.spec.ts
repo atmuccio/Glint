@@ -1,4 +1,4 @@
-import { ApplicationRef, Component, inject, Signal } from '@angular/core';
+import { Component, inject, Signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { GlintStyleZoneComponent } from './style-zone.component';
 import { ZONE_THEME } from '../tokens/zone-theme.token';

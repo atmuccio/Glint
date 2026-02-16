@@ -3,7 +3,6 @@ import {
   Component,
   input,
   model,
-  output,
   TemplateRef,
   viewChild,
 } from '@angular/core';

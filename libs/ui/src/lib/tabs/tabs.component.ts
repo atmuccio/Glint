@@ -92,7 +92,7 @@ import { GlintTabPanelComponent } from './tab-panel.component';
     }
   `,
   template: `
-    <div class="tab-list" role="tablist" (keydown)="onKeydown($event)">
+    <div class="tab-list" role="tablist" tabindex="-1" (keydown)="onKeydown($event)">
       @for (tab of panels(); track tab.panelId; let i = $index) {
         <button
           class="tab"

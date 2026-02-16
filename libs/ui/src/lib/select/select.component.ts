@@ -23,6 +23,8 @@ import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.serv
 import { GLINT_SELECT, GlintSelectHost, DEFAULT_COMPARE_WITH, CompareWithFn } from './select.model';
 import { GlintSelectOptionComponent } from './select-option.component';
 
+let nextId = 0;
+
 /**
  * Select component with single/multi-select, search, keyboard navigation, and CVA.
  *
@@ -63,6 +65,7 @@ import { GlintSelectOptionComponent } from './select-option.component';
       tabindex="0"
       [attr.aria-expanded]="isOpen()"
       [attr.aria-haspopup]="'listbox'"
+      [attr.aria-controls]="panelId"
       [attr.aria-activedescendant]="activeOptionId()"
       [attr.aria-disabled]="isDisabled() || null"
       [class.disabled]="isDisabled()"
@@ -81,6 +84,8 @@ import { GlintSelectOptionComponent } from './select-option.component';
       <div
         class="select-panel"
         role="listbox"
+        [id]="panelId"
+        tabindex="-1"
         [attr.aria-multiselectable]="multiple() || null"
         (keydown)="onPanelKeydown($event)"
       >
@@ -129,6 +134,8 @@ export class GlintSelectComponent implements ControlValueAccessor, GlintSelectHo
   private vcr = inject(ViewContainerRef);
   private destroyRef = inject(DestroyRef);
 
+  readonly panelId = `glint-select-panel-${nextId++}`;
+
   /** Whether the dropdown panel is open */
   readonly isOpen = signal(false);
   /** Current search/filter term */
@@ -151,8 +158,8 @@ export class GlintSelectComponent implements ControlValueAccessor, GlintSelectHo
   private ngControl = inject(NgControl, { optional: true, self: true });
 
   private overlayRef: OverlayRef | null = null;
-  private onChange: (value: unknown) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange: (value: unknown) => void = () => { /* noop */ };
+  private onTouched: () => void = () => { /* noop */ };
 
   /** Visible (non-hidden) options for empty state detection */
   visibleOptions = computed(() => {
@@ -232,7 +239,7 @@ export class GlintSelectComponent implements ControlValueAccessor, GlintSelectHo
 
   toggle(): void {
     if (this.isDisabled()) return;
-    this.isOpen() ? this.close() : this.open();
+    if (this.isOpen()) { this.close(); } else { this.open(); }
   }
 
   open(): void {

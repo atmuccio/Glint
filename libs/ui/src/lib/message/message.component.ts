@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   input,
   signal,
 } from '@angular/core';
@@ -110,12 +111,12 @@ export class GlintMessageComponent {
 
   protected closed = signal(false);
 
-  protected severityIcon = () => {
+  protected severityIcon = computed(() => {
     switch (this.severity()) {
       case 'success': return '\u2713';
       case 'info': return '\u24D8';
       case 'warning': return '\u26A0';
       case 'danger': return '\u2716';
     }
-  };
+  });
 }

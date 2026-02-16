@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   inject,
 } from '@angular/core';
 import { GLINT_DIALOG_DATA } from '../dialog/dialog.config';
@@ -104,12 +105,12 @@ export class GlintConfirmDialogComponent {
   protected config = inject<GlintConfirmConfig>(GLINT_DIALOG_DATA);
   protected ref = inject(GlintDialogRef);
 
-  protected severityIcon(): string {
+  protected severityIcon = computed(() => {
     switch (this.config.severity) {
       case 'info': return '\u24D8';
       case 'warning': return '\u26A0';
       case 'danger': return '\u2716';
       default: return '';
     }
-  }
+  });
 }

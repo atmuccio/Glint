@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  ElementRef,
   inject,
   input,
   signal,
@@ -152,8 +151,8 @@ export class GlintSliderComponent implements ControlValueAccessor {
   });
 
   private ngControl = inject(NgControl, { optional: true, self: true });
-  private onChangeFn: (value: number) => void = () => {};
-  protected onTouched: () => void = () => {};
+  private onChangeFn: (value: number) => void = () => { /* noop */ };
+  protected onTouched: () => void = () => { /* noop */ };
 
   constructor() {
     if (this.ngControl) {

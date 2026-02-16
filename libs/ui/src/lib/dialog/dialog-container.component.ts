@@ -2,7 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  ViewChild,
+  viewChild,
   ViewContainerRef,
 } from '@angular/core';
 import { CdkTrapFocus } from '@angular/cdk/a11y';
@@ -107,8 +107,7 @@ import { GlintDialogRef } from './dialog-ref';
   `,
 })
 export class GlintDialogContainerComponent {
-  @ViewChild('outlet', { read: ViewContainerRef, static: true })
-  outlet!: ViewContainerRef;
+  readonly outlet = viewChild.required('outlet', { read: ViewContainerRef });
 
   protected readonly config = inject<GlintDialogConfig>(GLINT_DIALOG_CONFIG);
   protected readonly dialogRef = inject(GlintDialogRef);

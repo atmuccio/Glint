@@ -95,7 +95,7 @@ const POSITIONS: ConnectedPosition[] = [
   `,
   template: `
     <button class="primary" type="button" (click)="primaryClick.emit()">{{ label() }}</button>
-    <button class="dropdown" type="button" (click)="toggleMenu()" aria-label="More options" aria-haspopup="true">
+    <button class="dropdown" type="button" (click)="toggleMenu()" aria-label="More options" aria-haspopup="true" [attr.aria-expanded]="isOpen()">
       <span class="chevron">&#9660;</span>
     </button>
   `,
@@ -115,14 +115,14 @@ export class GlintSplitButtonComponent {
   private elRef = inject(ElementRef);
   private destroyRef = inject(DestroyRef);
   private menuRef: import('@angular/cdk/overlay').OverlayRef | null = null;
-  private isOpen = signal(false);
+  protected isOpen = signal(false);
 
   constructor() {
     this.destroyRef.onDestroy(() => this.closeMenu());
   }
 
   toggleMenu(): void {
-    this.isOpen() ? this.closeMenu() : this.openMenu();
+    if (this.isOpen()) { this.closeMenu(); } else { this.openMenu(); }
   }
 
   private openMenu(): void {

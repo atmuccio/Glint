@@ -71,7 +71,7 @@ export class GlintDialogService {
     }
 
     // Create the user component inside the container
-    const componentRef = containerRef.instance.outlet.createComponent(component, {
+    const componentRef = containerRef.instance.outlet().createComponent(component, {
       injector: dialogInjector,
     });
     dialogRef.componentInstance = componentRef.instance;

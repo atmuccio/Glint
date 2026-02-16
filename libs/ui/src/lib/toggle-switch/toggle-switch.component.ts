@@ -115,8 +115,8 @@ export class GlintToggleSwitchComponent implements ControlValueAccessor {
   isDisabled = computed(() => this.disabled() || this.disabledFromCVA());
 
   private ngControl = inject(NgControl, { optional: true, self: true });
-  private onChange: (value: boolean) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange: (value: boolean) => void = () => { /* noop */ };
+  private onTouched: () => void = () => { /* noop */ };
 
   constructor() {
     if (this.ngControl) {

@@ -21,7 +21,6 @@ import {
   standalone: true,
   host: {
     'class': 'glint-card-header',
-    'style': 'display: block; padding-block: 1rem; padding-inline: 1.25rem; border-block-end: 1px solid var(--glint-color-border); font-weight: 500; font-size: 1.125rem;',
   },
 })
 export class GlintCardHeaderDirective {}
@@ -43,7 +42,6 @@ export class GlintCardHeaderDirective {}
   standalone: true,
   host: {
     'class': 'glint-card-subtitle',
-    'style': 'display: block; padding-inline: 1.25rem; padding-block-end: 0.5rem; font-size: 0.875rem; color: var(--glint-color-text-muted);',
   },
 })
 export class GlintCardSubtitleDirective {}
@@ -64,7 +62,6 @@ export class GlintCardSubtitleDirective {}
   standalone: true,
   host: {
     'class': 'glint-card-footer',
-    'style': 'display: flex; align-items: center; gap: var(--glint-spacing-sm); padding-block: 1rem; padding-inline: 1.25rem; border-block-start: 1px solid var(--glint-color-border);',
   },
 })
 export class GlintCardFooterDirective {}
@@ -126,6 +123,33 @@ export class GlintCardFooterDirective {}
 
     .body {
       padding: 1.25rem;
+    }
+
+    /* ── Projected directive slots ────────────────── */
+    .glint-card-header {
+      display: block;
+      padding-block: 1rem;
+      padding-inline: 1.25rem;
+      border-block-end: 1px solid var(--glint-color-border);
+      font-weight: 500;
+      font-size: 1.125rem;
+    }
+
+    .glint-card-subtitle {
+      display: block;
+      padding-inline: 1.25rem;
+      padding-block-end: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--glint-color-text-muted);
+    }
+
+    .glint-card-footer {
+      display: flex;
+      align-items: center;
+      gap: var(--glint-spacing-sm);
+      padding-block: 1rem;
+      padding-inline: 1.25rem;
+      border-block-start: 1px solid var(--glint-color-border);
     }
   `,
   template: `

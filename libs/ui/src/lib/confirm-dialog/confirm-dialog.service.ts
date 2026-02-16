@@ -1,4 +1,4 @@
-import { inject, Injectable, Injector } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { injectGlintDialog } from '../dialog/dialog.service';
 import { GlintConfirmDialogComponent } from './confirm-dialog.component';
 
