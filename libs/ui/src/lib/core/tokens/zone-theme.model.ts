@@ -37,6 +37,7 @@ export interface ZoneTheme {
   colorError: CSSColor;
   colorSuccess: CSSColor;
   colorWarning: CSSColor;
+  colorInfo: CSSColor;
 
   // ── Spacing tokens ────────────────────────────────────────
   spacingXs: CSSLength;
@@ -83,6 +84,7 @@ export const DEFAULT_ZONE_THEME: ZoneTheme = {
   colorError: GlintSemanticColor.Danger,
   colorSuccess: GlintSemanticColor.Success,
   colorWarning: GlintSemanticColor.Warning,
+  colorInfo: GlintSemanticColor.Info,
 
   // Spacing
   spacingXs: GlintSpacing.Xs,
@@ -130,6 +132,7 @@ export const THEME_TO_CSS_MAP: Record<string, string> = {
   colorError: '--glint-color-error',
   colorSuccess: '--glint-color-success',
   colorWarning: '--glint-color-warning',
+  colorInfo: '--glint-color-info',
   spacingXs: '--glint-spacing-xs',
   spacingSm: '--glint-spacing-sm',
   spacingMd: '--glint-spacing-md',
@@ -164,6 +167,7 @@ export const TOKEN_SYNTAX_MAP: Record<string, string> = {
   colorError: '<color>',
   colorSuccess: '<color>',
   colorWarning: '<color>',
+  colorInfo: '<color>',
   spacingXs: '<length>',
   spacingSm: '<length>',
   spacingMd: '<length>',

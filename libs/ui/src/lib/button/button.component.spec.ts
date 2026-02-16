@@ -21,7 +21,7 @@ import { ZoneTheme } from '../core/tokens/zone-theme.model';
 })
 class TestButtonHostComponent {
   zoneTheme: Partial<ZoneTheme> = {};
-  severity: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'neutral' = 'primary';
+  severity: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger' | 'neutral' = 'primary';
   disabled = false;
   loading = false;
   variant: 'filled' | 'outlined' | 'ghost' | undefined = undefined;

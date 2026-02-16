@@ -18,6 +18,8 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
  * ```html
  * <glint-button severity="primary" variant="filled">Click me</glint-button>
  * <glint-button severity="danger" variant="outlined" [loading]="true">Saving...</glint-button>
+ * <glint-button size="sm" [rounded]="true">Small Pill</glint-button>
+ * <glint-button severity="info" [raised]="true">Elevated Info</glint-button>
  * ```
  */
 @Component({
@@ -27,7 +29,10 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
   host: {
     '[attr.data-variant]': 'resolvedVariant()',
     '[attr.data-severity]': 'severity()',
+    '[attr.data-size]': 'size()',
     '[attr.data-loading]': 'loading() || null',
+    '[attr.data-rounded]': 'rounded() || null',
+    '[attr.data-raised]': 'raised() || null',
     '[class.disabled]': 'disabled()',
   },
   styles: `
@@ -56,6 +61,30 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
         box-shadow var(--glint-duration-normal) var(--glint-easing);
     }
 
+    /* ── Sizes ─────────────────────────────────── */
+    :host([data-size="sm"]) {
+      font-size: 0.875rem;
+      padding-block: var(--glint-spacing-xs);
+      padding-inline: var(--glint-spacing-sm);
+      gap: var(--glint-spacing-xs);
+    }
+
+    :host([data-size="lg"]) {
+      font-size: 1.125rem;
+      padding-block: var(--glint-spacing-md);
+      padding-inline: var(--glint-spacing-lg);
+    }
+
+    /* ── Rounded (pill) ────────────────────────── */
+    :host([data-rounded]) {
+      border-radius: 9999px;
+    }
+
+    /* ── Raised (elevated) ─────────────────────── */
+    :host([data-raised]) {
+      box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    }
+
     :host(:focus-visible) {
       box-shadow: 0 0 0 2px var(--glint-color-surface), 0 0 0 4px var(--glint-color-focus-ring);
     }
@@ -73,12 +102,12 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
       border-color: var(--glint-color-primary);
     }
     :host([data-variant="filled"][data-severity="primary"]:hover:not(.disabled)) {
-      background: color-mix(in oklch, var(--glint-color-primary), black 10%);
-      border-color: color-mix(in oklch, var(--glint-color-primary), black 10%);
+      background: color-mix(in oklch, var(--glint-color-primary), white 15%);
+      border-color: color-mix(in oklch, var(--glint-color-primary), white 15%);
     }
     :host([data-variant="filled"][data-severity="primary"]:active:not(.disabled)) {
-      background: color-mix(in oklch, var(--glint-color-primary), black 20%);
-      border-color: color-mix(in oklch, var(--glint-color-primary), black 20%);
+      background: color-mix(in oklch, var(--glint-color-primary), white 30%);
+      border-color: color-mix(in oklch, var(--glint-color-primary), white 30%);
     }
 
     :host([data-variant="filled"][data-severity="secondary"]) {
@@ -87,10 +116,12 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
       border-color: var(--glint-color-secondary);
     }
     :host([data-variant="filled"][data-severity="secondary"]:hover:not(.disabled)) {
-      background: color-mix(in oklch, var(--glint-color-secondary), black 10%);
+      background: color-mix(in oklch, var(--glint-color-secondary), black 5%);
+      border-color: color-mix(in oklch, var(--glint-color-secondary), black 5%);
     }
     :host([data-variant="filled"][data-severity="secondary"]:active:not(.disabled)) {
-      background: color-mix(in oklch, var(--glint-color-secondary), black 20%);
+      background: color-mix(in oklch, var(--glint-color-secondary), black 12%);
+      border-color: color-mix(in oklch, var(--glint-color-secondary), black 12%);
     }
 
     :host([data-variant="filled"][data-severity="success"]) {
@@ -105,6 +136,20 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
     :host([data-variant="filled"][data-severity="success"]:active:not(.disabled)) {
       background: color-mix(in oklch, var(--glint-color-success), black 20%);
       border-color: color-mix(in oklch, var(--glint-color-success), black 20%);
+    }
+
+    :host([data-variant="filled"][data-severity="info"]) {
+      background: var(--glint-color-info);
+      color: white;
+      border-color: var(--glint-color-info);
+    }
+    :host([data-variant="filled"][data-severity="info"]:hover:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-info), black 10%);
+      border-color: color-mix(in oklch, var(--glint-color-info), black 10%);
+    }
+    :host([data-variant="filled"][data-severity="info"]:active:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-info), black 20%);
+      border-color: color-mix(in oklch, var(--glint-color-info), black 20%);
     }
 
     :host([data-variant="filled"][data-severity="warning"]) {
@@ -183,6 +228,16 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
     :host([data-variant="outlined"][data-severity="success"]:active:not(.disabled)) {
       background: color-mix(in oklch, var(--glint-color-success), white 80%);
     }
+    :host([data-variant="outlined"][data-severity="info"]) {
+      border-color: var(--glint-color-info);
+      color: var(--glint-color-info);
+    }
+    :host([data-variant="outlined"][data-severity="info"]:hover:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-info), white 90%);
+    }
+    :host([data-variant="outlined"][data-severity="info"]:active:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-info), white 80%);
+    }
     :host([data-variant="outlined"][data-severity="warning"]) {
       border-color: var(--glint-color-warning);
       color: var(--glint-color-warning);
@@ -203,6 +258,16 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
     :host([data-variant="outlined"][data-severity="danger"]:active:not(.disabled)) {
       background: color-mix(in oklch, var(--glint-color-error), white 80%);
     }
+    :host([data-variant="outlined"][data-severity="neutral"]) {
+      border-color: var(--glint-color-border);
+      color: var(--glint-color-text);
+    }
+    :host([data-variant="outlined"][data-severity="neutral"]:hover:not(.disabled)) {
+      background: var(--glint-color-surface-variant);
+    }
+    :host([data-variant="outlined"][data-severity="neutral"]:active:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-surface-variant), var(--glint-color-border) 15%);
+    }
 
     /* ── Ghost variant ──────────────────────────── */
     :host([data-variant="ghost"]) {
@@ -215,6 +280,9 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
     }
     :host([data-variant="ghost"][data-severity="success"]) {
       color: var(--glint-color-success);
+    }
+    :host([data-variant="ghost"][data-severity="info"]) {
+      color: var(--glint-color-info);
     }
     :host([data-variant="ghost"][data-severity="warning"]) {
       color: var(--glint-color-warning);
@@ -233,6 +301,12 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
     }
     :host([data-variant="ghost"][data-severity="success"]:active:not(.disabled)) {
       background: color-mix(in oklch, var(--glint-color-success), white 80%);
+    }
+    :host([data-variant="ghost"][data-severity="info"]:hover:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-info), white 90%);
+    }
+    :host([data-variant="ghost"][data-severity="info"]:active:not(.disabled)) {
+      background: color-mix(in oklch, var(--glint-color-info), white 80%);
     }
     :host([data-variant="ghost"][data-severity="warning"]:hover:not(.disabled)) {
       background: color-mix(in oklch, var(--glint-color-warning), white 90%);
@@ -306,13 +380,19 @@ export class GlintButtonComponent {
   /** Visual variant */
   variant = input<'filled' | 'outlined' | 'ghost' | undefined>(undefined);
   /** Color severity */
-  severity = input<'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'neutral'>('primary');
+  severity = input<'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'danger' | 'neutral'>('primary');
+  /** Size */
+  size = input<'sm' | 'md' | 'lg'>('md');
   /** Disabled state */
   disabled = input(false);
   /** Loading state — shows spinner, hides content, sets aria-busy */
   loading = input(false);
   /** Button type attribute */
   type = input<'button' | 'submit' | 'reset'>('button');
+  /** Pill shape (border-radius: 9999px) */
+  rounded = input(false);
+  /** Elevated shadow */
+  raised = input(false);
 
   private zone = inject(ZONE_THEME);
   private elRef = inject(ElementRef<HTMLElement>);
