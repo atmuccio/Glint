@@ -367,6 +367,7 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
     <button
       [type]="type()"
       [disabled]="disabled()"
+      [attr.aria-label]="ariaLabel() || null"
       [attr.aria-busy]="loading() || null"
     >
       @if (loading()) {
@@ -393,6 +394,8 @@ export class GlintButtonComponent {
   rounded = input(false);
   /** Elevated shadow */
   raised = input(false);
+  /** Accessible label for icon-only buttons */
+  ariaLabel = input<string>('');
 
   private zone = inject(ZONE_THEME);
   private elRef = inject(ElementRef<HTMLElement>);

@@ -39,6 +39,7 @@ const POSITIONS: ConnectedPosition[] = [
     '(mouseleave)': 'scheduleHide()',
     '(focus)': 'scheduleShow()',
     '(blur)': 'scheduleHide()',
+    '(keydown.escape)': 'hide()',
     '[attr.aria-describedby]': 'isVisible() ? tooltipId : null',
   },
 })

@@ -23,6 +23,7 @@ export { GlintRadius } from './palette/radius';
 export { GlintShadow } from './palette/shadows';
 export { GlintFont, GlintFontSize, GlintFontWeight } from './palette/typography';
 export { GlintDuration, GlintEasing } from './palette/animation';
+export { GlintZIndex } from './palette/z-index';
 
 // Style Zone
 export { GlintStyleZoneComponent } from './style-zone/style-zone.component';

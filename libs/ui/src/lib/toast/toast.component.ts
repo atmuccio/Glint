@@ -26,7 +26,7 @@ import { GlintToastService } from './toast.service';
   styles: `
     :host {
       position: fixed;
-      z-index: 1080;
+      z-index: 1080; /* GlintZIndex.Toast */
       display: flex;
       flex-direction: column;
       gap: var(--glint-spacing-sm);
