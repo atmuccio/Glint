@@ -3,6 +3,7 @@
 
 export * from './lib/core/index';
 export { GlintButtonComponent } from './lib/button/button.component';
+export { GlintCheckboxComponent } from './lib/checkbox/checkbox.component';
 export { GlintCardComponent, GlintCardHeaderDirective, GlintCardSubtitleDirective, GlintCardFooterDirective } from './lib/card/card.component';
 export { GlintInputComponent } from './lib/input/input.component';
 export { GlintTooltipDirective } from './lib/tooltip/tooltip.directive';
