@@ -35,10 +35,10 @@ const POSITIONS: ConnectedPosition[] = [
   selector: '[glintTooltip]',
   standalone: true,
   host: {
-    '(mouseenter)': 'show()',
-    '(mouseleave)': 'hide()',
-    '(focus)': 'show()',
-    '(blur)': 'hide()',
+    '(mouseenter)': 'scheduleShow()',
+    '(mouseleave)': 'scheduleHide()',
+    '(focus)': 'scheduleShow()',
+    '(blur)': 'scheduleHide()',
     '[attr.aria-describedby]': 'isVisible() ? tooltipId : null',
   },
 })
@@ -47,6 +47,10 @@ export class GlintTooltipDirective implements OnInit {
   glintTooltip = input.required<string>();
   /** Disable tooltip display */
   glintTooltipDisabled = input(false);
+  /** Delay in ms before showing the tooltip */
+  glintTooltipShowDelay = input(0);
+  /** Delay in ms before hiding the tooltip */
+  glintTooltipHideDelay = input(0);
 
   readonly tooltipId = `glint-tooltip-${nextTooltipId++}`;
   /** Whether the tooltip is currently visible */
@@ -58,9 +62,45 @@ export class GlintTooltipDirective implements OnInit {
   private destroyRef = inject(DestroyRef);
   private panelRef: ComponentRef<GlintTooltipPanelComponent> | null = null;
   private overlayRef: import('@angular/cdk/overlay').OverlayRef | null = null;
+  private showTimer: ReturnType<typeof setTimeout> | null = null;
+  private hideTimer: ReturnType<typeof setTimeout> | null = null;
 
   ngOnInit(): void {
-    this.destroyRef.onDestroy(() => this.hide());
+    this.destroyRef.onDestroy(() => {
+      this.clearTimers();
+      this.hide();
+    });
+  }
+
+  scheduleShow(): void {
+    this.clearTimers();
+    const delay = this.glintTooltipShowDelay();
+    if (delay > 0) {
+      this.showTimer = setTimeout(() => this.show(), delay);
+    } else {
+      this.show();
+    }
+  }
+
+  scheduleHide(): void {
+    this.clearTimers();
+    const delay = this.glintTooltipHideDelay();
+    if (delay > 0) {
+      this.hideTimer = setTimeout(() => this.hide(), delay);
+    } else {
+      this.hide();
+    }
+  }
+
+  private clearTimers(): void {
+    if (this.showTimer) {
+      clearTimeout(this.showTimer);
+      this.showTimer = null;
+    }
+    if (this.hideTimer) {
+      clearTimeout(this.hideTimer);
+      this.hideTimer = null;
+    }
   }
 
   show(): void {
