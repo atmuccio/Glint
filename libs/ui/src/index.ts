@@ -37,4 +37,17 @@ export { GlintProgressSpinnerComponent } from './lib/progress-spinner/progress-s
 export { GlintSkeletonComponent } from './lib/skeleton/skeleton.component';
 export { GlintBreadcrumbComponent } from './lib/breadcrumb/breadcrumb.component';
 export type { GlintBreadcrumbItem } from './lib/breadcrumb/breadcrumb.component';
+export { GlintAccordionComponent } from './lib/accordion/accordion.component';
+export { GlintAccordionPanelComponent } from './lib/accordion/accordion-panel.component';
+export { GlintAvatarComponent } from './lib/avatar/avatar.component';
+export { GlintAvatarGroupComponent } from './lib/avatar/avatar-group.component';
+export { GlintChipComponent } from './lib/chip/chip.component';
+export { GlintDrawerComponent } from './lib/drawer/drawer.component';
+export { GlintPopoverComponent } from './lib/popover/popover.component';
+export { GlintToolbarComponent } from './lib/toolbar/toolbar.component';
+export { GlintPaginatorComponent } from './lib/paginator/paginator.component';
+export type { GlintPageEvent } from './lib/paginator/paginator.component';
+export { GlintTableComponent } from './lib/table/table.component';
+export { GlintColumnDirective } from './lib/table/table-column.directive';
+export type { GlintSortEvent } from './lib/table/table.component';
 export { DARK_ZONE, COMPACT_ZONE, DANGER_ZONE, SOFT_ZONE, DARK_COMPACT_ZONE } from './lib/presets/theme-presets';
