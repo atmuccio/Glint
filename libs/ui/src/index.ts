@@ -10,6 +10,7 @@ export { GlintTextareaComponent } from './lib/textarea/textarea.component';
 export { GlintBadgeComponent } from './lib/badge/badge.component';
 export { GlintTagComponent } from './lib/tag/tag.component';
 export { GlintDividerComponent } from './lib/divider/divider.component';
+export { GlintInputNumberComponent } from './lib/input-number/input-number.component';
 export { GlintCardComponent, GlintCardHeaderDirective, GlintCardSubtitleDirective, GlintCardFooterDirective } from './lib/card/card.component';
 export { GlintInputComponent } from './lib/input/input.component';
 export { GlintTooltipDirective } from './lib/tooltip/tooltip.directive';
