@@ -1,4 +1,5 @@
 import {
+  afterRenderEffect,
   ChangeDetectionStrategy,
   Component,
   computed,
@@ -219,8 +220,8 @@ export class GlintInputComponent implements ControlValueAccessor {
    */
   private ngControl = inject(NgControl, { optional: true, self: true });
 
-  private onChange: (value: string) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange: (value: string) => void = () => { /* noop */ };
+  private onTouched: () => void = () => { /* noop */ };
 
   constructor() {
     // Wire up CVA manually — avoids NG_VALUE_ACCESSOR provider + NgControl circular dep
@@ -248,12 +249,14 @@ export class GlintInputComponent implements ControlValueAccessor {
     });
 
     // Drive native <input> disabled from the merged signal
-    effect(() => {
-      const disabled = this.isDisabled();
-      const el = this.inputRef()?.nativeElement;
-      if (el) {
-        el.disabled = disabled;
-      }
+    afterRenderEffect({
+      write: () => {
+        const disabled = this.isDisabled();
+        const el = this.inputRef()?.nativeElement;
+        if (el) {
+          el.disabled = disabled;
+        }
+      },
     });
   }
 

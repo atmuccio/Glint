@@ -1,13 +1,12 @@
 import {
+  afterRenderEffect,
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   ElementRef,
   inject,
   input,
   Signal,
-  untracked,
 } from '@angular/core';
 import {
   BEHAVIORAL_KEYS,
@@ -97,33 +96,35 @@ export class GlintStyleZoneComponent {
     // Uses resolvedTheme (parent + local overrides merged) so that all
     // properties are set explicitly — including rem-based defaults that
     // CSS.registerProperty() can't provide (it requires px initialValues).
-    effect(() => {
-      const source = this.resolvedTheme() as unknown as Record<string, unknown>;
-      const host = untracked(() => this.el.nativeElement);
-      const currentKeys = new Set<string>();
+    afterRenderEffect({
+      write: () => {
+        const source = this.resolvedTheme() as unknown as Record<string, unknown>;
+        const host = this.el.nativeElement;
+        const currentKeys = new Set<string>();
 
-      for (const [key, cssVar] of Object.entries(THEME_TO_CSS_MAP)) {
-        if (BEHAVIORAL_KEYS.has(key)) continue;
+        for (const [key, cssVar] of Object.entries(THEME_TO_CSS_MAP)) {
+          if (BEHAVIORAL_KEYS.has(key)) continue;
 
-        const value = source[key];
+          const value = source[key];
 
-        if (value === ZONE_INHERIT) {
-          host.style.removeProperty(cssVar);
-        } else if (value !== undefined) {
-          validateThemeValue(key, value);
-          host.style.setProperty(cssVar, value as string);
-          currentKeys.add(cssVar);
+          if (value === ZONE_INHERIT) {
+            host.style.removeProperty(cssVar);
+          } else if (value !== undefined) {
+            validateThemeValue(key, value);
+            host.style.setProperty(cssVar, value as string);
+            currentKeys.add(cssVar);
+          }
         }
-      }
 
-      // Clean up properties from previous render that are no longer set
-      for (const cssVar of previousKeys) {
-        if (!currentKeys.has(cssVar)) {
-          host.style.removeProperty(cssVar);
+        // Clean up properties from previous render that are no longer set
+        for (const cssVar of previousKeys) {
+          if (!currentKeys.has(cssVar)) {
+            host.style.removeProperty(cssVar);
+          }
         }
-      }
 
-      previousKeys = currentKeys;
+        previousKeys = currentKeys;
+      },
     });
   }
 }

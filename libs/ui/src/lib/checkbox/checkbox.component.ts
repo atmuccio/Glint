@@ -1,8 +1,8 @@
 import {
+  afterRenderEffect,
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   ElementRef,
   inject,
   input,
@@ -152,20 +152,22 @@ export class GlintCheckboxComponent implements ControlValueAccessor {
   private inputRef = viewChild<ElementRef<HTMLInputElement>>('inputEl');
 
   private ngControl = inject(NgControl, { optional: true, self: true });
-  private onChange: (value: boolean) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange: (value: boolean) => void = () => { /* noop */ };
+  private onTouched: () => void = () => { /* noop */ };
 
   constructor() {
     if (this.ngControl) {
       this.ngControl.valueAccessor = this;
     }
 
-    effect(() => {
-      const disabled = this.isDisabled();
-      const el = this.inputRef()?.nativeElement;
-      if (el) {
-        el.disabled = disabled;
-      }
+    afterRenderEffect({
+      write: () => {
+        const disabled = this.isDisabled();
+        const el = this.inputRef()?.nativeElement;
+        if (el) {
+          el.disabled = disabled;
+        }
+      },
     });
   }
 

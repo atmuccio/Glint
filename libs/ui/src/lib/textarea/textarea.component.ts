@@ -1,8 +1,8 @@
 import {
+  afterRenderEffect,
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   ElementRef,
   inject,
   input,
@@ -166,20 +166,22 @@ export class GlintTextareaComponent implements ControlValueAccessor {
   private textareaRef = viewChild<ElementRef<HTMLTextAreaElement>>('textareaEl');
 
   private ngControl = inject(NgControl, { optional: true, self: true });
-  private onChange: (value: string) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange: (value: string) => void = () => { /* noop */ };
+  private onTouched: () => void = () => { /* noop */ };
 
   constructor() {
     if (this.ngControl) {
       this.ngControl.valueAccessor = this;
     }
 
-    effect(() => {
-      const disabled = this.isDisabled();
-      const el = this.textareaRef()?.nativeElement;
-      if (el) {
-        el.disabled = disabled;
-      }
+    afterRenderEffect({
+      write: () => {
+        const disabled = this.isDisabled();
+        const el = this.textareaRef()?.nativeElement;
+        if (el) {
+          el.disabled = disabled;
+        }
+      },
     });
   }
 

@@ -1,10 +1,9 @@
 import {
-  effect,
+  afterRenderEffect,
   inject,
   Injectable,
   Injector,
   Signal,
-  untracked,
 } from '@angular/core';
 import { Overlay, OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
 import { ZONE_THEME } from '../tokens/zone-theme.token';
@@ -66,30 +65,32 @@ export class ZoneAwareOverlayService {
     let previousKeys = new Set<string>();
 
     // Apply CSS variables reactively to the overlay pane
-    const effectRef = effect(() => {
-      const theme = zoneTheme();
-      const el = untracked(() => overlayRef.overlayElement);
-      if (!el) return;
+    const effectRef = afterRenderEffect({
+      write: () => {
+        const theme = zoneTheme();
+        const el = overlayRef.overlayElement;
+        if (!el) return;
 
-      const currentKeys = new Set<string>();
+        const currentKeys = new Set<string>();
 
-      for (const [key, cssVar] of Object.entries(THEME_TO_CSS_MAP)) {
-        if (BEHAVIORAL_KEYS.has(key)) continue;
-        const value = (theme as unknown as Record<string, string>)[key];
-        if (value) {
-          el.style.setProperty(cssVar, value);
-          currentKeys.add(cssVar);
+        for (const [key, cssVar] of Object.entries(THEME_TO_CSS_MAP)) {
+          if (BEHAVIORAL_KEYS.has(key)) continue;
+          const value = (theme as unknown as Record<string, string>)[key];
+          if (value) {
+            el.style.setProperty(cssVar, value);
+            currentKeys.add(cssVar);
+          }
         }
-      }
 
-      // Clean up stale properties from previous evaluation
-      for (const cssVar of previousKeys) {
-        if (!currentKeys.has(cssVar)) {
-          el.style.removeProperty(cssVar);
+        // Clean up stale properties from previous evaluation
+        for (const cssVar of previousKeys) {
+          if (!currentKeys.has(cssVar)) {
+            el.style.removeProperty(cssVar);
+          }
         }
-      }
 
-      previousKeys = currentKeys;
+        previousKeys = currentKeys;
+      },
     }, { injector: callerInjector });
 
     // Clean up effect when overlay is disposed (detach is called by dispose internally)

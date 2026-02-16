@@ -1,4 +1,5 @@
 import {
+  afterRenderEffect,
   ChangeDetectionStrategy,
   Component,
   computed,
@@ -172,8 +173,8 @@ export class GlintPasswordComponent implements ControlValueAccessor {
 
   private inputRef = viewChild<ElementRef<HTMLInputElement>>('inputEl');
   private ngControl = inject(NgControl, { optional: true, self: true });
-  private onChange: (value: string) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange: (value: string) => void = () => { /* noop */ };
+  private onTouched: () => void = () => { /* noop */ };
 
   protected strengthLevel = computed(() => {
     const v = this.value();
@@ -206,10 +207,12 @@ export class GlintPasswordComponent implements ControlValueAccessor {
       });
     });
 
-    effect(() => {
-      const disabled = this.isDisabled();
-      const el = this.inputRef()?.nativeElement;
-      if (el) el.disabled = disabled;
+    afterRenderEffect({
+      write: () => {
+        const disabled = this.isDisabled();
+        const el = this.inputRef()?.nativeElement;
+        if (el) el.disabled = disabled;
+      },
     });
   }
 

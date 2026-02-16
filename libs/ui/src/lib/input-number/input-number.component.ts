@@ -1,4 +1,5 @@
 import {
+  afterRenderEffect,
   ChangeDetectionStrategy,
   Component,
   computed,
@@ -272,8 +273,8 @@ export class GlintInputNumberComponent implements ControlValueAccessor {
 
   private inputRef = viewChild<ElementRef<HTMLInputElement>>('inputEl');
   private ngControl = inject(NgControl, { optional: true, self: true });
-  private onChange: (value: number | null) => void = () => {};
-  private onTouched: () => void = () => {};
+  private onChange: (value: number | null) => void = () => { /* noop */ };
+  private onTouched: () => void = () => { /* noop */ };
 
   constructor() {
     if (this.ngControl) {
@@ -296,12 +297,14 @@ export class GlintInputNumberComponent implements ControlValueAccessor {
       });
     });
 
-    effect(() => {
-      const disabled = this.isDisabled();
-      const el = this.inputRef()?.nativeElement;
-      if (el) {
-        el.disabled = disabled;
-      }
+    afterRenderEffect({
+      write: () => {
+        const disabled = this.isDisabled();
+        const el = this.inputRef()?.nativeElement;
+        if (el) {
+          el.disabled = disabled;
+        }
+      },
     });
   }
 
