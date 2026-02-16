@@ -1,14 +1,15 @@
 import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { GlintCardComponent, GlintCardHeaderDirective, GlintCardFooterDirective } from './card.component';
+import { GlintCardComponent, GlintCardHeaderDirective, GlintCardSubtitleDirective, GlintCardFooterDirective } from './card.component';
 
 @Component({
   selector: 'glint-test-card-host',
   standalone: true,
-  imports: [GlintCardComponent, GlintCardHeaderDirective, GlintCardFooterDirective],
+  imports: [GlintCardComponent, GlintCardHeaderDirective, GlintCardSubtitleDirective, GlintCardFooterDirective],
   template: `
     <glint-card [variant]="variant">
       <div glintCardHeader>Header Text</div>
+      <div glintCardSubtitle>Subtitle Text</div>
       <p>Body content</p>
       <div glintCardFooter>Footer Text</div>
     </glint-card>
@@ -29,7 +30,20 @@ describe('GlintCardComponent', () => {
 
     const card = fixture.nativeElement.querySelector('glint-card') as HTMLElement;
     expect(card.getAttribute('data-variant')).toBe('flat');
-    expect(card.getAttribute('role')).toBe('region');
+    expect(card.getAttribute('role')).toBeNull();
+  });
+
+  it('should render projected subtitle content', async () => {
+    TestBed.configureTestingModule({
+      imports: [TestCardHostComponent],
+    });
+    const fixture = TestBed.createComponent(TestCardHostComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const subtitle = fixture.nativeElement.querySelector('.glint-card-subtitle') as HTMLElement;
+    expect(subtitle).toBeTruthy();
+    expect(subtitle.textContent?.trim()).toBe('Subtitle Text');
   });
 
   it('should render projected header content', async () => {

@@ -27,6 +27,28 @@ import {
 export class GlintCardHeaderDirective {}
 
 /**
+ * Structural directive marking projected card subtitle content.
+ *
+ * @example
+ * ```html
+ * <glint-card>
+ *   <div glintCardHeader>Title</div>
+ *   <div glintCardSubtitle>Subtitle text</div>
+ *   <p>Card body content</p>
+ * </glint-card>
+ * ```
+ */
+@Directive({
+  selector: '[glintCardSubtitle]',
+  standalone: true,
+  host: {
+    'class': 'glint-card-subtitle',
+    'style': 'display: block; padding-inline: 1.25rem; padding-block-end: 0.5rem; font-size: 0.875rem; color: var(--glint-color-text-muted);',
+  },
+})
+export class GlintCardSubtitleDirective {}
+
+/**
  * Structural directive marking projected card footer content.
  *
  * @example
@@ -67,7 +89,6 @@ export class GlintCardFooterDirective {}
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[attr.data-variant]': 'variant()',
-    'role': 'region',
   },
   styles: `
     :host {
@@ -109,6 +130,7 @@ export class GlintCardFooterDirective {}
   `,
   template: `
     <ng-content select="[glintCardHeader]" />
+    <ng-content select="[glintCardSubtitle]" />
     <div class="body">
       <ng-content />
     </div>
