@@ -1,9 +1,9 @@
 import { inject, Injectable, Injector, Type } from '@angular/core';
-import { OverlayConfig } from '@angular/cdk/overlay';
+import { GlobalPositionStrategy, OverlayConfig } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { takeUntil } from 'rxjs';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
-import { GlintDialogConfig, GLINT_DIALOG_DATA } from './dialog.config';
+import { GlintDialogConfig, GlintDialogPosition, GLINT_DIALOG_CONFIG, GLINT_DIALOG_DATA } from './dialog.config';
 import { GlintDialogRef } from './dialog-ref';
 import { GlintDialogContainerComponent } from './dialog-container.component';
 
@@ -19,21 +19,21 @@ export class GlintDialogService {
     config: GlintDialogConfig<D> | undefined,
     callerInjector: Injector
   ): GlintDialogRef<T, R> {
-    const mergedConfig = {
+    const mergedConfig: GlintDialogConfig<D> = {
       hasBackdrop: true,
       disableClose: false,
       maxWidth: '90vw',
       maxHeight: '90vh',
+      position: 'center',
       ...config,
     };
+
+    const positionStrategy = this.buildPositionStrategy(mergedConfig.position ?? 'center');
 
     const overlayConfig = new OverlayConfig({
       hasBackdrop: mergedConfig.hasBackdrop,
       backdropClass: 'glint-dialog-backdrop',
-      positionStrategy: this.overlayService.position()
-        .global()
-        .centerHorizontally()
-        .centerVertically(),
+      positionStrategy,
       scrollStrategy: this.overlayService.scrollStrategies.block(),
       width: mergedConfig.width,
       height: mergedConfig.height,
@@ -53,6 +53,7 @@ export class GlintDialogService {
       providers: [
         { provide: GlintDialogRef, useValue: dialogRef },
         { provide: GLINT_DIALOG_DATA, useValue: mergedConfig.data },
+        { provide: GLINT_DIALOG_CONFIG, useValue: mergedConfig },
       ],
       parent: zoneInjector,
     });
@@ -87,6 +88,33 @@ export class GlintDialogService {
 
     return dialogRef;
   }
+
+  private buildPositionStrategy(position: GlintDialogPosition): GlobalPositionStrategy {
+    const strategy = this.overlayService.position().global();
+    const offset = '2rem';
+
+    switch (position) {
+      case 'top':
+        return strategy.centerHorizontally().top(offset);
+      case 'bottom':
+        return strategy.centerHorizontally().bottom(offset);
+      case 'left':
+        return strategy.centerVertically().left(offset);
+      case 'right':
+        return strategy.centerVertically().right(offset);
+      case 'top-left':
+        return strategy.top(offset).left(offset);
+      case 'top-right':
+        return strategy.top(offset).right(offset);
+      case 'bottom-left':
+        return strategy.bottom(offset).left(offset);
+      case 'bottom-right':
+        return strategy.bottom(offset).right(offset);
+      case 'center':
+      default:
+        return strategy.centerHorizontally().centerVertically();
+    }
+  }
 }
 
 /**
@@ -100,7 +128,11 @@ export class GlintDialogService {
  *   private dialog = injectGlintDialog();
  *
  *   openSettings() {
- *     const ref = this.dialog.open(SettingsComponent, { data: { userId: 1 } });
+ *     const ref = this.dialog.open(SettingsComponent, {
+ *       header: 'Settings',
+ *       data: { userId: 1 },
+ *       position: 'top',
+ *     });
  *     ref.afterClosed$.subscribe(result => console.log(result));
  *   }
  * }

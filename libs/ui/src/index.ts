@@ -11,7 +11,7 @@ export { injectGlintDialog } from './lib/dialog/dialog.service';
 export type { GlintDialog } from './lib/dialog/dialog.service';
 export { GlintDialogRef } from './lib/dialog/dialog-ref';
 export { GLINT_DIALOG_DATA } from './lib/dialog/dialog.config';
-export type { GlintDialogConfig } from './lib/dialog/dialog.config';
+export type { GlintDialogConfig, GlintDialogPosition } from './lib/dialog/dialog.config';
 export { GlintSelectComponent } from './lib/select/select.component';
 export { GlintSelectOptionComponent } from './lib/select/select-option.component';
 export { GLINT_SELECT } from './lib/select/select.model';
