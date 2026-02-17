@@ -58,6 +58,9 @@ export { GlintSplitButtonComponent } from './lib/split-button/split-button.compo
 export { GlintFieldsetComponent } from './lib/fieldset/fieldset.component';
 export { GlintStepperComponent } from './lib/stepper/stepper.component';
 export { GlintStepComponent } from './lib/stepper/step.component';
+export { GlintStepHeaderComponent } from './lib/stepper/step-header.component';
+export { CdkStepperNext, CdkStepperPrevious } from '@angular/cdk/stepper';
+export type { StepperSelectionEvent, StepperOrientation } from '@angular/cdk/stepper';
 export { GlintTimelineComponent } from './lib/timeline/timeline.component';
 export type { GlintTimelineEvent } from './lib/timeline/timeline.component';
 export { DARK_ZONE, COMPACT_ZONE, DANGER_ZONE, SOFT_ZONE, DARK_COMPACT_ZONE } from './lib/presets/theme-presets';

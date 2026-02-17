@@ -27,7 +27,7 @@ describe('GlintStepperComponent', () => {
   it('should render step headers', () => {
     const fixture = TestBed.createComponent(TestStepperHostComponent);
     fixture.detectChanges();
-    const headers = fixture.nativeElement.querySelectorAll('.step-header');
+    const headers = fixture.nativeElement.querySelectorAll('glint-step-header');
     expect(headers.length).toBe(3);
     expect(headers[0].textContent).toContain('Account');
   });
@@ -42,7 +42,7 @@ describe('GlintStepperComponent', () => {
   it('should switch step on header click', () => {
     const fixture = TestBed.createComponent(TestStepperHostComponent);
     fixture.detectChanges();
-    const headers = fixture.nativeElement.querySelectorAll('.step-header');
+    const headers = fixture.nativeElement.querySelectorAll('glint-step-header');
     headers[1].click();
     fixture.detectChanges();
     const content = fixture.nativeElement.querySelector('.step-content');
@@ -52,7 +52,7 @@ describe('GlintStepperComponent', () => {
   it('should mark active step', () => {
     const fixture = TestBed.createComponent(TestStepperHostComponent);
     fixture.detectChanges();
-    const headers = fixture.nativeElement.querySelectorAll('.step-header');
+    const headers = fixture.nativeElement.querySelectorAll('glint-step-header');
     expect(headers[0].classList.contains('active')).toBe(true);
   });
 
@@ -60,7 +60,7 @@ describe('GlintStepperComponent', () => {
     const fixture = TestBed.createComponent(TestStepperHostComponent);
     fixture.componentInstance.step.set(2);
     fixture.detectChanges();
-    const headers = fixture.nativeElement.querySelectorAll('.step-header');
+    const headers = fixture.nativeElement.querySelectorAll('glint-step-header');
     expect(headers[0].classList.contains('complete')).toBe(true);
     expect(headers[1].classList.contains('complete')).toBe(true);
   });
@@ -70,5 +70,31 @@ describe('GlintStepperComponent', () => {
     fixture.detectChanges();
     const connectors = fixture.nativeElement.querySelectorAll('.connector');
     expect(connectors.length).toBe(2);
+  });
+
+  it('should support next() and previous() navigation', () => {
+    const fixture = TestBed.createComponent(TestStepperHostComponent);
+    fixture.detectChanges();
+    const stepper = fixture.debugElement.children[0].componentInstance as GlintStepperComponent;
+
+    stepper.next();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.step-content').textContent?.trim()).toBe('Profile form');
+
+    stepper.previous();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.step-content').textContent?.trim()).toBe('Account form');
+  });
+
+  it('should support prev() as alias for previous()', () => {
+    const fixture = TestBed.createComponent(TestStepperHostComponent);
+    fixture.detectChanges();
+    const stepper = fixture.debugElement.children[0].componentInstance as GlintStepperComponent;
+
+    stepper.next();
+    fixture.detectChanges();
+    stepper.prev();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.querySelector('.step-content').textContent?.trim()).toBe('Account form');
   });
 });

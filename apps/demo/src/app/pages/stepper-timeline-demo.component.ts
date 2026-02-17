@@ -83,6 +83,6 @@ export class StepperTimelineDemoComponent {
   }
 
   stepPrev(): void {
-    this.stepper().prev();
+    this.stepper().previous();
   }
 }

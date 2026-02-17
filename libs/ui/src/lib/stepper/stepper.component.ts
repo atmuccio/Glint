@@ -1,30 +1,41 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  contentChildren,
-  input,
-  model,
+  EventEmitter,
+  Input,
+  numberAttribute,
+  Output,
+  ViewChildren,
+  QueryList,
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
-import { GlintStepComponent } from './step.component';
+import { CdkStepper, CdkStepHeader } from '@angular/cdk/stepper';
+import { GlintStepHeaderComponent } from './step-header.component';
 
 /**
  * Stepper for wizard-style navigation.
+ * Extends CdkStepper to inherit keyboard navigation (Arrow keys, Home, End,
+ * Enter/Space to select), linear mode validation, orientation support,
+ * and focus management via FocusKeyManager.
+ *
+ * The `activeStep` input/output is an alias for CdkStepper's `selectedIndex`
+ * to maintain backwards compatibility.
  *
  * @example
  * ```html
  * <glint-stepper [(activeStep)]="currentStep">
- *   <glint-step label="Account">…</glint-step>
- *   <glint-step label="Profile">…</glint-step>
- *   <glint-step label="Review">…</glint-step>
+ *   <glint-step label="Account">...</glint-step>
+ *   <glint-step label="Profile">...</glint-step>
+ *   <glint-step label="Review">...</glint-step>
  * </glint-stepper>
  * ```
  */
 @Component({
   selector: 'glint-stepper',
   standalone: true,
-  imports: [NgTemplateOutlet],
+  imports: [NgTemplateOutlet, GlintStepHeaderComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [{ provide: CdkStepper, useExisting: GlintStepperComponent }],
   styles: `
     :host {
       display: block;
@@ -37,62 +48,6 @@ import { GlintStepComponent } from './step.component';
       align-items: center;
       gap: 0;
       margin-block-end: var(--glint-spacing-lg);
-    }
-
-    .step-header {
-      display: flex;
-      align-items: center;
-      gap: var(--glint-spacing-sm);
-      cursor: pointer;
-      padding-block: var(--glint-spacing-xs);
-      padding-inline: var(--glint-spacing-sm);
-      border: none;
-      background: transparent;
-      font: inherit;
-      color: var(--glint-color-text-muted);
-      transition: color var(--glint-duration-fast) var(--glint-easing);
-    }
-    .step-header:focus-visible {
-      outline: 2px solid var(--glint-color-focus-ring);
-      outline-offset: 2px;
-    }
-
-    .step-header.active {
-      color: var(--glint-color-primary);
-    }
-
-    .step-header.complete {
-      color: var(--glint-color-success);
-    }
-
-    .step-number {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      inline-size: 1.75rem;
-      block-size: 1.75rem;
-      border-radius: 50%;
-      border: 2px solid currentColor;
-      font-weight: 600;
-      font-size: 0.875rem;
-      flex-shrink: 0;
-    }
-
-    .step-header.active .step-number {
-      background: var(--glint-color-primary);
-      color: var(--glint-color-primary-contrast);
-      border-color: var(--glint-color-primary);
-    }
-
-    .step-header.complete .step-number {
-      background: var(--glint-color-success);
-      color: white;
-      border-color: var(--glint-color-success);
-    }
-
-    .step-label {
-      font-weight: 500;
-      white-space: nowrap;
     }
 
     .connector {
@@ -111,62 +66,92 @@ import { GlintStepComponent } from './step.component';
     }
   `,
   template: `
-    <div class="steps" role="tablist">
-      @for (step of steps(); track $index; let i = $index; let last = $last) {
-        <button
-          class="step-header"
-          [class.active]="activeStep() === i"
-          [class.complete]="i < activeStep()"
-          role="tab"
-          [attr.aria-selected]="activeStep() === i"
-          (click)="goToStep(i)"
-        >
-          <span class="step-number">
-            @if (i < activeStep()) {
-              &#10003;
-            } @else {
-              {{ i + 1 }}
-            }
-          </span>
-          <span class="step-label">{{ step.label() }}</span>
-        </button>
+    <!-- eslint-disable-next-line @angular-eslint/template/interactive-supports-focus -->
+    <div class="steps" role="tablist" (keydown)="_onKeydown($event)">
+      @for (step of steps; track step; let i = $index; let last = $last) {
+        <glint-step-header
+          [index]="i"
+          [active]="selectedIndex === i"
+          [complete]="isComplete(i)"
+          [optional]="step.optional"
+          (click)="step.select()"
+        >{{ step.label }}</glint-step-header>
         @if (!last) {
-          <div class="connector" [class.complete]="i < activeStep()"></div>
+          <div
+            class="connector"
+            [class.complete]="isComplete(i)"
+          ></div>
         }
       }
     </div>
-    @for (step of steps(); track $index; let i = $index) {
-      @if (activeStep() === i) {
-        <div class="step-content" role="tabpanel">
-          <ng-container [ngTemplateOutlet]="step.contentTemplate()" />
+    @for (step of steps; track step; let i = $index) {
+      @if (selectedIndex === i) {
+        <div
+          class="step-content"
+          role="tabpanel"
+          [attr.id]="_getStepContentId(i)"
+          [attr.aria-labelledby]="_getStepLabelId(i)"
+        >
+          <ng-container [ngTemplateOutlet]="step.content" />
         </div>
       }
     }
   `,
 })
-export class GlintStepperComponent {
-  /** Current active step index (two-way bindable) */
-  activeStep = model(0);
-  /** Allow clicking completed steps to navigate back */
-  linear = input(false);
+export class GlintStepperComponent extends CdkStepper {
+  // CdkStepper provides:
+  // - linear: boolean (input)
+  // - selectedIndex: number (input/output via selectedIndexChange)
+  // - selected: CdkStep | undefined
+  // - orientation: StepperOrientation (input)
+  // - selectionChange: EventEmitter<StepperSelectionEvent>
+  // - selectedIndexChange: EventEmitter<number>
+  // - steps: QueryList<CdkStep>
+  // - next(): void
+  // - previous(): void
+  // - reset(): void
+  // - _onKeydown(event): void (keyboard navigation)
 
-  steps = contentChildren(GlintStepComponent);
+  /**
+   * Override CdkStepper's @ContentChildren(CdkStepHeader) with @ViewChildren
+   * since our step headers are rendered in the template, not projected as content.
+   */
+  @ViewChildren(GlintStepHeaderComponent)
+  override _stepHeader = new QueryList<CdkStepHeader>();
 
-  goToStep(index: number): void {
-    if (this.linear() && index > this.activeStep()) return;
-    this.activeStep.set(index);
+  /**
+   * Alias for CdkStepper's `selectedIndex` — maintains backward compatibility.
+   * Use `[(activeStep)]` for two-way binding.
+   */
+  // eslint-disable-next-line @angular-eslint/no-input-rename
+  @Input({ alias: 'activeStep', transform: numberAttribute })
+  override set selectedIndex(index: number) {
+    super.selectedIndex = index;
+  }
+  override get selectedIndex(): number {
+    return super.selectedIndex;
   }
 
-  next(): void {
-    const total = this.steps().length;
-    if (this.activeStep() < total - 1) {
-      this.activeStep.update(v => v + 1);
-    }
+  /** Emits when activeStep changes. Supports `[(activeStep)]` two-way binding. */
+  // eslint-disable-next-line @angular-eslint/no-output-rename
+  @Output('activeStepChange')
+  override readonly selectedIndexChange = new EventEmitter<number>();
+
+  /**
+   * Whether the step at the given index should display as completed.
+   * A step is visually complete if it precedes the active step or has been
+   * explicitly marked `[completed]="true"`.
+   */
+  isComplete(index: number): boolean {
+    const step = this.steps.get(index);
+    return index < this.selectedIndex || (!!step?.completed && index !== this.selectedIndex);
   }
 
+  /**
+   * Navigate to previous step.
+   * @deprecated Use `previous()` instead. This alias is kept for backward compatibility.
+   */
   prev(): void {
-    if (this.activeStep() > 0) {
-      this.activeStep.update(v => v - 1);
-    }
+    this.previous();
   }
 }
