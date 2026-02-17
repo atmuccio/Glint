@@ -2,13 +2,16 @@ import {
   ChangeDetectionStrategy,
   Component,
   contentChildren,
-  input,
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
+import { CdkAccordion } from '@angular/cdk/accordion';
 import { GlintAccordionPanelComponent } from './accordion-panel.component';
 
 /**
  * Accordion container with expandable panels.
+ *
+ * Uses `CdkAccordion` as a host directive to manage single/multi expand mode
+ * via `UniqueSelectionDispatcher`. The `multiple` input maps to CDK's `multi`.
  *
  * @example
  * ```html
@@ -23,6 +26,7 @@ import { GlintAccordionPanelComponent } from './accordion-panel.component';
   standalone: true,
   imports: [NgTemplateOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  hostDirectives: [{ directive: CdkAccordion, inputs: ['multi: multiple'] }],
   styles: `
     :host {
       display: block;
@@ -114,20 +118,11 @@ import { GlintAccordionPanelComponent } from './accordion-panel.component';
   `,
 })
 export class GlintAccordionComponent {
-  /** Allow multiple panels open simultaneously */
-  multiple = input(false);
-
   panels = contentChildren(GlintAccordionPanelComponent);
 
   onToggle(panel: GlintAccordionPanelComponent): void {
     if (panel.disabled()) return;
-
-    if (!this.multiple() && !panel.expanded()) {
-      // Close other panels in single mode
-      for (const p of this.panels()) {
-        if (p !== panel) p.expanded.set(false);
-      }
-    }
+    // CDK handles single-expand coordination via UniqueSelectionDispatcher
     panel.toggle();
   }
 
