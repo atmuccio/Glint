@@ -10,4 +10,14 @@ export interface GlintMenuItem {
   separator?: boolean;
   /** Click handler */
   command?: () => void;
+  /** Nested child items (for submenus, tiered/panel menus) */
+  items?: GlintMenuItem[];
+  /** Expanded state for accordion-style menus (PanelMenu) */
+  expanded?: boolean;
+  /** Angular router link */
+  routerLink?: string | string[];
+  /** CSS style class */
+  styleClass?: string;
+  /** Whether this item is visible (default true) */
+  visible?: boolean;
 }
