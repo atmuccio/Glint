@@ -107,4 +107,9 @@ export { GlintConfirmPopupService } from './lib/confirm-popup/confirm-popup.serv
 export type { GlintConfirmPopupConfig } from './lib/confirm-popup/confirm-popup.service';
 export { GlintBlockUiComponent } from './lib/block-ui/block-ui.component';
 export { GlintOverlayBadgeComponent } from './lib/overlay-badge/overlay-badge.component';
+export { GlintOrderListComponent } from './lib/order-list/order-list.component';
+export { GlintPickListComponent } from './lib/pick-list/pick-list.component';
+export { GlintSplitterComponent, GlintSplitterPanelComponent } from './lib/splitter/splitter.component';
+export { GlintScrollPanelComponent } from './lib/scroll-panel/scroll-panel.component';
+export { GlintEditorComponent } from './lib/editor/editor.component';
 export { DARK_ZONE, COMPACT_ZONE, DANGER_ZONE, SOFT_ZONE, DARK_COMPACT_ZONE } from './lib/presets/theme-presets';
