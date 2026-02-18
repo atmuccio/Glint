@@ -8,6 +8,10 @@
   flex-shrink: 0;
   background: #111827;
   color: #d1d5db;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 .sidebar-header {

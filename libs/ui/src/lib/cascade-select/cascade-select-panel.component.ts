@@ -32,7 +32,8 @@ import type { GlintMenuItem } from '../menu/menu-item.model';
   styles: `
     :host {
       display: block;
-      min-inline-size: 12rem;
+      min-inline-size: max(12rem, 100%);
+      box-sizing: border-box;
       padding-block: var(--glint-spacing-xs);
       background: var(--glint-color-surface);
       border: 1px solid var(--glint-color-border);

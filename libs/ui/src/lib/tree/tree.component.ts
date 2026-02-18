@@ -138,22 +138,41 @@ import { GlintTreeNode } from '../core/tree/tree-node.model';
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      inline-size: 1rem;
-      block-size: 1rem;
+      inline-size: 1.25rem;
+      block-size: 1.25rem;
       border: 2px solid var(--glint-color-border);
-      border-radius: 2px;
+      border-radius: calc(var(--glint-border-radius) * 0.5);
       margin-inline-end: var(--glint-spacing-xs);
-      font-size: 0.75em;
+      background: var(--glint-color-surface);
       flex-shrink: 0;
       transition:
         background-color var(--glint-duration-fast) var(--glint-easing),
         border-color var(--glint-duration-fast) var(--glint-easing);
     }
 
+    .tree-checkbox:hover {
+      border-color: color-mix(in oklch, var(--glint-color-border), black 20%);
+    }
+
     .tree-checkbox.checked {
       background: var(--glint-color-primary);
       border-color: var(--glint-color-primary);
-      color: var(--glint-color-on-primary, #fff);
+    }
+
+    .tree-checkbox.checked:hover {
+      background: color-mix(in oklch, var(--glint-color-primary), black 10%);
+      border-color: color-mix(in oklch, var(--glint-color-primary), black 10%);
+    }
+
+    .tree-checkbox-icon {
+      display: none;
+      inline-size: 0.75rem;
+      block-size: 0.75rem;
+      color: var(--glint-color-primary-contrast);
+    }
+
+    .tree-checkbox.checked .tree-checkbox-icon {
+      display: block;
     }
 
     .tree-label {
@@ -204,9 +223,9 @@ import { GlintTreeNode } from '../core/tree/tree-node.model';
               role="checkbox"
               [attr.aria-checked]="isSelected(entry.node)"
             >
-              @if (isSelected(entry.node)) {
-                &#10003;
-              }
+              <svg class="tree-checkbox-icon" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
             </span>
           }
           <span class="tree-label">{{ entry.node.label }}</span>

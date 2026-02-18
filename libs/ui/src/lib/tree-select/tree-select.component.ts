@@ -237,7 +237,7 @@ export class GlintTreeSelectComponent implements ControlValueAccessor {
     const triggerEl = this.triggerEl().nativeElement;
 
     const config = createDropdownOverlayConfig(this.overlayService, triggerEl, {
-      width: Math.max(triggerEl.offsetWidth, 200),
+      minWidth: triggerEl.offsetWidth,
     });
 
     const { overlayRef, injector } = this.overlayService.createZoneAwareOverlay(

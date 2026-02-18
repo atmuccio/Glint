@@ -12,6 +12,8 @@ import {
 export interface DropdownOverlayOptions {
   /** Fixed width for the overlay (e.g. trigger element width) */
   width?: number | string;
+  /** Minimum width for the overlay (ensures panel is at least as wide as trigger) */
+  minWidth?: number | string;
   /** Override default positions */
   positions?: ConnectedPosition[];
   /** Whether to show a backdrop (default: true) */
@@ -53,6 +55,7 @@ export function createDropdownOverlayConfig(
     hasBackdrop: options?.hasBackdrop ?? true,
     backdropClass: options?.backdropClass ?? 'cdk-overlay-transparent-backdrop',
     width: options?.width,
+    minWidth: options?.minWidth,
   });
 }
 

@@ -94,11 +94,20 @@ import { ControlValueAccessor, NgControl } from '@angular/forms';
     }
 
     .labels {
+      position: relative;
       display: flex;
       justify-content: space-between;
       font-size: 0.75rem;
       color: var(--glint-color-text-muted);
       margin-block-start: var(--glint-spacing-xs);
+    }
+
+    .labels .value-label {
+      position: absolute;
+      left: var(--fill);
+      transform: translateX(-50%);
+      font-weight: 600;
+      color: var(--glint-color-primary);
     }
   `,
   template: `
@@ -119,9 +128,9 @@ import { ControlValueAccessor, NgControl } from '@angular/forms';
       />
     </div>
     @if (showLabels()) {
-      <div class="labels">
+      <div class="labels" [style.--fill]="fillPercent()">
         <span>{{ min() }}</span>
-        <span>{{ value() }}</span>
+        <span class="value-label">{{ value() }}</span>
         <span>{{ max() }}</span>
       </div>
     }

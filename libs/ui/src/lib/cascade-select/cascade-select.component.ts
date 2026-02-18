@@ -214,7 +214,7 @@ export class GlintCascadeSelectComponent implements ControlValueAccessor {
     const triggerEl = this.triggerEl().nativeElement;
 
     const config = createDropdownOverlayConfig(this.overlayService, triggerEl, {
-      width: triggerEl.offsetWidth,
+      minWidth: triggerEl.offsetWidth,
     });
 
     const { overlayRef, injector } = this.overlayService.createZoneAwareOverlay(

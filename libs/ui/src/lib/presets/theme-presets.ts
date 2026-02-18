@@ -5,6 +5,7 @@ import { GlintSpacing } from '../core/palette/spacing';
 import { GlintRadius } from '../core/palette/radius';
 import { GlintShadow } from '../core/palette/shadows';
 import { GlintDuration } from '../core/palette/animation';
+import { GlintFontSize } from '../core/palette/typography';
 
 /**
  * Dark theme zone preset.
@@ -46,6 +47,7 @@ export const COMPACT_ZONE: Partial<ZoneTheme> = {
   spacingMd: GlintSpacing.Sm,
   spacingLg: GlintSpacing.Md,
   spacingXl: GlintSpacing.Lg,
+  fontSize: GlintFontSize.Sm,
 };
 
 /**

@@ -40,10 +40,13 @@ import { GlintOrgChartNodeComponent } from './org-chart-node.component';
   styles: `
     .org-chart {
       display: flex;
+      inline-size: fit-content;
+      min-inline-size: 100%;
       justify-content: center;
       font-family: var(--glint-font-family);
       font-size: var(--glint-font-size);
       padding: var(--glint-spacing-md);
+      box-sizing: border-box;
     }
   `,
   template: `

@@ -80,16 +80,21 @@ import {
       background: transparent;
       color: inherit;
       cursor: pointer;
-      padding: 0;
-      inline-size: 1.25rem;
-      block-size: 1.25rem;
+      padding: 0.25rem;
+      inline-size: 2rem;
+      block-size: 2rem;
       font-size: 0.875rem;
       line-height: 1;
+      border-radius: var(--glint-border-radius);
       flex-shrink: 0;
       opacity: 0.6;
-      transition: opacity var(--glint-duration-fast) var(--glint-easing);
+      transition: opacity var(--glint-duration-fast) var(--glint-easing),
+        background-color var(--glint-duration-fast) var(--glint-easing);
     }
-    .close:hover { opacity: 1; }
+    .close:hover {
+      opacity: 1;
+      background: color-mix(in oklch, currentColor, transparent 88%);
+    }
     .close:focus-visible {
       outline: 2px solid var(--glint-color-focus-ring);
       outline-offset: 1px;

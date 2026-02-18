@@ -97,4 +97,49 @@ export const appRoutes: Route[] = [
     loadComponent: () =>
       import('./pages/containers-demo.component').then(m => m.ContainersDemoComponent),
   },
+  {
+    path: 'selection',
+    loadComponent: () =>
+      import('./pages/selection-demo.component').then(m => m.SelectionDemoComponent),
+  },
+  {
+    path: 'advanced-inputs',
+    loadComponent: () =>
+      import('./pages/advanced-inputs-demo.component').then(m => m.AdvancedInputsDemoComponent),
+  },
+  {
+    path: 'advanced-selects',
+    loadComponent: () =>
+      import('./pages/advanced-selects-demo.component').then(m => m.AdvancedSelectsDemoComponent),
+  },
+  {
+    path: 'advanced-menus',
+    loadComponent: () =>
+      import('./pages/advanced-menus-demo.component').then(m => m.AdvancedMenusDemoComponent),
+  },
+  {
+    path: 'trees',
+    loadComponent: () =>
+      import('./pages/trees-demo.component').then(m => m.TreesDemoComponent),
+  },
+  {
+    path: 'media',
+    loadComponent: () =>
+      import('./pages/media-demo.component').then(m => m.MediaDemoComponent),
+  },
+  {
+    path: 'lists',
+    loadComponent: () =>
+      import('./pages/lists-demo.component').then(m => m.ListsDemoComponent),
+  },
+  {
+    path: 'panels',
+    loadComponent: () =>
+      import('./pages/panels-demo.component').then(m => m.PanelsDemoComponent),
+  },
+  {
+    path: 'utilities',
+    loadComponent: () =>
+      import('./pages/utilities-demo.component').then(m => m.UtilitiesDemoComponent),
+  },
 ];

@@ -103,9 +103,11 @@ import type { ZoneTheme } from '@glint/ui';
       <h3>Dark + Compact (Pre-composed)</h3>
       <p>A pre-composed zone that combines dark and compact themes into a single reusable configuration.</p>
       <glint-style-zone [theme]="darkCompactZone">
-        <div class="row">
-          <glint-button severity="primary" variant="filled">Dark Compact</glint-button>
-          <glint-button severity="secondary" variant="outlined">Dark Compact</glint-button>
+        <div style="background: var(--glint-color-surface); padding: 1rem; border-radius: 0.5rem;">
+          <div class="row">
+            <glint-button severity="primary" variant="filled">Dark Compact</glint-button>
+            <glint-button severity="secondary" variant="outlined">Dark Compact</glint-button>
+          </div>
         </div>
       </glint-style-zone>
     </div>

@@ -128,7 +128,7 @@ export interface GlintSortEvent {
     }
 
     :host([data-striped]) tr:nth-child(even) td {
-      background: var(--glint-color-surface-variant);
+      background: color-mix(in oklch, var(--glint-color-surface-variant), var(--glint-color-border) 8%);
     }
 
     .empty {
