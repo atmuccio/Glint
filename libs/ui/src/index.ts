@@ -90,4 +90,7 @@ export { GlintTreeTableComponent } from './lib/tree-table/tree-table.component';
 export { GlintTreeTableColumnDirective } from './lib/tree-table/tree-table-column.directive';
 export { GlintTreeSelectComponent } from './lib/tree-select/tree-select.component';
 export { GlintOrganizationChartComponent } from './lib/organization-chart/organization-chart.component';
+export { GlintAutoCompleteComponent } from './lib/autocomplete/autocomplete.component';
+export { GlintMultiSelectComponent } from './lib/multiselect/multiselect.component';
+export { GlintDatepickerComponent } from './lib/datepicker/datepicker.component';
 export { DARK_ZONE, COMPACT_ZONE, DANGER_ZONE, SOFT_ZONE, DARK_COMPACT_ZONE } from './lib/presets/theme-presets';
