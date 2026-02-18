@@ -21,11 +21,11 @@ export interface GlintSortEvent {
  *
  * @example
  * ```html
- * <glint-table [data]="users" [striped]="true">
+ * <glint-table [data]="users" [striped]="true" trackBy="id">
  *   <ng-template glintColumn="name" header="Name" [sortable]="true" let-row>
  *     {{ row.name }}
  *   </ng-template>
- *   <ng-template glintColumn="email" header="Email" let-row>
+ *   <ng-template glintColumn="email" header="Email" align="end" let-row>
  *     {{ row.email }}
  *   </ng-template>
  * </glint-table>
@@ -48,6 +48,10 @@ export interface GlintSortEvent {
       inline-size: 100%;
       border-collapse: collapse;
       border-spacing: 0;
+    }
+
+    :host([data-fixed-layout]) table {
+      table-layout: fixed;
     }
 
     th {
@@ -101,9 +105,43 @@ export interface GlintSortEvent {
       text-align: center;
       color: var(--glint-color-text-muted);
     }
+
+    /* Sticky column support */
+    th.sticky-start,
+    td.sticky-start {
+      position: sticky;
+      inset-inline-start: 0;
+      z-index: 1;
+      background: var(--glint-color-surface-variant);
+    }
+    td.sticky-start {
+      background: var(--glint-color-surface);
+    }
+
+    th.sticky-end,
+    td.sticky-end {
+      position: sticky;
+      inset-inline-end: 0;
+      z-index: 1;
+      background: var(--glint-color-surface-variant);
+    }
+    td.sticky-end {
+      background: var(--glint-color-surface);
+    }
+
+    /* Column alignment */
+    th.align-center,
+    td.align-center {
+      text-align: center;
+    }
+    th.align-end,
+    td.align-end {
+      text-align: end;
+    }
   `,
   host: {
     '[attr.data-striped]': 'striped() || null',
+    '[attr.data-fixed-layout]': 'fixedLayout() || null',
   },
   template: `
     <table role="grid">
@@ -112,6 +150,10 @@ export interface GlintSortEvent {
           @for (col of columns(); track col.field()) {
             <th
               [class.sortable]="col.sortable()"
+              [class.sticky-start]="col.sticky()"
+              [class.sticky-end]="col.stickyEnd()"
+              [class.align-center]="col.align() === 'center'"
+              [class.align-end]="col.align() === 'end'"
               [style.inline-size]="col.width()"
               [attr.aria-sort]="getAriaSort(col.field())"
               (click)="col.sortable() ? toggleSort(col.field()) : null"
@@ -129,10 +171,15 @@ export interface GlintSortEvent {
         </tr>
       </thead>
       <tbody>
-        @for (row of sortedData(); track $index) {
+        @for (row of sortedData(); track rowIdentity(row)) {
           <tr>
             @for (col of columns(); track col.field()) {
-              <td>
+              <td
+                [class.sticky-start]="col.sticky()"
+                [class.sticky-end]="col.stickyEnd()"
+                [class.align-center]="col.align() === 'center'"
+                [class.align-end]="col.align() === 'end'"
+              >
                 <ng-container [ngTemplateOutlet]="col.template" [ngTemplateOutletContext]="{ $implicit: row }" />
               </td>
             }
@@ -151,6 +198,10 @@ export class GlintTableComponent {
   data = input<Record<string, unknown>[]>([]);
   /** Striped rows */
   striped = input(false);
+  /** Use fixed table layout for consistent column widths */
+  fixedLayout = input(false);
+  /** Field name used to track row identity for efficient re-rendering */
+  trackBy = input<string>();
   /** Emitted on sort change */
   sortChange = output<GlintSortEvent>();
 
@@ -158,6 +209,12 @@ export class GlintTableComponent {
 
   protected sortField = signal('');
   protected sortOrder = signal<'asc' | 'desc'>('asc');
+
+  /** Returns a stable identity for a data row based on trackBy field or object reference */
+  protected rowIdentity(row: Record<string, unknown>): unknown {
+    const field = this.trackBy();
+    return field ? row[field] : row;
+  }
 
   protected sortedData = computed(() => {
     const data = [...this.data()];

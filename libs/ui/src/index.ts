@@ -49,6 +49,7 @@ export { GlintPaginatorComponent } from './lib/paginator/paginator.component';
 export type { GlintPageEvent } from './lib/paginator/paginator.component';
 export { GlintTableComponent } from './lib/table/table.component';
 export { GlintColumnDirective } from './lib/table/table-column.directive';
+export type { GlintColumnAlign } from './lib/table/table-column.directive';
 export type { GlintSortEvent } from './lib/table/table.component';
 export { GlintPasswordComponent } from './lib/password/password.component';
 export { GlintSliderComponent } from './lib/slider/slider.component';

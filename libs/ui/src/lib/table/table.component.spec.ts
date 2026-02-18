@@ -31,9 +31,62 @@ class TestTableHostComponent {
   }
 }
 
+@Component({
+  selector: 'glint-test-table-fixed-layout',
+  standalone: true,
+  imports: [GlintTableComponent, GlintColumnDirective],
+  template: `
+    <glint-table [data]="data" [fixedLayout]="true" trackBy="id">
+      <ng-template glintColumn="id" header="ID" let-row>
+        {{ row['id'] }}
+      </ng-template>
+      <ng-template glintColumn="name" header="Name" let-row>
+        {{ row['name'] }}
+      </ng-template>
+    </glint-table>
+  `,
+})
+class TestTableFixedLayoutHostComponent {
+  data = [
+    { id: 1, name: 'Alice' },
+    { id: 2, name: 'Bob' },
+  ];
+}
+
+@Component({
+  selector: 'glint-test-table-column-features',
+  standalone: true,
+  imports: [GlintTableComponent, GlintColumnDirective],
+  template: `
+    <glint-table [data]="data">
+      <ng-template glintColumn="id" header="ID" [sticky]="true" let-row>
+        {{ row['id'] }}
+      </ng-template>
+      <ng-template glintColumn="name" header="Name" align="center" let-row>
+        {{ row['name'] }}
+      </ng-template>
+      <ng-template glintColumn="actions" header="Actions" [stickyEnd]="true" align="end" let-row>
+        Edit
+      </ng-template>
+    </glint-table>
+  `,
+})
+class TestTableColumnFeaturesHostComponent {
+  data = [
+    { id: 1, name: 'Alice', actions: '' },
+    { id: 2, name: 'Bob', actions: '' },
+  ];
+}
+
 describe('GlintTableComponent', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule({ imports: [TestTableHostComponent] });
+    TestBed.configureTestingModule({
+      imports: [
+        TestTableHostComponent,
+        TestTableFixedLayoutHostComponent,
+        TestTableColumnFeaturesHostComponent,
+      ],
+    });
   });
 
   it('should render column headers', () => {
@@ -103,5 +156,104 @@ describe('GlintTableComponent', () => {
     fixture.detectChanges();
     const table = fixture.nativeElement.querySelector('table');
     expect(table.getAttribute('role')).toBe('grid');
+  });
+
+  // --- fixedLayout tests ---
+
+  it('should apply data-fixed-layout attribute when fixedLayout is true', () => {
+    const fixture = TestBed.createComponent(TestTableFixedLayoutHostComponent);
+    fixture.detectChanges();
+    const host = fixture.nativeElement.querySelector('glint-table');
+    expect(host.hasAttribute('data-fixed-layout')).toBe(true);
+  });
+
+  it('should not apply data-fixed-layout attribute by default', () => {
+    const fixture = TestBed.createComponent(TestTableHostComponent);
+    fixture.detectChanges();
+    const host = fixture.nativeElement.querySelector('glint-table');
+    expect(host.hasAttribute('data-fixed-layout')).toBe(false);
+  });
+
+  // --- trackBy tests ---
+
+  it('should render correctly with trackBy field', () => {
+    const fixture = TestBed.createComponent(TestTableFixedLayoutHostComponent);
+    fixture.detectChanges();
+    const rows = fixture.nativeElement.querySelectorAll('tbody tr');
+    expect(rows.length).toBe(2);
+    const cells = fixture.nativeElement.querySelectorAll('tbody tr:first-child td');
+    expect(cells[0].textContent?.trim()).toBe('1');
+    expect(cells[1].textContent?.trim()).toBe('Alice');
+  });
+
+  // --- sticky column tests ---
+
+  it('should apply sticky-start class on sticky column header and cells', () => {
+    const fixture = TestBed.createComponent(TestTableColumnFeaturesHostComponent);
+    fixture.detectChanges();
+    const headers = fixture.nativeElement.querySelectorAll('th');
+    expect(headers[0].classList.contains('sticky-start')).toBe(true);
+    expect(headers[1].classList.contains('sticky-start')).toBe(false);
+
+    const firstRowCells = fixture.nativeElement.querySelectorAll('tbody tr:first-child td');
+    expect(firstRowCells[0].classList.contains('sticky-start')).toBe(true);
+    expect(firstRowCells[1].classList.contains('sticky-start')).toBe(false);
+  });
+
+  it('should apply sticky-end class on stickyEnd column header and cells', () => {
+    const fixture = TestBed.createComponent(TestTableColumnFeaturesHostComponent);
+    fixture.detectChanges();
+    const headers = fixture.nativeElement.querySelectorAll('th');
+    expect(headers[2].classList.contains('sticky-end')).toBe(true);
+    expect(headers[0].classList.contains('sticky-end')).toBe(false);
+
+    const firstRowCells = fixture.nativeElement.querySelectorAll('tbody tr:first-child td');
+    expect(firstRowCells[2].classList.contains('sticky-end')).toBe(true);
+    expect(firstRowCells[0].classList.contains('sticky-end')).toBe(false);
+  });
+
+  // --- column alignment tests ---
+
+  it('should apply align-center class on center-aligned column', () => {
+    const fixture = TestBed.createComponent(TestTableColumnFeaturesHostComponent);
+    fixture.detectChanges();
+    const headers = fixture.nativeElement.querySelectorAll('th');
+    expect(headers[1].classList.contains('align-center')).toBe(true);
+    expect(headers[0].classList.contains('align-center')).toBe(false);
+
+    const firstRowCells = fixture.nativeElement.querySelectorAll('tbody tr:first-child td');
+    expect(firstRowCells[1].classList.contains('align-center')).toBe(true);
+  });
+
+  it('should apply align-end class on end-aligned column', () => {
+    const fixture = TestBed.createComponent(TestTableColumnFeaturesHostComponent);
+    fixture.detectChanges();
+    const headers = fixture.nativeElement.querySelectorAll('th');
+    expect(headers[2].classList.contains('align-end')).toBe(true);
+
+    const firstRowCells = fixture.nativeElement.querySelectorAll('tbody tr:first-child td');
+    expect(firstRowCells[2].classList.contains('align-end')).toBe(true);
+  });
+
+  it('should not apply alignment classes on default-aligned column', () => {
+    const fixture = TestBed.createComponent(TestTableColumnFeaturesHostComponent);
+    fixture.detectChanges();
+    const headers = fixture.nativeElement.querySelectorAll('th');
+    // First column has default align='start', should have no alignment classes
+    expect(headers[0].classList.contains('align-center')).toBe(false);
+    expect(headers[0].classList.contains('align-end')).toBe(false);
+  });
+
+  // --- sort does not mutate input data ---
+
+  it('should not mutate the original data array when sorting', () => {
+    const fixture = TestBed.createComponent(TestTableHostComponent);
+    fixture.detectChanges();
+    const originalOrder = [...fixture.componentInstance.data];
+    const headers = fixture.nativeElement.querySelectorAll('th');
+    headers[1].click(); // Sort by age
+    fixture.detectChanges();
+    // Original data should remain in the same order
+    expect(fixture.componentInstance.data).toEqual(originalOrder);
   });
 });
