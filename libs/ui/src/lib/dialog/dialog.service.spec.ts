@@ -1,6 +1,5 @@
 import { Component, inject } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
-import { OverlayModule } from '@angular/cdk/overlay';
 import { injectGlintDialog, GlintDialog } from './dialog.service';
 import { GLINT_DIALOG_DATA } from './dialog.config';
 import { GlintDialogRef } from './dialog-ref';
@@ -34,7 +33,17 @@ class TestDialogHostComponent {
 describe('GlintDialogService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [TestDialogHostComponent, OverlayModule],
+      imports: [TestDialogHostComponent],
+    });
+  });
+
+  afterEach(() => {
+    // Clean up any open dialogs
+    const containers = document.querySelectorAll('glint-dialog-container');
+    containers.forEach(el => el.remove());
+    const overlays = document.querySelectorAll('.cdk-overlay-container');
+    overlays.forEach(el => {
+      el.innerHTML = '';
     });
   });
 

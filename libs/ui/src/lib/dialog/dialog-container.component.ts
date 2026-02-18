@@ -2,28 +2,35 @@ import {
   ChangeDetectionStrategy,
   Component,
   inject,
-  viewChild,
-  ViewContainerRef,
+  ViewEncapsulation,
 } from '@angular/core';
-import { CdkTrapFocus } from '@angular/cdk/a11y';
+import { CdkDialogContainer } from '@angular/cdk/dialog';
+import { CdkPortalOutlet } from '@angular/cdk/portal';
 import { GlintDialogConfig, GLINT_DIALOG_CONFIG } from './dialog.config';
 import { GlintDialogRef } from './dialog-ref';
 
 /**
  * Internal dialog container that wraps dialog content.
- * Provides focus trap, role="dialog", aria-modal, and optional header with close button.
+ *
+ * Extends CDK's `CdkDialogContainer` which provides:
+ * - Focus trap management
+ * - ARIA attributes (role, aria-modal, aria-label, etc.)
+ * - Portal outlet for content attachment
+ * - Focus restoration on close
+ *
+ * We add our own header/close-button UI and styling on top.
  */
 @Component({
   selector: 'glint-dialog-container',
   standalone: true,
-  imports: [CdkTrapFocus],
+  imports: [CdkPortalOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  encapsulation: ViewEncapsulation.None,
   host: {
-    'role': 'dialog',
-    'aria-modal': 'true',
+    'class': 'glint-dialog-container',
   },
   styles: `
-    :host {
+    .glint-dialog-container {
       display: block;
       background: var(--glint-color-surface);
       color: var(--glint-color-text);
@@ -40,7 +47,7 @@ import { GlintDialogRef } from './dialog-ref';
         color var(--glint-duration-normal) var(--glint-easing);
     }
 
-    .dialog-header {
+    .glint-dialog-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -49,13 +56,13 @@ import { GlintDialogRef } from './dialog-ref';
       border-block-end: 1px solid var(--glint-color-border);
     }
 
-    .dialog-title {
+    .glint-dialog-title {
       font-weight: 600;
       font-size: 1.125em;
       margin: 0;
     }
 
-    .dialog-close {
+    .glint-dialog-close {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -72,43 +79,39 @@ import { GlintDialogRef } from './dialog-ref';
         background-color var(--glint-duration-fast) var(--glint-easing),
         color var(--glint-duration-fast) var(--glint-easing);
     }
-    .dialog-close:hover {
+    .glint-dialog-close:hover {
       background: var(--glint-color-surface-variant);
       color: var(--glint-color-text);
     }
-    .dialog-close:focus-visible {
+    .glint-dialog-close:focus-visible {
       outline: 2px solid var(--glint-color-focus-ring);
       outline-offset: 2px;
     }
 
-    .dialog-body {
+    .glint-dialog-body {
       padding: var(--glint-spacing-lg);
     }
   `,
   template: `
-    <div cdkTrapFocus [cdkTrapFocusAutoCapture]="true">
-      @if (config.header) {
-        <div class="dialog-header">
-          <h2 class="dialog-title">{{ config.header }}</h2>
-          @if (!config.disableClose) {
-            <button
-              class="dialog-close"
-              type="button"
-              aria-label="Close dialog"
-              (click)="dialogRef.close()"
-            >&#10005;</button>
-          }
-        </div>
-      }
-      <div class="dialog-body">
-        <ng-template #outlet />
+    @if (glintConfig.header) {
+      <div class="glint-dialog-header">
+        <h2 class="glint-dialog-title">{{ glintConfig.header }}</h2>
+        @if (!glintConfig.disableClose) {
+          <button
+            class="glint-dialog-close"
+            type="button"
+            aria-label="Close dialog"
+            (click)="glintDialogRef.close()"
+          >&#10005;</button>
+        }
       </div>
+    }
+    <div class="glint-dialog-body">
+      <ng-template cdkPortalOutlet />
     </div>
   `,
 })
-export class GlintDialogContainerComponent {
-  readonly outlet = viewChild.required('outlet', { read: ViewContainerRef });
-
-  protected readonly config = inject<GlintDialogConfig>(GLINT_DIALOG_CONFIG);
-  protected readonly dialogRef = inject(GlintDialogRef);
+export class GlintDialogContainerComponent extends CdkDialogContainer {
+  protected readonly glintConfig = inject<GlintDialogConfig>(GLINT_DIALOG_CONFIG);
+  protected readonly glintDialogRef = inject(GlintDialogRef);
 }

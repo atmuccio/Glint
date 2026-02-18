@@ -1,18 +1,22 @@
-import { inject, Injectable, Injector, Type } from '@angular/core';
-import { GlobalPositionStrategy, OverlayConfig } from '@angular/cdk/overlay';
-import { ComponentPortal } from '@angular/cdk/portal';
-import { takeUntil } from 'rxjs';
-import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
+import { afterRenderEffect, inject, Injectable, Injector, Signal, Type } from '@angular/core';
+import { Dialog as CdkDialog, DialogRef as CdkDialogRef } from '@angular/cdk/dialog';
+import { GlobalPositionStrategy, Overlay } from '@angular/cdk/overlay';
+import { ZONE_THEME } from '../core/tokens/zone-theme.token';
+import { BEHAVIORAL_KEYS, THEME_TO_CSS_MAP, ZoneTheme } from '../core/tokens/zone-theme.model';
 import { GlintDialogConfig, GlintDialogPosition, GLINT_DIALOG_CONFIG, GLINT_DIALOG_DATA } from './dialog.config';
 import { GlintDialogRef } from './dialog-ref';
 import { GlintDialogContainerComponent } from './dialog-container.component';
 
 /**
  * Internal dialog service. Consumers should use `injectGlintDialog()` instead.
+ *
+ * Uses CDK Dialog internally for overlay creation, focus management, and ARIA.
+ * Applies zone theme CSS vars to the overlay element for style inheritance.
  */
 @Injectable({ providedIn: 'root' })
 export class GlintDialogService {
-  private overlayService = inject(ZoneAwareOverlayService);
+  private readonly cdkDialog = inject(CdkDialog);
+  private readonly overlay = inject(Overlay);
 
   open<T, D = unknown, R = unknown>(
     component: Type<T>,
@@ -30,67 +34,99 @@ export class GlintDialogService {
 
     const positionStrategy = this.buildPositionStrategy(mergedConfig.position ?? 'center');
 
-    const overlayConfig = new OverlayConfig({
+    // Create the GlintDialogRef as a deferred wrapper.
+    // We initialize it without a CDK ref and wire it up after cdkDialog.open().
+    const glintDialogRef = GlintDialogRef.createDeferred<T, R>();
+
+    // Create a child injector that provides our custom tokens.
+    // Both the container and content components will inherit from this injector
+    // since CDK Dialog uses config.injector as parent for both.
+    const dialogInjector = Injector.create({
+      providers: [
+        { provide: GlintDialogRef, useValue: glintDialogRef },
+        { provide: GLINT_DIALOG_DATA, useValue: mergedConfig.data },
+        { provide: GLINT_DIALOG_CONFIG, useValue: mergedConfig },
+      ],
+      parent: callerInjector,
+    });
+
+    const cdkRef = this.cdkDialog.open(component, {
+      data: mergedConfig.data,
       hasBackdrop: mergedConfig.hasBackdrop,
       backdropClass: 'glint-dialog-backdrop',
-      positionStrategy,
-      scrollStrategy: this.overlayService.scrollStrategies.block(),
+      disableClose: mergedConfig.disableClose,
       width: mergedConfig.width,
       height: mergedConfig.height,
       maxWidth: mergedConfig.maxWidth,
       maxHeight: mergedConfig.maxHeight,
-    });
-
-    const { overlayRef, injector: zoneInjector } = this.overlayService.createZoneAwareOverlay(
-      overlayConfig,
-      callerInjector
-    );
-
-    const dialogRef = new GlintDialogRef<T, R>(overlayRef);
-
-    // Create injector with dialog-specific providers
-    const dialogInjector = Injector.create({
-      providers: [
-        { provide: GlintDialogRef, useValue: dialogRef },
-        { provide: GLINT_DIALOG_DATA, useValue: mergedConfig.data },
-        { provide: GLINT_DIALOG_CONFIG, useValue: mergedConfig },
-      ],
-      parent: zoneInjector,
-    });
-
-    // Attach container
-    const containerPortal = new ComponentPortal(
-      GlintDialogContainerComponent,
-      null,
-      dialogInjector
-    );
-    const containerRef = overlayRef.attach(containerPortal);
-
-    if (mergedConfig.ariaLabel) {
-      containerRef.location.nativeElement.setAttribute('aria-label', mergedConfig.ariaLabel);
-    }
-
-    // Create the user component inside the container
-    const componentRef = containerRef.instance.outlet().createComponent(component, {
+      positionStrategy,
+      scrollStrategy: this.overlay.scrollStrategies.block(),
+      ariaLabel: mergedConfig.ariaLabel ?? undefined,
+      ariaModal: true,
+      role: 'dialog',
+      autoFocus: 'first-tabbable',
+      restoreFocus: true,
       injector: dialogInjector,
+      container: GlintDialogContainerComponent,
     });
-    dialogRef.componentInstance = componentRef.instance;
 
-    // Handle backdrop click
-    if (!mergedConfig.disableClose) {
-      overlayRef.backdropClick().pipe(takeUntil(overlayRef.detachments())).subscribe(() => dialogRef.close());
-      overlayRef.keydownEvents().pipe(takeUntil(overlayRef.detachments())).subscribe((event) => {
-        if (event.key === 'Escape') {
-          dialogRef.close();
+    // Wire the deferred ref to the real CDK ref
+    glintDialogRef._connectCdkRef(cdkRef as CdkDialogRef<R>);
+
+    // Set the component instance on our ref
+    glintDialogRef.componentInstance = cdkRef.componentInstance as T | null;
+
+    // Apply zone theme CSS vars to the overlay element
+    this.applyZoneTheme(cdkRef as CdkDialogRef, callerInjector);
+
+    return glintDialogRef;
+  }
+
+  /**
+   * Applies zone theme CSS variables reactively to the CDK overlay element.
+   * This bridges the gap between zone-scoped CSS vars and body-level overlays.
+   */
+  private applyZoneTheme(cdkRef: CdkDialogRef, callerInjector: Injector): void {
+    const zoneTheme: Signal<ZoneTheme> = callerInjector.get(ZONE_THEME);
+    const overlayEl = cdkRef.overlayRef.overlayElement;
+
+    let previousKeys = new Set<string>();
+
+    const effectRef = afterRenderEffect({
+      write: () => {
+        const theme = zoneTheme();
+        if (!overlayEl) return;
+
+        const currentKeys = new Set<string>();
+
+        for (const [key, cssVar] of Object.entries(THEME_TO_CSS_MAP)) {
+          if (BEHAVIORAL_KEYS.has(key)) continue;
+          const value = (theme as unknown as Record<string, string>)[key];
+          if (value) {
+            overlayEl.style.setProperty(cssVar, value);
+            currentKeys.add(cssVar);
+          }
         }
-      });
-    }
 
-    return dialogRef;
+        // Clean up stale properties from previous evaluation
+        for (const cssVar of previousKeys) {
+          if (!currentKeys.has(cssVar)) {
+            overlayEl.style.removeProperty(cssVar);
+          }
+        }
+
+        previousKeys = currentKeys;
+      },
+    }, { injector: callerInjector });
+
+    // Cleanup effect when dialog closes
+    cdkRef.closed.subscribe(() => {
+      effectRef.destroy();
+    });
   }
 
   private buildPositionStrategy(position: GlintDialogPosition): GlobalPositionStrategy {
-    const strategy = this.overlayService.position().global();
+    const strategy = this.overlay.position().global();
     const offset = '2rem';
 
     switch (position) {
