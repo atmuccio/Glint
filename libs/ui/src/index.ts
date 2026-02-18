@@ -93,4 +93,11 @@ export { GlintOrganizationChartComponent } from './lib/organization-chart/organi
 export { GlintAutoCompleteComponent } from './lib/autocomplete/autocomplete.component';
 export { GlintMultiSelectComponent } from './lib/multiselect/multiselect.component';
 export { GlintDatepickerComponent } from './lib/datepicker/datepicker.component';
+export { GlintDataViewComponent } from './lib/data-view/data-view.component';
+export { GlintScrollerComponent } from './lib/scroller/scroller.component';
+export { GlintImageComponent } from './lib/image/image.component';
+export { GlintImageCompareComponent } from './lib/image-compare/image-compare.component';
+export { GlintCarouselComponent } from './lib/carousel/carousel.component';
+export { GlintGalleriaComponent } from './lib/galleria/galleria.component';
+export type { GlintGalleriaImage } from './lib/galleria/galleria.component';
 export { DARK_ZONE, COMPACT_ZONE, DANGER_ZONE, SOFT_ZONE, DARK_COMPACT_ZONE } from './lib/presets/theme-presets';
