@@ -12,8 +12,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
-
-let nextId = 0;
+import { glintId } from '../core/utils/id-generator';
 
 /**
  * Input component with ControlValueAccessor, zone-aware styling, and validation support.
@@ -198,7 +197,7 @@ export class GlintInputComponent implements ControlValueAccessor {
   errorMessage = input<string>('');
 
   /** Unique IDs for a11y */
-  readonly inputId = `glint-input-${nextId++}`;
+  readonly inputId = glintId('glint-input');
   readonly errorId = `${this.inputId}-error`;
 
   /** Internal value state (for display text tracking) */

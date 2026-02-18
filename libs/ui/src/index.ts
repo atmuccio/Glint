@@ -113,3 +113,4 @@ export { GlintSplitterComponent, GlintSplitterPanelComponent } from './lib/split
 export { GlintScrollPanelComponent } from './lib/scroll-panel/scroll-panel.component';
 export { GlintEditorComponent } from './lib/editor/editor.component';
 export { DARK_ZONE, COMPACT_ZONE, DANGER_ZONE, SOFT_ZONE, DARK_COMPACT_ZONE } from './lib/presets/theme-presets';
+export { cleanupOverlays } from './lib/testing/test-utils';

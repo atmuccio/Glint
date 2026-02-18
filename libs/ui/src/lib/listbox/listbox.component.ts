@@ -2,16 +2,18 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  ElementRef,
   inject,
   input,
   signal,
-  viewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
+import { CdkListbox, CdkOption, ListboxValueChangeEvent } from '@angular/cdk/listbox';
+import { resolveItemLabel } from '../core/utils/label-resolver';
+import { filterByLabel } from '../core/utils/filter-utils';
 
 /**
- * ListBox component with single/multiple selection and CVA support.
+ * ListBox component with single/multiple selection, CDK keyboard navigation,
+ * typeahead, aria-activedescendant, and CVA support.
  *
  * @example
  * ```html
@@ -33,6 +35,7 @@ import { ControlValueAccessor, NgControl } from '@angular/forms';
 @Component({
   selector: 'glint-listbox',
   standalone: true,
+  imports: [CdkListbox, CdkOption],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.disabled]': 'isDisabled()',
@@ -100,6 +103,10 @@ import { ControlValueAccessor, NgControl } from '@angular/forms';
       background: color-mix(in oklch, var(--glint-color-surface), var(--glint-color-primary) 8%);
     }
 
+    .option.cdk-option-active:not(.selected) {
+      background: color-mix(in oklch, var(--glint-color-surface), var(--glint-color-primary) 12%);
+    }
+
     .option:focus-visible {
       box-shadow: inset 0 0 0 2px var(--glint-color-focus-ring);
     }
@@ -117,7 +124,6 @@ import { ControlValueAccessor, NgControl } from '@angular/forms';
     <div class="listbox-wrapper">
       @if (filter()) {
         <input
-          #filterInput
           class="filter-input"
           type="text"
           placeholder="Search..."
@@ -126,25 +132,21 @@ import { ControlValueAccessor, NgControl } from '@angular/forms';
         />
       }
       <div
-        #listEl
         class="list"
-        role="listbox"
-        [attr.aria-multiselectable]="multiple() || null"
+        cdkListbox
+        [cdkListboxMultiple]="multiple()"
+        [cdkListboxDisabled]="isDisabled()"
+        [cdkListboxUseActiveDescendant]="true"
+        [cdkListboxValue]="selectedValues()"
         [style]="listStyle()"
-        tabindex="-1"
-        (keydown)="onKeydown($event)"
+        (cdkListboxValueChange)="onCdkValueChange($event)"
       >
         @for (option of filteredOptions(); track getOptionValue(option)) {
           <div
             class="option"
-            role="option"
+            [cdkOption]="getOptionValue(option)"
+            [cdkOptionTypeaheadLabel]="getOptionLabel(option)"
             [class.selected]="isSelected(option)"
-            [attr.aria-selected]="isSelected(option)"
-            [attr.data-value]="getOptionValue(option)"
-            tabindex="0"
-            (click)="onSelect(option)"
-            (keydown.enter)="onSelect(option); $event.preventDefault()"
-            (keydown.space)="onSelect(option); $event.preventDefault()"
           >{{ getOptionLabel(option) }}</div>
         }
       </div>
@@ -172,18 +174,10 @@ export class GlintListboxComponent implements ControlValueAccessor {
   /** Filter search text */
   protected filterText = signal('');
 
-  private listEl = viewChild<ElementRef<HTMLElement>>('listEl');
-
   /** Filtered options based on filterText */
   filteredOptions = computed(() => {
-    const text = this.filterText().toLowerCase();
-    const opts = this.options();
     const labelKey = this.optionLabel();
-    if (!text) return opts;
-    return opts.filter(opt => {
-      const label = String(opt[labelKey] ?? '').toLowerCase();
-      return label.includes(text);
-    });
+    return filterByLabel(this.options(), this.filterText(), opt => resolveItemLabel(opt, labelKey));
   });
 
   private disabledFromCVA = signal(false);
@@ -197,6 +191,21 @@ export class GlintListboxComponent implements ControlValueAccessor {
     if (this.ngControl) {
       this.ngControl.valueAccessor = this;
     }
+  }
+
+  // ── CDK event handler ──────────────────────────
+
+  protected onCdkValueChange(event: ListboxValueChangeEvent<unknown>): void {
+    const values = event.value as unknown[];
+
+    this.selectedValues.set([...values]);
+
+    if (this.multiple()) {
+      this.onChange([...values]);
+    } else {
+      this.onChange(values.length > 0 ? values[0] : null);
+    }
+    this.onTouched();
   }
 
   // ── ControlValueAccessor ─────────────────────
@@ -224,7 +233,7 @@ export class GlintListboxComponent implements ControlValueAccessor {
   // ── Helpers ──────────────────────────────────
 
   getOptionLabel(option: Record<string, unknown>): string {
-    return String(option[this.optionLabel()] ?? '');
+    return resolveItemLabel(option, this.optionLabel());
   }
 
   getOptionValue(option: Record<string, unknown>): unknown {
@@ -238,76 +247,8 @@ export class GlintListboxComponent implements ControlValueAccessor {
 
   // ── Event handlers ───────────────────────────
 
-  protected onSelect(option: Record<string, unknown>): void {
-    if (this.isDisabled()) return;
-
-    const val = this.getOptionValue(option);
-
-    if (this.multiple()) {
-      const current = this.selectedValues();
-      const idx = current.indexOf(val);
-      if (idx >= 0) {
-        this.selectedValues.set(current.filter((_, i) => i !== idx));
-      } else {
-        this.selectedValues.set([...current, val]);
-      }
-      this.onChange(this.selectedValues());
-    } else {
-      this.selectedValues.set([val]);
-      this.onChange(val);
-    }
-    this.onTouched();
-  }
-
   protected onFilterInput(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
     this.filterText.set(value);
-  }
-
-  protected onKeydown(event: KeyboardEvent): void {
-    const listEl = this.listEl()?.nativeElement;
-    if (!listEl) return;
-
-    const options = Array.from(listEl.querySelectorAll('.option')) as HTMLElement[];
-    if (options.length === 0) return;
-
-    const focused = listEl.querySelector('.option:focus') as HTMLElement | null;
-    const currentIndex = focused ? options.indexOf(focused) : -1;
-
-    switch (event.key) {
-      case 'ArrowDown': {
-        event.preventDefault();
-        const next = Math.min(currentIndex + 1, options.length - 1);
-        options[next].focus();
-        break;
-      }
-      case 'ArrowUp': {
-        event.preventDefault();
-        const prev = Math.max(currentIndex - 1, 0);
-        options[prev].focus();
-        break;
-      }
-      case 'Home': {
-        event.preventDefault();
-        options[0].focus();
-        break;
-      }
-      case 'End': {
-        event.preventDefault();
-        options[options.length - 1].focus();
-        break;
-      }
-      case 'a':
-      case 'A': {
-        if (event.ctrlKey && this.multiple()) {
-          event.preventDefault();
-          const allValues = this.filteredOptions().map(o => this.getOptionValue(o));
-          this.selectedValues.set(allValues);
-          this.onChange(this.selectedValues());
-          this.onTouched();
-        }
-        break;
-      }
-    }
   }
 }

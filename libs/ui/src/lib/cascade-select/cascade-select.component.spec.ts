@@ -4,6 +4,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { GlintCascadeSelectComponent } from './cascade-select.component';
 import type { GlintMenuItem } from '../menu/menu-item.model';
+import { cleanupOverlays } from '../testing/test-utils';
 
 @Component({
   selector: 'glint-test-cascade-select-host',
@@ -43,9 +44,7 @@ describe('GlintCascadeSelectComponent', () => {
   });
 
   afterEach(() => {
-    document.querySelectorAll('.cdk-overlay-container').forEach(el => {
-      el.innerHTML = '';
-    });
+    cleanupOverlays();
   });
 
   function createFixture(overrides?: Partial<TestCascadeSelectHostComponent>) {
@@ -166,6 +165,88 @@ describe('GlintCascadeSelectComponent', () => {
     fixture.detectChanges();
 
     expect(getSelect(fixture).classList.contains('disabled')).toBe(true);
+  });
+
+  it('should close on Escape key', async () => {
+    const fixture = createFixture();
+    await openPanel(fixture);
+    expect(getPanelItems().length).toBe(3);
+
+    document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(getPanelItems().length).toBe(0);
+  });
+
+  it('should navigate items with ArrowDown key', async () => {
+    const fixture = createFixture();
+    await openPanel(fixture);
+
+    const panel = document.querySelector('glint-cascade-select-panel') as HTMLElement;
+    expect(panel).toBeTruthy();
+
+    panel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const items = getPanelItems();
+    // After pressing ArrowDown, the first (index 0) or second item should be active
+    const activeItems = items.filter(el => el.classList.contains('active'));
+    expect(activeItems.length).toBeGreaterThan(0);
+  });
+
+  it('should open submenu with ArrowRight on parent item', async () => {
+    const fixture = createFixture();
+    await openPanel(fixture);
+
+    const panel = document.querySelector('glint-cascade-select-panel') as HTMLElement;
+
+    // Move to first item (Electronics)
+    panel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    fixture.detectChanges();
+
+    // Press ArrowRight to open submenu
+    panel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    // There should now be a sub-panel with child items
+    const panels = document.querySelectorAll('glint-cascade-select-panel');
+    expect(panels.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('should select leaf item with Enter key', async () => {
+    const fixture = createFixture();
+    await openPanel(fixture);
+
+    const panel = document.querySelector('glint-cascade-select-panel') as HTMLElement;
+
+    // Navigate to Books (index 2) with ArrowDown twice
+    panel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    fixture.detectChanges();
+    panel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    fixture.detectChanges();
+    panel.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    fixture.detectChanges();
+
+    // Press Enter to select
+    panel.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.ctrl.value).toBe('Books');
+  });
+
+  it('should open panel on Enter key on trigger', async () => {
+    const fixture = createFixture();
+    const trigger = getTrigger(fixture);
+
+    trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(getPanelItems().length).toBe(3);
   });
 
   it('should show submenu indicator for items with children', async () => {

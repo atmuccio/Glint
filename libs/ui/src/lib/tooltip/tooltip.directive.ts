@@ -6,20 +6,12 @@ import {
   inject,
   Injector,
   input,
-  OnInit,
   signal,
 } from '@angular/core';
-import { ConnectedPosition, OverlayConfig } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
+import { createTooltipOverlayConfig } from '../core/overlay/overlay-config-factory';
 import { GlintTooltipPanelComponent } from './tooltip.component';
-
-const POSITIONS: ConnectedPosition[] = [
-  { originX: 'center', originY: 'top', overlayX: 'center', overlayY: 'bottom', offsetY: -8 },
-  { originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top', offsetY: 8 },
-  { originX: 'end', originY: 'center', overlayX: 'start', overlayY: 'center', offsetX: 8 },
-  { originX: 'start', originY: 'center', overlayX: 'end', overlayY: 'center', offsetX: -8 },
-];
 
 /**
  * Tooltip directive that shows a text tooltip on hover/focus.
@@ -43,7 +35,7 @@ const POSITIONS: ConnectedPosition[] = [
     '[attr.aria-describedby]': 'isVisible() ? tooltipId : null',
   },
 })
-export class GlintTooltipDirective implements OnInit {
+export class GlintTooltipDirective {
   /** Tooltip message text */
   glintTooltip = input.required<string>();
   /** Disable tooltip display */
@@ -66,7 +58,7 @@ export class GlintTooltipDirective implements OnInit {
   private showTimer: ReturnType<typeof setTimeout> | null = null;
   private hideTimer: ReturnType<typeof setTimeout> | null = null;
 
-  ngOnInit(): void {
+  constructor() {
     this.destroyRef.onDestroy(() => {
       this.clearTimers();
       this.hide();
@@ -107,13 +99,7 @@ export class GlintTooltipDirective implements OnInit {
   show(): void {
     if (this.glintTooltipDisabled() || !this.glintTooltip() || this.overlayRef) return;
 
-    const config = new OverlayConfig({
-      positionStrategy: this.overlayService
-        .position()
-        .flexibleConnectedTo(this.elRef)
-        .withPositions(POSITIONS),
-      scrollStrategy: this.overlayService.scrollStrategies.reposition(),
-    });
+    const config = createTooltipOverlayConfig(this.overlayService, this.elRef);
 
     const { overlayRef, injector } = this.overlayService.createZoneAwareOverlay(
       config,

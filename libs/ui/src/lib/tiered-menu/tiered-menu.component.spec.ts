@@ -89,8 +89,8 @@ describe('GlintTieredMenuComponent', () => {
       await fixture.whenStable();
 
       const items = fixture.nativeElement.querySelectorAll('[role="menuitem"]');
-      // 'File' has children, should have aria-haspopup
-      expect(items[0].getAttribute('aria-haspopup')).toBe('true');
+      // 'File' has children — CdkMenuTrigger sets aria-haspopup="menu"
+      expect(items[0].getAttribute('aria-haspopup')).toBe('menu');
       // 'File' should contain the submenu indicator
       const indicator = items[0].querySelector('.submenu-indicator');
       expect(indicator).toBeTruthy();
@@ -106,10 +106,9 @@ describe('GlintTieredMenuComponent', () => {
       fixture.detectChanges();
       await fixture.whenStable();
 
-      const panel = fixture.nativeElement.querySelector(
-        'glint-tiered-menu-panel'
-      );
-      expect(panel.getAttribute('role')).toBe('menu');
+      // CdkMenu adds role="menu" on the inner container
+      const menu = fixture.nativeElement.querySelector('[role="menu"]');
+      expect(menu).toBeTruthy();
     });
 
     it('should handle keyboard navigation (ArrowDown/ArrowUp)', async () => {
@@ -117,19 +116,27 @@ describe('GlintTieredMenuComponent', () => {
       fixture.detectChanges();
       await fixture.whenStable();
 
-      const panel = fixture.nativeElement.querySelector(
-        'glint-tiered-menu-panel'
+      const menu = fixture.nativeElement.querySelector(
+        '[role="menu"]'
       ) as HTMLElement;
       const items = fixture.nativeElement.querySelectorAll(
         '[role="menuitem"]'
       ) as NodeListOf<HTMLButtonElement>;
 
-      // Focus the first item
-      items[0].focus();
+      // CDK FocusKeyManager tracks focus internally — first ArrowDown
+      // activates the first item, second moves to the next.
+      // Arrow down activates first item
+      menu.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowDown', keyCode: 40, bubbles: true })
+      );
+      fixture.detectChanges();
+      await fixture.whenStable();
 
-      // Arrow down should move to next item
-      panel.dispatchEvent(
-        new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true })
+      expect(document.activeElement).toBe(items[0]);
+
+      // Arrow down again should move to next item
+      menu.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowDown', keyCode: 40, bubbles: true })
       );
       fixture.detectChanges();
       await fixture.whenStable();
@@ -137,8 +144,8 @@ describe('GlintTieredMenuComponent', () => {
       expect(document.activeElement).toBe(items[1]);
 
       // Arrow up should move back
-      panel.dispatchEvent(
-        new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true })
+      menu.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowUp', keyCode: 38, bubbles: true })
       );
       fixture.detectChanges();
       await fixture.whenStable();

@@ -68,4 +68,15 @@ describe('GlintFieldsetComponent', () => {
     const content = fixture.nativeElement.querySelector('.content');
     expect(content).toBeTruthy();
   });
+
+  it('should have aria-expanded attribute on toggle button', () => {
+    const fixture = TestBed.createComponent(TestFieldsetHostComponent);
+    fixture.componentInstance.toggleable = true;
+    fixture.detectChanges();
+    const toggle = fixture.nativeElement.querySelector('.toggle') as HTMLButtonElement;
+    expect(toggle.getAttribute('aria-expanded')).toBe('true');
+    toggle.click();
+    fixture.detectChanges();
+    expect(toggle.getAttribute('aria-expanded')).toBe('false');
+  });
 });

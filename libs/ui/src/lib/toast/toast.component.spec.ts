@@ -67,6 +67,29 @@ describe('GlintToastService + GlintToastComponent', () => {
     expect(toast.getAttribute('data-severity')).toBe('success');
   });
 
+  it('should have aria-live="polite" on the host', () => {
+    const fixture = TestBed.createComponent(GlintToastComponent);
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.getAttribute('aria-live')).toBe('polite');
+  });
+
+  it('should have role="alert" on individual toast items', () => {
+    const fixture = TestBed.createComponent(GlintToastComponent);
+    fixture.detectChanges();
+    service.show({ severity: 'info', summary: 'Test', duration: 0 });
+    fixture.detectChanges();
+    const toast = fixture.nativeElement.querySelector('.toast');
+    expect(toast.getAttribute('role')).toBe('alert');
+  });
+
+  it('should have aria-atomic="false" to announce new toasts individually', () => {
+    const fixture = TestBed.createComponent(GlintToastComponent);
+    fixture.detectChanges();
+    const host = fixture.nativeElement as HTMLElement;
+    expect(host.getAttribute('aria-atomic')).toBe('false');
+  });
+
   it('should clear all toasts', () => {
     const fixture = TestBed.createComponent(GlintToastComponent);
     fixture.detectChanges();

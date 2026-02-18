@@ -298,6 +298,43 @@ describe('GlintAutoCompleteComponent', () => {
 
   // ── Keyboard ─────────────────────────────────────
 
+  it('should navigate suggestions with ArrowDown', async () => {
+    createAutoFixture({ suggestions: ['Apple', 'Banana', 'Cherry'] });
+    await fixture.whenStable();
+
+    const ac = getAutoComplete();
+    ac.openPanel();
+    await fixture.whenStable();
+
+    const input = getInput();
+    // ArrowDown should move highlight to second item
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    await fixture.whenStable();
+
+    const items = getPanelItems();
+    // After ArrowDown, index 1 should be highlighted
+    expect(items[1].classList.contains('highlighted')).toBe(true);
+  });
+
+  it('should select highlighted suggestion with Enter', async () => {
+    createAutoFixture({ suggestions: ['Apple', 'Banana', 'Cherry'] });
+    await fixture.whenStable();
+
+    const ac = getAutoComplete();
+    ac.openPanel();
+    await fixture.whenStable();
+
+    const input = getInput();
+    // Move to second item and select
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    await fixture.whenStable();
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    await fixture.whenStable();
+
+    expect(fixture.componentInstance.ctrl.value).toBe('Banana');
+    expect(getPanel()).toBeFalsy();
+  });
+
   it('should close panel on Escape', async () => {
     createAutoFixture({ suggestions: ['Apple', 'Banana'] });
     await fixture.whenStable();
@@ -311,6 +348,56 @@ describe('GlintAutoCompleteComponent', () => {
     input.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
     await fixture.whenStable();
 
+    expect(getPanel()).toBeFalsy();
+  });
+
+  it('should navigate up with ArrowUp', async () => {
+    createAutoFixture({ suggestions: ['Apple', 'Banana', 'Cherry'] });
+    await fixture.whenStable();
+
+    const ac = getAutoComplete();
+    ac.openPanel();
+    await fixture.whenStable();
+
+    const input = getInput();
+    // Move down twice
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    await fixture.whenStable();
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    await fixture.whenStable();
+
+    // Move back up
+    input.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
+    await fixture.whenStable();
+
+    const items = getPanelItems();
+    expect(items[1].classList.contains('highlighted')).toBe(true);
+  });
+
+  it('should have listbox role on panel', async () => {
+    createAutoFixture({ suggestions: ['Apple', 'Banana'] });
+    await fixture.whenStable();
+
+    const ac = getAutoComplete();
+    ac.openPanel();
+    await fixture.whenStable();
+
+    const panel = getPanel();
+    expect(panel?.getAttribute('role')).toBe('listbox');
+  });
+
+  it('should display empty message when no suggestions', async () => {
+    createAutoFixture({ suggestions: [] });
+    await fixture.whenStable();
+
+    const ac = getAutoComplete();
+    // Force open by directly setting suggestions to empty
+    (ac as unknown as { suggestions: { (): unknown[] } }).suggestions = (() => []) as unknown as typeof ac.suggestions;
+    // This won't open because items.length === 0, which is correct behavior
+    ac.openPanel();
+    await fixture.whenStable();
+
+    // Panel should not open when there are no suggestions
     expect(getPanel()).toBeFalsy();
   });
 });

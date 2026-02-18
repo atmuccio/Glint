@@ -92,7 +92,10 @@ describe('GlintContextMenuDirective', () => {
     await fixture.whenStable();
 
     const panel = document.querySelector('glint-menu-panel');
-    expect(panel?.getAttribute('role')).toBe('menu');
+    expect(panel).toBeTruthy();
+    // CdkMenu adds role="menu" on the inner menu container
+    const menu = panel?.querySelector('[role="menu"]') ?? panel;
+    expect(menu?.getAttribute('role')).toBe('menu');
   });
 
   it('should close on Escape key', async () => {

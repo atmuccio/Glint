@@ -5,8 +5,7 @@ import {
   TemplateRef,
   viewChild,
 } from '@angular/core';
-
-let nextId = 0;
+import { glintId } from '../core/utils/id-generator';
 
 /**
  * A single tab panel. Must be placed inside a `<glint-tabs>` host.
@@ -35,7 +34,7 @@ export class GlintTabPanelComponent {
   disabled = input(false);
 
   /** Unique ID for ARIA linkage */
-  readonly panelId = `glint-tab-panel-${nextId++}`;
+  readonly panelId = glintId('glint-tab-panel');
   readonly tabId = `${this.panelId}-tab`;
 
   /** Template outlet for lazy rendering */

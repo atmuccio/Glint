@@ -151,7 +151,7 @@ export class GlintSliderComponent implements ControlValueAccessor {
   });
 
   private ngControl = inject(NgControl, { optional: true, self: true });
-  private onChangeFn: (value: number) => void = () => { /* noop */ };
+  private onChange: (value: number) => void = () => { /* noop */ };
   protected onTouched: () => void = () => { /* noop */ };
 
   constructor() {
@@ -164,13 +164,13 @@ export class GlintSliderComponent implements ControlValueAccessor {
     this.value.set(value ?? this.min());
   }
 
-  registerOnChange(fn: (value: number) => void): void { this.onChangeFn = fn; }
+  registerOnChange(fn: (value: number) => void): void { this.onChange = fn; }
   registerOnTouched(fn: () => void): void { this.onTouched = fn; }
   setDisabledState(isDisabled: boolean): void { this.disabledFromCVA.set(isDisabled); }
 
   protected onInput(event: Event): void {
     const v = parseFloat((event.target as HTMLInputElement).value);
     this.value.set(v);
-    this.onChangeFn(v);
+    this.onChange(v);
   }
 }

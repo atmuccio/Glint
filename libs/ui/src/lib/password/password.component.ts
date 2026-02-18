@@ -12,8 +12,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
-
-let nextId = 0;
+import { glintId } from '../core/utils/id-generator';
 
 /**
  * Password input with toggle visibility and optional strength meter.
@@ -162,7 +161,7 @@ export class GlintPasswordComponent implements ControlValueAccessor {
   /** Disabled state */
   disabled = input<boolean | undefined>(undefined);
 
-  readonly inputId = `glint-password-${nextId++}`;
+  readonly inputId = glintId('glint-password');
 
   protected value = signal('');
   protected focused = signal(false);

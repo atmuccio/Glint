@@ -12,6 +12,8 @@ import {
   CdkDropList,
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
+import { resolveItemLabel } from '../core/utils/label-resolver';
+import { filterByLabel } from '../core/utils/filter-utils';
 
 /**
  * Reorderable list with drag-and-drop support and move buttons.
@@ -276,16 +278,11 @@ export class GlintOrderListComponent {
   protected filterText = signal('');
 
   protected filteredItems = computed(() => {
-    const items = this.value();
     const filterField = this.filterBy();
-    const text = this.filterText().toLowerCase();
-
-    if (!filterField || !text) return items;
-
-    return items.filter(item => {
-      const val = this.getFieldValue(item, filterField);
-      return String(val).toLowerCase().includes(text);
-    });
+    if (!filterField) return this.value();
+    return filterByLabel(this.value(), this.filterText(), item =>
+      String(this.getFieldValue(item, filterField))
+    );
   });
 
   protected canMoveUp = computed(() => {
@@ -306,11 +303,7 @@ export class GlintOrderListComponent {
   });
 
   protected getLabel(item: unknown): string {
-    const f = this.field();
-    if (f && item != null && typeof item === 'object') {
-      return String((item as Record<string, unknown>)[f] ?? '');
-    }
-    return String(item);
+    return resolveItemLabel(item, this.field());
   }
 
   protected getFieldValue(item: unknown, fieldName: string): unknown {

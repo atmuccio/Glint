@@ -11,46 +11,17 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
-import { ConnectedPosition, OverlayConfig } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
+import { createDropdownOverlayConfig } from '../core/overlay/overlay-config-factory';
 import { GlintTieredMenuPanelComponent } from './tiered-menu-panel.component';
 import type { GlintMenuItem } from '../menu/menu-item.model';
-
-const POSITIONS: ConnectedPosition[] = [
-  {
-    originX: 'start',
-    originY: 'bottom',
-    overlayX: 'start',
-    overlayY: 'top',
-    offsetY: 4,
-  },
-  {
-    originX: 'start',
-    originY: 'top',
-    overlayX: 'start',
-    overlayY: 'bottom',
-    offsetY: -4,
-  },
-  {
-    originX: 'end',
-    originY: 'bottom',
-    overlayX: 'end',
-    overlayY: 'top',
-    offsetY: 4,
-  },
-  {
-    originX: 'end',
-    originY: 'top',
-    overlayX: 'end',
-    overlayY: 'bottom',
-    offsetY: -4,
-  },
-];
 
 /**
  * Tiered menu component with nested submenus.
  * Can be used inline (default) or as a popup overlay.
+ * Uses Angular CDK Menu primitives (CdkMenu + CdkMenuItem + CdkMenuTrigger)
+ * for keyboard navigation, focus management, ARIA roles, and submenu coordination.
  *
  * @example Inline:
  * ```html
@@ -132,17 +103,8 @@ export class GlintTieredMenuComponent {
     if (this.isOpen() || !this.popup()) return;
 
     const targetEl = this.resolveTarget();
-    const positionStrategy = this.overlay
-      .position()
-      .flexibleConnectedTo(targetEl)
-      .withPositions(POSITIONS);
 
-    const config = new OverlayConfig({
-      positionStrategy,
-      scrollStrategy: this.overlay.scrollStrategies.reposition(),
-      hasBackdrop: true,
-      backdropClass: 'cdk-overlay-transparent-backdrop',
-    });
+    const config = createDropdownOverlayConfig(this.overlay, targetEl);
 
     const { overlayRef, injector } = this.overlay.createZoneAwareOverlay(
       config,

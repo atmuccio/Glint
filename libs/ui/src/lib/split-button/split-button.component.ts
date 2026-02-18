@@ -9,16 +9,12 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { ConnectedPosition, OverlayConfig } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
+import { DROPDOWN_END_POSITIONS } from '../core/overlay/overlay-positions';
+import { createDropdownOverlayConfig } from '../core/overlay/overlay-config-factory';
 import { GlintMenuPanelComponent } from '../menu/menu-panel.component';
 import type { GlintMenuItem } from '../menu/menu-item.model';
-
-const POSITIONS: ConnectedPosition[] = [
-  { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 4 },
-  { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', offsetY: -4 },
-];
 
 /**
  * Split button with a primary action and a dropdown menu.
@@ -128,13 +124,8 @@ export class GlintSplitButtonComponent {
   private openMenu(): void {
     if (this.isOpen()) return;
 
-    const config = new OverlayConfig({
-      positionStrategy: this.overlay.position()
-        .flexibleConnectedTo(this.elRef)
-        .withPositions(POSITIONS),
-      scrollStrategy: this.overlay.scrollStrategies.reposition(),
-      hasBackdrop: true,
-      backdropClass: 'cdk-overlay-transparent-backdrop',
+    const config = createDropdownOverlayConfig(this.overlay, this.elRef, {
+      positions: DROPDOWN_END_POSITIONS,
     });
 
     const { overlayRef, injector } = this.overlay.createZoneAwareOverlay(config, this.injector);

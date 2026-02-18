@@ -7,6 +7,19 @@ import {
   output,
   signal,
 } from '@angular/core';
+import {
+  CdkTable,
+  CdkColumnDef,
+  CdkHeaderCellDef,
+  CdkCellDef,
+  CdkHeaderRowDef,
+  CdkRowDef,
+  CdkHeaderRow,
+  CdkRow,
+  CdkHeaderCell,
+  CdkCell,
+  CdkNoDataRow,
+} from '@angular/cdk/table';
 import { NgTemplateOutlet } from '@angular/common';
 import { GlintColumnDirective } from './table-column.directive';
 
@@ -18,6 +31,11 @@ export interface GlintSortEvent {
 
 /**
  * Data table with column definitions, sorting, and striped rows.
+ *
+ * Internally uses Angular CDK Table (`CdkTable`) for efficient row rendering
+ * and column management via `CdkColumnDef`, `CdkHeaderCellDef`, `CdkCellDef`,
+ * `CdkHeaderRowDef`, and `CdkRowDef`. Existing `glintColumn` directive API
+ * and all Glint styling are preserved.
  *
  * @example
  * ```html
@@ -34,7 +52,20 @@ export interface GlintSortEvent {
 @Component({
   selector: 'glint-table',
   standalone: true,
-  imports: [NgTemplateOutlet],
+  imports: [
+    CdkTable,
+    CdkColumnDef,
+    CdkHeaderCellDef,
+    CdkCellDef,
+    CdkHeaderRowDef,
+    CdkRowDef,
+    CdkHeaderRow,
+    CdkRow,
+    CdkHeaderCell,
+    CdkCell,
+    CdkNoDataRow,
+    NgTemplateOutlet,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: `
     :host {
@@ -144,52 +175,51 @@ export interface GlintSortEvent {
     '[attr.data-fixed-layout]': 'fixedLayout() || null',
   },
   template: `
-    <table role="grid">
-      <thead>
-        <tr>
-          @for (col of columns(); track col.field()) {
-            <th
-              [class.sortable]="col.sortable()"
-              [class.sticky-start]="col.sticky()"
-              [class.sticky-end]="col.stickyEnd()"
-              [class.align-center]="col.align() === 'center'"
-              [class.align-end]="col.align() === 'end'"
-              [style.inline-size]="col.width()"
-              [attr.aria-sort]="getAriaSort(col.field())"
-              (click)="col.sortable() ? toggleSort(col.field()) : null"
-            >
-              {{ col.header() || col.field() }}
-              @if (col.sortable()) {
-                <span
-                  class="sort-icon"
-                  [class.active]="sortField() === col.field()"
-                  aria-hidden="true"
-                >{{ sortField() === col.field() ? (sortOrder() === 'asc' ? '▲' : '▼') : '⇅' }}</span>
-              }
-            </th>
-          }
-        </tr>
-      </thead>
-      <tbody>
-        @for (row of sortedData(); track rowIdentity(row)) {
-          <tr>
-            @for (col of columns(); track col.field()) {
-              <td
-                [class.sticky-start]="col.sticky()"
-                [class.sticky-end]="col.stickyEnd()"
-                [class.align-center]="col.align() === 'center'"
-                [class.align-end]="col.align() === 'end'"
-              >
-                <ng-container [ngTemplateOutlet]="col.template" [ngTemplateOutletContext]="{ $implicit: row }" />
-              </td>
+    <table cdk-table [dataSource]="sortedData()" role="grid" [fixedLayout]="fixedLayout()">
+      @for (col of columns(); track col.field()) {
+        <ng-container [cdkColumnDef]="col.field()">
+          <th
+            cdk-header-cell
+            *cdkHeaderCellDef
+            [class.sortable]="col.sortable()"
+            [class.sticky-start]="col.sticky()"
+            [class.sticky-end]="col.stickyEnd()"
+            [class.align-center]="col.align() === 'center'"
+            [class.align-end]="col.align() === 'end'"
+            [style.inline-size]="col.width()"
+            [attr.aria-sort]="getAriaSort(col.field())"
+            (click)="col.sortable() ? toggleSort(col.field()) : null"
+          >
+            {{ col.header() || col.field() }}
+            @if (col.sortable()) {
+              <span
+                class="sort-icon"
+                [class.active]="sortField() === col.field()"
+                aria-hidden="true"
+              >{{ sortField() === col.field() ? (sortOrder() === 'asc' ? '\u25B2' : '\u25BC') : '\u21C5' }}</span>
             }
-          </tr>
-        } @empty {
-          <tr>
-            <td class="empty" [attr.colspan]="columns().length">No data available</td>
-          </tr>
-        }
-      </tbody>
+          </th>
+          <td
+            cdk-cell
+            *cdkCellDef="let row"
+            [class.sticky-start]="col.sticky()"
+            [class.sticky-end]="col.stickyEnd()"
+            [class.align-center]="col.align() === 'center'"
+            [class.align-end]="col.align() === 'end'"
+          >
+            <ng-container [ngTemplateOutlet]="col.template" [ngTemplateOutletContext]="{ $implicit: row }" />
+          </td>
+        </ng-container>
+      }
+
+      <tr cdk-header-row *cdkHeaderRowDef="displayedColumns()"></tr>
+      <tr cdk-row *cdkRowDef="let row; columns: displayedColumns()"></tr>
+
+      <ng-template cdkNoDataRow>
+        <tr>
+          <td class="empty" [attr.colspan]="columns().length">No data available</td>
+        </tr>
+      </ng-template>
     </table>
   `,
 })
@@ -202,6 +232,8 @@ export class GlintTableComponent {
   fixedLayout = input(false);
   /** Field name used to track row identity for efficient re-rendering */
   trackBy = input<string>();
+  /** Enable virtual scrolling (CdkTable integration point) */
+  virtualScroll = input(false);
   /** Emitted on sort change */
   sortChange = output<GlintSortEvent>();
 
@@ -209,6 +241,11 @@ export class GlintTableComponent {
 
   protected sortField = signal('');
   protected sortOrder = signal<'asc' | 'desc'>('asc');
+
+  /** Column names for CdkTable's displayedColumns */
+  protected displayedColumns = computed(() =>
+    this.columns().map(col => col.field())
+  );
 
   /** Returns a stable identity for a data row based on trackBy field or object reference */
   protected rowIdentity(row: Record<string, unknown>): unknown {

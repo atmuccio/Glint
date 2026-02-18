@@ -88,4 +88,23 @@ describe('GlintAccordionComponent', () => {
     fixture.detectChanges();
     expect(header.getAttribute('aria-expanded')).toBe('true');
   });
+
+  it('should navigate headers with ArrowDown key', () => {
+    const fixture = TestBed.createComponent(TestAccordionHostComponent);
+    fixture.detectChanges();
+    const headers = fixture.nativeElement.querySelectorAll('.header') as NodeListOf<HTMLElement>;
+    headers[0].focus();
+    headers[0].dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    fixture.detectChanges();
+    // After ArrowDown, the next non-disabled header should receive focus
+    expect(document.activeElement).toBe(headers[1]);
+  });
+
+  it('should mark disabled header with aria-disabled', () => {
+    const fixture = TestBed.createComponent(TestAccordionHostComponent);
+    fixture.detectChanges();
+    const headers = fixture.nativeElement.querySelectorAll('.header');
+    // Third header is disabled
+    expect(headers[2].getAttribute('aria-disabled')).toBe('true');
+  });
 });

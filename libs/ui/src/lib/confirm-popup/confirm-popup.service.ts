@@ -6,9 +6,10 @@ import {
   Injector,
   signal,
 } from '@angular/core';
-import { ConnectedPosition, OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
+import { ConnectedPosition, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
+import { createPopoverOverlayConfig } from '../core/overlay/overlay-config-factory';
 
 /** Configuration for a confirm popup */
 export interface GlintConfirmPopupConfig {
@@ -162,13 +163,8 @@ export class GlintConfirmPopupService {
     // Close any existing popup
     this.close();
 
-    const overlayConfig = new OverlayConfig({
-      positionStrategy: this.overlay.position()
-        .flexibleConnectedTo(config.target)
-        .withPositions(POSITIONS),
-      scrollStrategy: this.overlay.scrollStrategies.reposition(),
-      hasBackdrop: true,
-      backdropClass: 'cdk-overlay-transparent-backdrop',
+    const overlayConfig = createPopoverOverlayConfig(this.overlay, config.target, {
+      positions: POSITIONS,
     });
 
     const { overlayRef } = this.overlay.createZoneAwareOverlay(overlayConfig, this.injector);

@@ -51,6 +51,14 @@ describe('GlintMessageComponent', () => {
     expect(btn).toBeTruthy();
   });
 
+  it('should serve as aria-live region via role="alert"', () => {
+    const fixture = TestBed.createComponent(TestMessageHostComponent);
+    fixture.detectChanges();
+    const msg = fixture.nativeElement.querySelector('glint-message') as HTMLElement;
+    // role="alert" implicitly creates an aria-live="assertive" region
+    expect(msg.getAttribute('role')).toBe('alert');
+  });
+
   it('should hide on close button click', () => {
     const fixture = TestBed.createComponent(TestMessageHostComponent);
     fixture.componentInstance.closable = true;

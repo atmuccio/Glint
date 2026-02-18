@@ -274,6 +274,20 @@ describe('GlintSelectComponent', () => {
     expect(fixture.componentInstance.ctrl.value).toBe('apple');
   });
 
+  it('should close panel on Escape key', async () => {
+    const fixture = createFixture();
+    await openPanel(fixture);
+    expect(getPanel()).toBeTruthy();
+
+    const panel = getPanel();
+    panel.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(getPanel()).toBeFalsy();
+    expect(getTrigger(fixture).getAttribute('aria-expanded')).toBe('false');
+  });
+
   // ── Search ─────────────────────────────────────
 
   it('should filter options when searchable', async () => {
@@ -304,6 +318,13 @@ describe('GlintSelectComponent', () => {
     const emptyMsg = document.querySelector('.empty-message');
     expect(emptyMsg).toBeTruthy();
     expect(emptyMsg?.textContent?.trim()).toBe('No options found');
+  });
+
+  it('should have listbox role on panel', async () => {
+    const fixture = createFixture();
+    await openPanel(fixture);
+    const panel = getPanel();
+    expect(panel.getAttribute('role')).toBe('listbox');
   });
 
   // ── CVA ────────────────────────────────────────

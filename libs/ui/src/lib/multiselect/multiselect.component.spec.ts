@@ -320,6 +320,55 @@ describe('GlintMultiSelectComponent', () => {
     expect(fixture.componentInstance.ctrl.value).toEqual([]);
   });
 
+  // ── Keyboard ───────────────────────────────────
+
+  it('should open panel on ArrowDown key', async () => {
+    const fixture = createFixture();
+    const trigger = getTrigger(fixture);
+
+    trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(getPanel()).toBeTruthy();
+    expect(getHost(fixture).classList.contains('open')).toBe(true);
+  });
+
+  it('should close panel on Escape key', async () => {
+    const fixture = createFixture();
+    await openPanel(fixture);
+    expect(getPanel()).toBeTruthy();
+
+    const trigger = getTrigger(fixture);
+    trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(getPanel()).toBeFalsy();
+  });
+
+  it('should open panel on Enter key', async () => {
+    const fixture = createFixture();
+    const trigger = getTrigger(fixture);
+
+    trigger.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(getPanel()).toBeTruthy();
+  });
+
+  it('should open panel on Space key', async () => {
+    const fixture = createFixture();
+    const trigger = getTrigger(fixture);
+
+    trigger.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(getPanel()).toBeTruthy();
+  });
+
   // ── Grouped ────────────────────────────────────
 
   it('should display grouped options', async () => {

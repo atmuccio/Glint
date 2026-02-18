@@ -13,8 +13,7 @@ import {
   viewChildren,
 } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
-
-let nextId = 0;
+import { glintId } from '../core/utils/id-generator';
 
 /**
  * One-time-password input with individual character boxes.
@@ -31,10 +30,11 @@ let nextId = 0;
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.disabled]': 'isDisabled()',
-    style: 'display: inline-flex; gap: var(--glint-spacing-sm);',
   },
   styles: `
     :host {
+      display: inline-flex;
+      gap: var(--glint-spacing-sm);
       font-family: var(--glint-font-family);
     }
 
@@ -98,7 +98,7 @@ export class GlintInputOtpComponent implements ControlValueAccessor {
   /** Emitted when all inputs are filled */
   complete = output<string>();
 
-  readonly inputId = `glint-input-otp-${nextId++}`;
+  readonly inputId = glintId('glint-input-otp');
 
   /** Array of individual character values */
   protected values = signal<string[]>([]);

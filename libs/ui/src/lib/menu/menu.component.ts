@@ -9,21 +9,16 @@ import {
   output,
   signal,
 } from '@angular/core';
-import { ConnectedPosition, OverlayConfig } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
+import { createDropdownOverlayConfig } from '../core/overlay/overlay-config-factory';
 import { GlintMenuPanelComponent } from './menu-panel.component';
 import type { GlintMenuItem } from './menu-item.model';
 
-const POSITIONS: ConnectedPosition[] = [
-  { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 4 },
-  { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom', offsetY: -4 },
-  { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 4 },
-  { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', offsetY: -4 },
-];
-
 /**
  * Menu trigger component. Attach to a trigger element and provide menu items.
+ * Uses Angular CDK Menu primitives (CdkMenu + CdkMenuItem) for keyboard
+ * navigation, focus management, and ARIA roles within the panel.
  *
  * @example
  * ```html
@@ -69,17 +64,8 @@ export class GlintMenuComponent {
     if (this.isOpen()) return;
 
     const targetEl = this.resolveTarget();
-    const positionStrategy = this.overlay
-      .position()
-      .flexibleConnectedTo(targetEl)
-      .withPositions(POSITIONS);
 
-    const config = new OverlayConfig({
-      positionStrategy,
-      scrollStrategy: this.overlay.scrollStrategies.reposition(),
-      hasBackdrop: true,
-      backdropClass: 'cdk-overlay-transparent-backdrop',
-    });
+    const config = createDropdownOverlayConfig(this.overlay, targetEl);
 
     const { overlayRef, injector } = this.overlay.createZoneAwareOverlay(config, this.injector);
     this.panelRef = overlayRef;

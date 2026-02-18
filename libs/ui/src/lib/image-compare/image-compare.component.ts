@@ -4,9 +4,10 @@ import {
   computed,
   ElementRef,
   inject,
+  effect,
   input,
-  OnInit,
   signal,
+  untracked,
 } from '@angular/core';
 
 /**
@@ -138,7 +139,7 @@ import {
     }
   `,
 })
-export class GlintImageCompareComponent implements OnInit {
+export class GlintImageCompareComponent {
   /** Source URL for the left (before) image */
   leftSrc = input.required<string>();
   /** Source URL for the right (after) image */
@@ -160,8 +161,12 @@ export class GlintImageCompareComponent implements OnInit {
 
   private dragging = false;
 
-  ngOnInit(): void {
-    this.position.set(this.initialPosition());
+  constructor() {
+    // Sync initialPosition input to mutable position signal
+    effect(() => {
+      const pos = this.initialPosition();
+      untracked(() => this.position.set(pos));
+    });
   }
 
   onPointerDown(event: PointerEvent): void {

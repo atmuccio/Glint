@@ -12,8 +12,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
-
-let nextId = 0;
+import { glintId } from '../core/utils/id-generator';
 
 /**
  * Numeric input with spinner buttons, min/max/step, and ControlValueAccessor support.
@@ -251,7 +250,7 @@ export class GlintInputNumberComponent implements ControlValueAccessor {
   /** Disabled state */
   disabled = input<boolean | undefined>(undefined);
 
-  readonly inputId = `glint-input-number-${nextId++}`;
+  readonly inputId = glintId('glint-input-number');
 
   protected value = signal<number | null>(null);
   protected focused = signal(false);

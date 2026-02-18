@@ -15,9 +15,11 @@ import {
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
-import { OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
+import { OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
+import { createDropdownOverlayConfig } from '../core/overlay/overlay-config-factory';
+import { glintId } from '../core/utils/id-generator';
 
 // ── Color math helpers ────────────────────────────────────
 
@@ -165,8 +167,6 @@ export function formatColor(hsb: HSB, format: 'hex' | 'rgb' | 'hsl'): string {
 }
 
 // ── Component ─────────────────────────────────────────────
-
-let nextId = 0;
 
 /**
  * Color picker with saturation/brightness gradient, hue strip, and hex input.
@@ -419,7 +419,7 @@ export class GlintColorPickerComponent implements ControlValueAccessor {
   /** Emits formatted color string on change */
   colorChange = output<string>();
 
-  readonly componentId = `glint-colorpicker-${nextId++}`;
+  readonly componentId = glintId('glint-colorpicker');
 
   /** Internal HSB state */
   protected hsb = signal<HSB>({ h: 0, s: 100, b: 100 });
@@ -498,19 +498,7 @@ export class GlintColorPickerComponent implements ControlValueAccessor {
     const trigger = this.triggerEl()?.nativeElement;
     if (!trigger) return;
 
-    const config = new OverlayConfig({
-      positionStrategy: this.overlayService
-        .position()
-        .flexibleConnectedTo(trigger)
-        .withPositions([
-          { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 4 },
-          { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom', offsetY: -4 },
-        ])
-        .withPush(true),
-      scrollStrategy: this.overlayService.scrollStrategies.reposition(),
-      hasBackdrop: true,
-      backdropClass: 'cdk-overlay-transparent-backdrop',
-    });
+    const config = createDropdownOverlayConfig(this.overlayService, trigger);
 
     const { overlayRef, injector } = this.overlayService.createZoneAwareOverlay(
       config,

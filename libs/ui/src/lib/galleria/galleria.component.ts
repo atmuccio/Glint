@@ -3,10 +3,10 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   inject,
   Injector,
   input,
-  OnInit,
   output,
   signal,
   TemplateRef,
@@ -410,7 +410,7 @@ export interface GlintGalleriaImage {
     </ng-template>
   `,
 })
-export class GlintGalleriaComponent implements OnInit {
+export class GlintGalleriaComponent {
   /** Array of images */
   readonly images = input.required<GlintGalleriaImage[]>();
   /** Whether to show the thumbnail strip */
@@ -452,8 +452,18 @@ export class GlintGalleriaComponent implements OnInit {
   private overlayRef: OverlayRef | null = null;
   private autoplayTimer: ReturnType<typeof setInterval> | null = null;
 
-  ngOnInit(): void {
-    this.setupAutoplay();
+  constructor() {
+    // React to autoplay input changes: start/stop timer as needed
+    effect(() => {
+      const autoplay = this.autoplay();
+      const interval = this.autoplayInterval();
+      // Clear any existing timer before potentially starting a new one
+      this.clearAutoplay();
+      if (autoplay && interval > 0) {
+        this.autoplayTimer = setInterval(() => this.next(), interval);
+      }
+    });
+
     this.destroyRef.onDestroy(() => {
       this.clearAutoplay();
       this.disposeOverlay();
@@ -522,17 +532,6 @@ export class GlintGalleriaComponent implements OnInit {
   /** Close fullscreen overlay */
   closeFullscreen(): void {
     this.disposeOverlay();
-  }
-
-  private setupAutoplay(): void {
-    if (this.autoplay()) {
-      const interval = this.autoplayInterval();
-      if (interval > 0) {
-        this.autoplayTimer = setInterval(() => {
-          this.next();
-        }, interval);
-      }
-    }
   }
 
   private clearAutoplay(): void {

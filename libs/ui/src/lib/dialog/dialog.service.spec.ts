@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { injectGlintDialog, GlintDialog } from './dialog.service';
 import { GLINT_DIALOG_DATA } from './dialog.config';
 import { GlintDialogRef } from './dialog-ref';
+import { cleanupOverlays } from '../testing/test-utils';
 
 @Component({
   selector: 'glint-test-dialog-content',
@@ -41,10 +42,7 @@ describe('GlintDialogService', () => {
     // Clean up any open dialogs
     const containers = document.querySelectorAll('glint-dialog-container');
     containers.forEach(el => el.remove());
-    const overlays = document.querySelectorAll('.cdk-overlay-container');
-    overlays.forEach(el => {
-      el.innerHTML = '';
-    });
+    cleanupOverlays();
   });
 
   it('should open a dialog with content component', async () => {
@@ -104,6 +102,47 @@ describe('GlintDialogService', () => {
     fixture.componentInstance.lastRef?.close('test-result');
 
     expect(result).toBe('test-result');
+  });
+
+  it('should close dialog on Escape key', async () => {
+    const fixture = TestBed.createComponent(TestDialogHostComponent);
+    fixture.detectChanges();
+
+    fixture.componentInstance.open();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(document.querySelector('glint-dialog-container')).toBeTruthy();
+
+    // CDK OverlayKeyboardDispatcher listens on body for keydown
+    // CDK Dialog checks event.keyCode === 27 (ESCAPE)
+    document.body.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Escape',
+      keyCode: 27,
+      code: 'Escape',
+      bubbles: true,
+    }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(document.querySelector('glint-dialog-container')).toBeFalsy();
+  });
+
+  it('should have dialog role and aria-modal on container', async () => {
+    const fixture = TestBed.createComponent(TestDialogHostComponent);
+    fixture.detectChanges();
+
+    fixture.componentInstance.open();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const container = document.querySelector('glint-dialog-container') as HTMLElement;
+    expect(container.getAttribute('role')).toBe('dialog');
+    expect(container.getAttribute('aria-modal')).toBe('true');
+
+    fixture.componentInstance.lastRef?.close();
+    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should provide GlintDialogRef to dialog content', async () => {

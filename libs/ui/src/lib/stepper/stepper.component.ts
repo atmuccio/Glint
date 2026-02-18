@@ -115,6 +115,9 @@ export class GlintStepperComponent extends CdkStepper {
   /**
    * Override CdkStepper's @ContentChildren(CdkStepHeader) with @ViewChildren
    * since our step headers are rendered in the template, not projected as content.
+   *
+   * Uses decorator instead of signal query because CdkStepper base class
+   * expects a QueryList<CdkStepHeader> property set via @ViewChildren.
    */
   @ViewChildren(GlintStepHeaderComponent)
   override _stepHeader = new QueryList<CdkStepHeader>();
@@ -122,8 +125,11 @@ export class GlintStepperComponent extends CdkStepper {
   /**
    * Alias for CdkStepper's `selectedIndex` — maintains backward compatibility.
    * Use `[(activeStep)]` for two-way binding.
+   *
+   * Uses @Input() decorator instead of signal input because CdkStepper base class
+   * defines selectedIndex as a decorated property that must be overridden with a decorator.
    */
-  // eslint-disable-next-line @angular-eslint/no-input-rename
+  // eslint-disable-next-line @angular-eslint/no-input-rename -- CdkStepper override requires decorator
   @Input({ alias: 'activeStep', transform: numberAttribute })
   override set selectedIndex(index: number) {
     super.selectedIndex = index;
@@ -132,8 +138,13 @@ export class GlintStepperComponent extends CdkStepper {
     return super.selectedIndex;
   }
 
-  /** Emits when activeStep changes. Supports `[(activeStep)]` two-way binding. */
-  // eslint-disable-next-line @angular-eslint/no-output-rename
+  /**
+   * Emits when activeStep changes. Supports `[(activeStep)]` two-way binding.
+   *
+   * Uses @Output() decorator instead of signal output because CdkStepper base class
+   * defines selectedIndexChange as an EventEmitter that must be overridden with a decorator.
+   */
+  // eslint-disable-next-line @angular-eslint/no-output-rename -- CdkStepper override requires decorator
   @Output('activeStepChange')
   override readonly selectedIndexChange = new EventEmitter<number>();
 

@@ -7,8 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
-
-let nextId = 0;
+import { glintId } from '../core/utils/id-generator';
 
 /**
  * Toggle switch component with ControlValueAccessor.
@@ -107,7 +106,7 @@ export class GlintToggleSwitchComponent implements ControlValueAccessor {
   /** Disabled state */
   disabled = input(false);
 
-  readonly labelId = `glint-toggle-label-${nextId++}`;
+  readonly labelId = glintId('glint-toggle-label');
 
   protected checked = signal(false);
 

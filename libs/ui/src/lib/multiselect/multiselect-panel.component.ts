@@ -5,6 +5,8 @@ import {
   output,
   signal,
 } from '@angular/core';
+import { resolveItemLabel } from '../core/utils/label-resolver';
+import { filterByLabel } from '../core/utils/filter-utils';
 
 /**
  * Internal panel component rendered inside the CDK overlay for MultiSelect.
@@ -219,17 +221,13 @@ export class GlintMultiSelectPanelComponent {
 
   /** Filtered flat options (non-grouped mode) */
   readonly filteredOptions = computed(() => {
-    const term = this.filterText().toLowerCase();
     const labelKey = this.optionLabel();
-    if (!term) return this.options();
-    return this.options().filter(opt =>
-      String(opt[labelKey] ?? '').toLowerCase().includes(term)
-    );
+    return filterByLabel(this.options(), this.filterText(), opt => resolveItemLabel(opt, labelKey));
   });
 
   /** Filtered groups (grouped mode) */
   readonly filteredGroups = computed(() => {
-    const term = this.filterText().toLowerCase();
+    const term = this.filterText();
     const labelKey = this.optionLabel();
     const childrenKey = this.optionGroupChildren();
     const groups = this.options() as Record<string, unknown>[];
@@ -239,9 +237,7 @@ export class GlintMultiSelectPanelComponent {
     return groups
       .map(grp => {
         const children = (grp[childrenKey] as Record<string, unknown>[]) ?? [];
-        const filtered = children.filter(opt =>
-          String(opt[labelKey] ?? '').toLowerCase().includes(term)
-        );
+        const filtered = filterByLabel(children, term, opt => resolveItemLabel(opt, labelKey));
         return { ...grp, [childrenKey]: filtered };
       })
       .filter(grp => {
@@ -280,7 +276,7 @@ export class GlintMultiSelectPanelComponent {
 
   /** Helper to get option label */
   optLabel(opt: Record<string, unknown>): string {
-    return String(opt[this.optionLabel()] ?? '');
+    return resolveItemLabel(opt, this.optionLabel());
   }
 
   /** Helper to get option value */
@@ -290,7 +286,7 @@ export class GlintMultiSelectPanelComponent {
 
   /** Helper to get group label */
   grpLabel(grp: Record<string, unknown>): string {
-    return String(grp[this.optionGroupLabel()] ?? '');
+    return resolveItemLabel(grp, this.optionGroupLabel());
   }
 
   /** Helper to get group children */

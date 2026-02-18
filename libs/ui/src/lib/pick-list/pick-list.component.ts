@@ -13,6 +13,8 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
+import { resolveItemLabel } from '../core/utils/label-resolver';
+import { filterByLabel } from '../core/utils/filter-utils';
 
 /**
  * Two-list transfer component with drag-and-drop support.
@@ -334,37 +336,23 @@ export class GlintPickListComponent {
   protected targetFilterText = signal('');
 
   protected filteredSourceItems = computed(() => {
-    const items = this.source();
     const filterField = this.filterBy();
-    const text = this.sourceFilterText().toLowerCase();
-
-    if (!filterField || !text || !this.showSourceFilter()) return items;
-
-    return items.filter(item => {
-      const val = this.getFieldValue(item, filterField);
-      return String(val).toLowerCase().includes(text);
-    });
+    if (!filterField || !this.showSourceFilter()) return this.source();
+    return filterByLabel(this.source(), this.sourceFilterText(), item =>
+      String(this.getFieldValue(item, filterField))
+    );
   });
 
   protected filteredTargetItems = computed(() => {
-    const items = this.target();
     const filterField = this.filterBy();
-    const text = this.targetFilterText().toLowerCase();
-
-    if (!filterField || !text || !this.showTargetFilter()) return items;
-
-    return items.filter(item => {
-      const val = this.getFieldValue(item, filterField);
-      return String(val).toLowerCase().includes(text);
-    });
+    if (!filterField || !this.showTargetFilter()) return this.target();
+    return filterByLabel(this.target(), this.targetFilterText(), item =>
+      String(this.getFieldValue(item, filterField))
+    );
   });
 
   protected getLabel(item: unknown): string {
-    const f = this.field();
-    if (f && item != null && typeof item === 'object') {
-      return String((item as Record<string, unknown>)[f] ?? '');
-    }
-    return String(item);
+    return resolveItemLabel(item, this.field());
   }
 
   protected getFieldValue(item: unknown, fieldName: string): unknown {

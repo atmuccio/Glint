@@ -10,8 +10,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
-
-let nextId = 0;
+import { glintId } from '../core/utils/id-generator';
 
 /**
  * Radio button component with ControlValueAccessor and group support.
@@ -136,7 +135,7 @@ export class GlintRadioButtonComponent implements ControlValueAccessor {
   /** Disabled state */
   disabled = input(false);
 
-  readonly inputId = `glint-radio-${nextId++}`;
+  readonly inputId = glintId('glint-radio');
 
   /** Internal model value (the group's selected value) */
   private modelValue = signal<unknown>(null);

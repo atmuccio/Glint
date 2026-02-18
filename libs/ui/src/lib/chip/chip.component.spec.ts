@@ -54,4 +54,20 @@ describe('GlintChipComponent', () => {
     const img = fixture.nativeElement.querySelector('.chip-image');
     expect(img).toBeTruthy();
   });
+
+  it('should not show remove button when not removable', () => {
+    const fixture = TestBed.createComponent(TestChipHostComponent);
+    fixture.componentInstance.removable = false;
+    fixture.detectChanges();
+    const btn = fixture.nativeElement.querySelector('.remove');
+    expect(btn).toBeFalsy();
+  });
+
+  it('should have aria-label on remove button', () => {
+    const fixture = TestBed.createComponent(TestChipHostComponent);
+    fixture.componentInstance.removable = true;
+    fixture.detectChanges();
+    const btn = fixture.nativeElement.querySelector('.remove') as HTMLElement;
+    expect(btn.getAttribute('aria-label')).toBe('Remove');
+  });
 });

@@ -46,4 +46,24 @@ describe('GlintFloatLabelComponent', () => {
     const host = fixture.nativeElement.querySelector('glint-float-label');
     expect(host.classList.contains('glint-float-label')).toBe(true);
   });
+
+  it('should have input with placeholder for CSS :has() float detection', () => {
+    const fixture = TestBed.createComponent(TestFloatLabelHostComponent);
+    fixture.detectChanges();
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    // The placeholder=" " is required for the :not(:placeholder-shown) CSS rule
+    expect(input.placeholder).toBe(' ');
+  });
+
+  it('should position label inside the wrapper for float animation', () => {
+    const fixture = TestBed.createComponent(TestFloatLabelHostComponent);
+    fixture.detectChanges();
+    const wrapper = fixture.nativeElement.querySelector('.glint-float-label-wrapper') as HTMLElement;
+    const label = wrapper.querySelector('label');
+    const input = wrapper.querySelector('input');
+    // Both label and input must be inside the wrapper for CSS :has() to work
+    expect(label).toBeTruthy();
+    expect(input).toBeTruthy();
+    expect(label?.textContent).toContain('Username');
+  });
 });

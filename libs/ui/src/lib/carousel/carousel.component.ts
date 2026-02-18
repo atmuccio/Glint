@@ -4,9 +4,9 @@ import {
   computed,
   contentChild,
   DestroyRef,
+  effect,
   inject,
   input,
-  OnInit,
   output,
   signal,
   TemplateRef,
@@ -186,7 +186,7 @@ import { NgTemplateOutlet } from '@angular/common';
     }
   `,
 })
-export class GlintCarouselComponent implements OnInit {
+export class GlintCarouselComponent {
   /** Data items to display */
   readonly value = input.required<unknown[]>();
   /** Number of items visible at once */
@@ -262,8 +262,15 @@ export class GlintCarouselComponent implements OnInit {
 
   private autoplayTimer: ReturnType<typeof setInterval> | null = null;
 
-  ngOnInit(): void {
-    this.setupAutoplay();
+  constructor() {
+    // React to autoplayInterval input changes: start/stop timer as needed
+    effect(() => {
+      const interval = this.autoplayInterval();
+      this.clearAutoplay();
+      if (interval > 0) {
+        this.autoplayTimer = setInterval(() => this.next(), interval);
+      }
+    });
 
     this.destroyRef.onDestroy(() => {
       this.clearAutoplay();
@@ -302,15 +309,6 @@ export class GlintCarouselComponent implements OnInit {
     if (page < 0 || page >= total) return;
     this.currentPage.set(page);
     this.pageChange.emit(page);
-  }
-
-  private setupAutoplay(): void {
-    const interval = this.autoplayInterval();
-    if (interval > 0) {
-      this.autoplayTimer = setInterval(() => {
-        this.next();
-      }, interval);
-    }
   }
 
   private clearAutoplay(): void {

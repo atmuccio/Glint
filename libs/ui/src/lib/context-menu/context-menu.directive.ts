@@ -13,7 +13,8 @@ import type { GlintMenuItem } from '../menu/menu-item.model';
 
 /**
  * Context menu directive that shows a menu panel at the pointer position on right-click.
- * Reuses the existing `GlintMenuPanelComponent` for rendering.
+ * Reuses the existing `GlintMenuPanelComponent` for rendering, which uses CDK Menu
+ * primitives (CdkMenu + CdkMenuItem) for keyboard navigation, focus management, and ARIA.
  *
  * @example
  * ```html

@@ -10,8 +10,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
-
-let nextId = 0;
+import { glintId } from '../core/utils/id-generator';
 
 /**
  * Checkbox component with ControlValueAccessor and indeterminate state support.
@@ -142,7 +141,7 @@ export class GlintCheckboxComponent implements ControlValueAccessor {
   /** Indeterminate state (visual only, does not affect value) */
   indeterminate = input(false);
 
-  readonly inputId = `glint-checkbox-${nextId++}`;
+  readonly inputId = glintId('glint-checkbox');
 
   protected checked = signal(false);
 

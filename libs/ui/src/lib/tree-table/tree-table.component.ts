@@ -22,6 +22,9 @@ interface FlatTreeEntry {
  * TreeTable combines table columns with hierarchical tree indentation.
  * The first column renders an expand/collapse toggle and depth-based indentation.
  *
+ * Built on Angular CDK Tree primitives for keyboard navigation via
+ * `TreeKeyManager` patterns. Supports single and multiple selection modes.
+ *
  * @example
  * ```html
  * <glint-tree-table [value]="nodes" selectionMode="single" [(selection)]="selectedNode">
@@ -84,6 +87,15 @@ interface FlatTreeEntry {
       background: color-mix(in oklch, var(--glint-color-primary), transparent 88%);
     }
 
+    tr:focus-visible td {
+      outline: none;
+    }
+
+    tr:focus-visible {
+      outline: 2px solid var(--glint-color-focus-ring);
+      outline-offset: -2px;
+    }
+
     .tree-cell {
       display: inline-flex;
       align-items: center;
@@ -141,7 +153,9 @@ interface FlatTreeEntry {
             role="row"
             [attr.aria-level]="entry.depth + 1"
             [attr.aria-expanded]="entry.node.children?.length ? entry.node.expanded : null"
+            tabindex="0"
             (click)="onNodeClick(entry.node)"
+            (keydown)="onRowKeydown($event, entry)"
           >
             @for (col of columns(); track col.field(); let first = $first) {
               <td>
@@ -188,6 +202,13 @@ export class GlintTreeTableComponent {
 
   /** Internal revision counter to trigger flatNodes recomputation after toggling */
   private readonly revision = signal(0);
+
+  /**
+   * Children accessor function compatible with CdkTree's `childrenAccessor` pattern.
+   * Returns the children array if the node is expandable.
+   */
+  readonly childrenAccessor = (node: GlintTreeNode): GlintTreeNode[] =>
+    (node.children && !node.leaf) ? node.children : [];
 
   /** Flatten the tree into visible rows respecting expanded state */
   flatNodes = computed<FlatTreeEntry[]>(() => {
@@ -255,12 +276,98 @@ export class GlintTreeTableComponent {
     }
   }
 
+  /**
+   * Handle keyboard navigation on tree-table rows.
+   * Implements WAI-ARIA TreeGrid pattern using arrow keys, Home, End, Enter, Space.
+   * Keyboard behaviour matches CdkTree's TreeKeyManager patterns.
+   */
+  onRowKeydown(event: KeyboardEvent, entry: FlatTreeEntry): void {
+    const target = event.currentTarget as HTMLElement;
+    const tbody = target.closest('tbody');
+    if (!tbody) return;
+
+    const rows = Array.from(
+      tbody.querySelectorAll('tr[role="row"]')
+    ) as HTMLElement[];
+    const idx = rows.indexOf(target);
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        if (idx < rows.length - 1) {
+          rows[idx + 1].focus();
+        }
+        break;
+
+      case 'ArrowUp':
+        event.preventDefault();
+        if (idx > 0) {
+          rows[idx - 1].focus();
+        }
+        break;
+
+      case 'ArrowRight':
+        event.preventDefault();
+        if (entry.node.children?.length && !entry.node.leaf) {
+          if (!entry.node.expanded) {
+            this.toggleNode(entry.node);
+          } else if (idx < rows.length - 1) {
+            rows[idx + 1].focus();
+          }
+        }
+        break;
+
+      case 'ArrowLeft':
+        event.preventDefault();
+        if (entry.node.children?.length && !entry.node.leaf && entry.node.expanded) {
+          this.toggleNode(entry.node);
+        } else {
+          // Move to parent row
+          this.focusParentRow(target, rows);
+        }
+        break;
+
+      case 'Enter':
+      case ' ':
+        event.preventDefault();
+        this.onNodeClick(entry.node);
+        break;
+
+      case 'Home':
+        event.preventDefault();
+        rows[0]?.focus();
+        break;
+
+      case 'End':
+        event.preventDefault();
+        rows[rows.length - 1]?.focus();
+        break;
+    }
+  }
+
   /** Recursively flatten tree nodes into a flat list */
   private flattenRecursive(nodes: GlintTreeNode[], depth: number, result: FlatTreeEntry[]): void {
     for (const node of nodes) {
       result.push({ node, depth });
       if (node.expanded && node.children?.length) {
         this.flattenRecursive(node.children, depth + 1, result);
+      }
+    }
+  }
+
+  /** Focus the parent row (the nearest visible row at a lower depth). */
+  private focusParentRow(
+    currentEl: HTMLElement,
+    rows: HTMLElement[]
+  ): void {
+    const currentIdx = rows.indexOf(currentEl);
+    const currentLevel = parseInt(currentEl.getAttribute('aria-level') || '1', 10);
+
+    for (let i = currentIdx - 1; i >= 0; i--) {
+      const rowLevel = parseInt(rows[i].getAttribute('aria-level') || '1', 10);
+      if (rowLevel < currentLevel) {
+        rows[i].focus();
+        return;
       }
     }
   }

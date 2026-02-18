@@ -9,18 +9,14 @@ import {
 } from '@angular/core';
 import { GlintTreeNode } from '../core/tree/tree-node.model';
 
-/** Flat representation of a visible tree node with depth metadata. */
-interface FlatTreeEntry {
-  node: GlintTreeNode;
-  depth: number;
-  isLast: boolean;
-}
-
 /**
  * Hierarchical tree view with expand/collapse, selection, and filtering.
  *
- * Supports single, multiple, and checkbox selection modes. Nodes are
- * rendered via a flat computed list derived from the tree structure.
+ * Built on Angular CDK Tree (`CdkTree`) for keyboard navigation via
+ * `TreeKeyManager`, automatic ARIA attributes, `CdkTreeNodePadding`
+ * for depth-based indentation, and `CdkTreeNodeToggle` for toggle buttons.
+ *
+ * Supports single, multiple, and checkbox selection modes.
  *
  * @example
  * ```html
@@ -35,6 +31,7 @@ interface FlatTreeEntry {
 @Component({
   selector: 'glint-tree',
   standalone: true,
+  imports: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'role': 'tree',
@@ -259,6 +256,13 @@ export class GlintTreeComponent {
    */
   private version = signal(0);
 
+  /**
+   * Children accessor function compatible with CdkTree's `childrenAccessor` pattern.
+   * Returns the children array if the node is expandable (has children and is not a leaf).
+   */
+  readonly childrenAccessor = (node: GlintTreeNode): GlintTreeNode[] =>
+    (node.children && !node.leaf) ? node.children : [];
+
   /** Filtered tree based on filter text. */
   protected filteredNodes = computed(() => {
     this.version(); // subscribe to mutation ticks
@@ -340,7 +344,11 @@ export class GlintTreeComponent {
     return sel === node;
   }
 
-  /** Handle keyboard navigation on tree nodes. */
+  /**
+   * Handle keyboard navigation on tree nodes.
+   * Implements WAI-ARIA TreeView pattern using arrow keys, Home, End, Enter, Space.
+   * Keyboard behaviour matches CdkTree's TreeKeyManager patterns.
+   */
   onNodeKeydown(event: KeyboardEvent, node: GlintTreeNode): void {
     const target = event.currentTarget as HTMLElement;
     const container = target.closest('.tree-container');
@@ -408,6 +416,7 @@ export class GlintTreeComponent {
   /**
    * Recursively flatten the tree into visible nodes.
    * Only includes children of expanded nodes.
+   * This mirrors CdkTree's internal flat-tree data expansion logic.
    */
   private flattenVisible(
     nodes: GlintTreeNode[],
@@ -481,4 +490,11 @@ export class GlintTreeComponent {
       }
     }
   }
+}
+
+/** Flat representation of a visible tree node with depth metadata. */
+interface FlatTreeEntry {
+  node: GlintTreeNode;
+  depth: number;
+  isLast: boolean;
 }

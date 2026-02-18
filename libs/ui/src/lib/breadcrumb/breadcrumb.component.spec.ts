@@ -63,6 +63,22 @@ describe('GlintBreadcrumbComponent', () => {
     expect(nav.getAttribute('role')).toBe('navigation');
   });
 
+  it('should not have aria-current on non-last items', () => {
+    const fixture = TestBed.createComponent(TestBreadcrumbHostComponent);
+    fixture.detectChanges();
+    const links = fixture.nativeElement.querySelectorAll('a');
+    links.forEach((link: HTMLElement) => {
+      expect(link.getAttribute('aria-current')).toBeFalsy();
+    });
+  });
+
+  it('should have aria-label on the nav element', () => {
+    const fixture = TestBed.createComponent(TestBreadcrumbHostComponent);
+    fixture.detectChanges();
+    const nav = fixture.nativeElement.querySelector('glint-breadcrumb');
+    expect(nav.getAttribute('aria-label')).toBe('Breadcrumb');
+  });
+
   it('should emit itemClick on link click', () => {
     const fixture = TestBed.createComponent(TestBreadcrumbHostComponent);
     fixture.detectChanges();

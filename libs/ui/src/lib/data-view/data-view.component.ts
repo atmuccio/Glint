@@ -3,11 +3,12 @@ import {
   Component,
   computed,
   contentChild,
+  effect,
   input,
-  OnInit,
   output,
   signal,
   TemplateRef,
+  untracked,
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { GlintPaginatorComponent, GlintPageEvent } from '../paginator/paginator.component';
@@ -173,7 +174,7 @@ import { GlintPaginatorComponent, GlintPageEvent } from '../paginator/paginator.
     }
   `,
 })
-export class GlintDataViewComponent implements OnInit {
+export class GlintDataViewComponent {
   /** Data array to display */
   value = input.required<unknown[]>();
   /** Layout mode: list or grid */
@@ -219,8 +220,17 @@ export class GlintDataViewComponent implements OnInit {
   });
 
   constructor() {
-    // Sync layout input to mutable state — use computed effect pattern
-    // We initialize in constructor and the signal is overridden by setLayout
+    // Sync layout input to mutable state on first change
+    effect(() => {
+      const layout = this.layout();
+      untracked(() => this.currentLayout.set(layout));
+    });
+
+    // Sync rows input to paginator state on first change
+    effect(() => {
+      const rows = this.rows();
+      untracked(() => this.paginatorRows.set(rows));
+    });
   }
 
   /** Update the layout and sync paginator rows from input */
@@ -232,11 +242,5 @@ export class GlintDataViewComponent implements OnInit {
   protected onPageChange(event: GlintPageEvent): void {
     this.paginatorFirst.set(event.first);
     this.paginatorRows.set(event.rows);
-  }
-
-  /** Initialize layout from input — called via ngOnInit equivalent */
-  ngOnInit(): void {
-    this.currentLayout.set(this.layout());
-    this.paginatorRows.set(this.rows());
   }
 }

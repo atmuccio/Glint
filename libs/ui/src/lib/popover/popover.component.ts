@@ -11,16 +11,10 @@ import {
   viewChild,
   ViewContainerRef,
 } from '@angular/core';
-import { ConnectedPosition, OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
+import { OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
-
-const POSITIONS: ConnectedPosition[] = [
-  { originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top', offsetY: 8 },
-  { originX: 'center', originY: 'top', overlayX: 'center', overlayY: 'bottom', offsetY: -8 },
-  { originX: 'end', originY: 'center', overlayX: 'start', overlayY: 'center', offsetX: 8 },
-  { originX: 'start', originY: 'center', overlayX: 'end', overlayY: 'center', offsetX: -8 },
-];
+import { createPopoverOverlayConfig } from '../core/overlay/overlay-config-factory';
 
 /**
  * Popover for rich content triggered on click.
@@ -85,14 +79,7 @@ export class GlintPopoverComponent {
     if (this.isOpen()) return;
 
     const targetEl = this.target() ?? this.elRef.nativeElement.previousElementSibling;
-    const config = new OverlayConfig({
-      positionStrategy: this.overlay.position()
-        .flexibleConnectedTo(targetEl)
-        .withPositions(POSITIONS),
-      scrollStrategy: this.overlay.scrollStrategies.reposition(),
-      hasBackdrop: true,
-      backdropClass: 'cdk-overlay-transparent-backdrop',
-    });
+    const config = createPopoverOverlayConfig(this.overlay, targetEl);
 
     const { overlayRef } = this.overlay.createZoneAwareOverlay(config, this.injector);
     this.overlayRef = overlayRef;

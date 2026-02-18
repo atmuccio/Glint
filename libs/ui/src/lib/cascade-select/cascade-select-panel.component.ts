@@ -9,15 +9,11 @@ import {
   signal,
   viewChildren,
 } from '@angular/core';
-import { ConnectedPosition, OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
+import { OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
+import { SUBMENU_POSITIONS } from '../core/overlay/overlay-positions';
 import type { GlintMenuItem } from '../menu/menu-item.model';
-
-const SUB_POSITIONS: ConnectedPosition[] = [
-  { originX: 'end', originY: 'top', overlayX: 'start', overlayY: 'top', offsetX: 0 },
-  { originX: 'start', originY: 'top', overlayX: 'end', overlayY: 'top', offsetX: 0 },
-];
 
 /**
  * Internal panel component for CascadeSelect. Renders a list of items and
@@ -244,7 +240,7 @@ export class CascadeSelectPanelComponent {
       positionStrategy: this.overlay
         .position()
         .flexibleConnectedTo(triggerEl)
-        .withPositions(SUB_POSITIONS),
+        .withPositions(SUBMENU_POSITIONS),
       scrollStrategy: this.overlay.scrollStrategies.reposition(),
     });
 

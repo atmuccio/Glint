@@ -16,14 +16,14 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
-import { OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
+import { OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { takeUntil } from 'rxjs';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
+import { createDropdownOverlayConfig } from '../core/overlay/overlay-config-factory';
 import { GLINT_SELECT, GlintSelectHost, DEFAULT_COMPARE_WITH, CompareWithFn } from './select.model';
 import { GlintSelectOptionComponent } from './select-option.component';
-
-let nextId = 0;
+import { glintId } from '../core/utils/id-generator';
 
 /**
  * Select component with single/multi-select, search, keyboard navigation, and CVA.
@@ -134,7 +134,7 @@ export class GlintSelectComponent implements ControlValueAccessor, GlintSelectHo
   private vcr = inject(ViewContainerRef);
   private destroyRef = inject(DestroyRef);
 
-  readonly panelId = `glint-select-panel-${nextId++}`;
+  readonly panelId = glintId('glint-select-panel');
 
   /** Whether the dropdown panel is open */
   readonly isOpen = signal(false);
@@ -247,19 +247,8 @@ export class GlintSelectComponent implements ControlValueAccessor, GlintSelectHo
 
     const triggerEl = this.triggerEl().nativeElement;
 
-    const config = new OverlayConfig({
-      positionStrategy: this.overlayService
-        .position()
-        .flexibleConnectedTo(triggerEl)
-        .withPositions([
-          { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 4 },
-          { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom', offsetY: -4 },
-        ])
-        .withPush(true),
-      scrollStrategy: this.overlayService.scrollStrategies.reposition(),
+    const config = createDropdownOverlayConfig(this.overlayService, triggerEl, {
       width: triggerEl.offsetWidth,
-      hasBackdrop: true,
-      backdropClass: 'cdk-overlay-transparent-backdrop',
     });
 
     const { overlayRef, injector } = this.overlayService.createZoneAwareOverlay(

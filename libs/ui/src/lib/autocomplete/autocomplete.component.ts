@@ -12,12 +12,13 @@ import {
   viewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
-import { OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
+import { OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
+import { createDropdownOverlayConfig } from '../core/overlay/overlay-config-factory';
+import { resolveItemLabel } from '../core/utils/label-resolver';
 import { AutoCompletePanelComponent } from './autocomplete-panel.component';
-
-let nextId = 0;
+import { glintId } from '../core/utils/id-generator';
 
 /**
  * AutoComplete component with suggestion dropdown, single/multiple selection, and CVA.
@@ -304,7 +305,7 @@ export class GlintAutoCompleteComponent implements ControlValueAccessor {
   private readonly elRef = inject(ElementRef);
   private readonly destroyRef = inject(DestroyRef);
 
-  readonly inputId = `glint-autocomplete-${nextId++}`;
+  readonly inputId = glintId('glint-autocomplete');
   readonly panelId = `${this.inputId}-panel`;
 
   /** CVA state */
@@ -372,14 +373,7 @@ export class GlintAutoCompleteComponent implements ControlValueAccessor {
 
   /** Get display label from a suggestion item */
   itemLabel(item: unknown): string {
-    if (item == null) return '';
-    if (typeof item === 'string') return item;
-    if (typeof item === 'object') {
-      const fieldName = this.field();
-      const record = item as Record<string, unknown>;
-      return String(record[fieldName] ?? '');
-    }
-    return String(item);
+    return resolveItemLabel(item, this.field());
   }
 
   private setInputValue(value: string): void {
@@ -576,16 +570,7 @@ export class GlintAutoCompleteComponent implements ControlValueAccessor {
     const wrapperEl = this.elRef.nativeElement.querySelector('.autocomplete-wrapper') as HTMLElement;
     if (!wrapperEl) return;
 
-    const config = new OverlayConfig({
-      positionStrategy: this.overlayService
-        .position()
-        .flexibleConnectedTo(wrapperEl)
-        .withPositions([
-          { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 4 },
-          { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom', offsetY: -4 },
-        ])
-        .withPush(true),
-      scrollStrategy: this.overlayService.scrollStrategies.reposition(),
+    const config = createDropdownOverlayConfig(this.overlayService, wrapperEl, {
       width: wrapperEl.offsetWidth,
       hasBackdrop: false,
     });

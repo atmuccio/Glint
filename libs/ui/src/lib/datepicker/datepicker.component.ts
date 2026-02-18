@@ -14,13 +14,13 @@ import {
   ViewContainerRef,
 } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
-import { OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
+import { OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { takeUntil } from 'rxjs';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
+import { createDropdownOverlayConfig } from '../core/overlay/overlay-config-factory';
 import { GlintDatepickerPanelComponent } from './datepicker-panel.component';
-
-let nextId = 0;
+import { glintId } from '../core/utils/id-generator';
 
 /**
  * Date picker with calendar dropdown, ControlValueAccessor support,
@@ -230,7 +230,7 @@ export class GlintDatepickerComponent implements ControlValueAccessor {
   /** Emitted when the current month changes */
   monthChange = output<{ month: number; year: number }>();
 
-  readonly inputId = `glint-datepicker-${nextId++}`;
+  readonly inputId = glintId('glint-datepicker');
 
   /** Whether the overlay panel is open */
   readonly isOpen = signal(false);
@@ -388,19 +388,7 @@ export class GlintDatepickerComponent implements ControlValueAccessor {
     const trigger = this.triggerEl()?.nativeElement;
     if (!trigger) return;
 
-    const config = new OverlayConfig({
-      positionStrategy: this.overlayService
-        .position()
-        .flexibleConnectedTo(trigger)
-        .withPositions([
-          { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 4 },
-          { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom', offsetY: -4 },
-        ])
-        .withPush(true),
-      scrollStrategy: this.overlayService.scrollStrategies.reposition(),
-      hasBackdrop: true,
-      backdropClass: 'cdk-overlay-transparent-backdrop',
-    });
+    const config = createDropdownOverlayConfig(this.overlayService, trigger);
 
     const { overlayRef, injector } = this.overlayService.createZoneAwareOverlay(
       config,

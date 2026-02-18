@@ -12,8 +12,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
-
-let nextId = 0;
+import { glintId } from '../core/utils/id-generator';
 
 interface MaskSlot {
   type: 'digit' | 'letter' | 'any' | 'literal';
@@ -118,7 +117,7 @@ export class GlintInputMaskComponent implements ControlValueAccessor {
   /** Disabled state */
   disabled = input<boolean | undefined>(undefined);
 
-  readonly inputId = `glint-input-mask-${nextId++}`;
+  readonly inputId = glintId('glint-input-mask');
 
   protected focused = signal(false);
 

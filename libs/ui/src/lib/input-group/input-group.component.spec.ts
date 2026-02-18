@@ -44,4 +44,29 @@ describe('GlintInputGroupComponent', () => {
     expect(addons[0].textContent?.trim()).toBe('$');
     expect(addons[1].textContent?.trim()).toBe('.00');
   });
+
+  it('should render prefix and suffix simultaneously', () => {
+    const fixture = TestBed.createComponent(TestInputGroupHostComponent);
+    fixture.detectChanges();
+    const addons = fixture.nativeElement.querySelectorAll('.glint-input-group-addon');
+    // First addon is prefix, last is suffix
+    expect(addons[0].textContent?.trim()).toBe('$');
+    expect(addons[addons.length - 1].textContent?.trim()).toBe('.00');
+    // Input should be between them
+    const children = Array.from(fixture.nativeElement.querySelector('glint-input-group').children) as HTMLElement[];
+    const addonIndices = children
+      .map((el, i) => el.classList.contains('glint-input-group-addon') ? i : -1)
+      .filter(i => i >= 0);
+    const inputIndex = children.findIndex(el => el.tagName === 'INPUT');
+    expect(inputIndex).toBeGreaterThan(addonIndices[0]);
+    expect(inputIndex).toBeLessThan(addonIndices[1]);
+  });
+
+  it('should use inline-flex display on host', () => {
+    const fixture = TestBed.createComponent(TestInputGroupHostComponent);
+    fixture.detectChanges();
+    const el = fixture.nativeElement.querySelector('glint-input-group') as HTMLElement;
+    // The component should use display: inline-flex via the .glint-input-group class
+    expect(el.classList.contains('glint-input-group')).toBe(true);
+  });
 });

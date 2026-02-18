@@ -30,9 +30,15 @@ export { GlintStyleZoneComponent } from './style-zone/style-zone.component';
 
 // Overlay
 export { ZoneAwareOverlayService } from './overlay/zone-aware-overlay.service';
+export { DROPDOWN_POSITIONS, TOOLTIP_POSITIONS, POPOVER_POSITIONS, DROPDOWN_END_POSITIONS, SUBMENU_POSITIONS } from './overlay/overlay-positions';
+export { createDropdownOverlayConfig, createTooltipOverlayConfig, createPopoverOverlayConfig } from './overlay/overlay-config-factory';
+export type { DropdownOverlayOptions, TooltipOverlayOptions, PopoverOverlayOptions } from './overlay/overlay-config-factory';
 
 // Utilities
 export { mergeZoneThemes } from './utils/merge-zone-themes';
+export { glintId } from './utils/id-generator';
+export { resolveItemLabel } from './utils/label-resolver';
+export { filterByLabel } from './utils/filter-utils';
 
 // Tree
 export type { GlintTreeNode } from './tree/tree-node.model';

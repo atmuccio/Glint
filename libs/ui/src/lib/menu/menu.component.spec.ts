@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { Component, viewChild } from '@angular/core';
 import { GlintMenuComponent } from './menu.component';
 import type { GlintMenuItem } from './menu-item.model';
+import { cleanupOverlays } from '../testing/test-utils';
 
 @Component({
   selector: 'glint-test-menu-host',
@@ -28,10 +29,7 @@ describe('GlintMenuComponent', () => {
   });
 
   afterEach(() => {
-    // Clean up any open overlays
-    document.querySelectorAll('.cdk-overlay-container').forEach(el => {
-      el.innerHTML = '';
-    });
+    cleanupOverlays();
   });
 
   it('should open menu on toggle', async () => {
@@ -84,6 +82,22 @@ describe('GlintMenuComponent', () => {
     expect(fixture.componentInstance.clicked).toBe(true);
   });
 
+  it('should close on Escape key', async () => {
+    const fixture = TestBed.createComponent(TestMenuHostComponent);
+    fixture.detectChanges();
+    fixture.componentInstance.menu().open();
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(document.querySelector('glint-menu-panel')).toBeTruthy();
+
+    document.body.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    expect(document.querySelector('glint-menu-panel')).toBeFalsy();
+  });
+
   it('should render separators', async () => {
     const fixture = TestBed.createComponent(TestMenuHostComponent);
     fixture.detectChanges();
@@ -94,5 +108,32 @@ describe('GlintMenuComponent', () => {
     expect(sep).toBeTruthy();
     fixture.componentInstance.menu().close();
     fixture.detectChanges();
+  });
+
+  it('should have menu role on cdkMenu element', async () => {
+    const fixture = TestBed.createComponent(TestMenuHostComponent);
+    fixture.detectChanges();
+    fixture.componentInstance.menu().open();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const menuEl = document.querySelector('[role="menu"]') as HTMLElement;
+    expect(menuEl).toBeTruthy();
+    fixture.componentInstance.menu().close();
+    fixture.detectChanges();
+  });
+
+  it('should not click disabled items', async () => {
+    const fixture = TestBed.createComponent(TestMenuHostComponent);
+    fixture.detectChanges();
+    fixture.componentInstance.menu().open();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const items = document.querySelectorAll('[role="menuitem"]');
+    // Click disabled item (index 1)
+    (items[1] as HTMLButtonElement).click();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    // clicked should remain false since only the first item has a command
+    expect(fixture.componentInstance.clicked).toBe(false);
   });
 });

@@ -10,8 +10,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
-
-let nextId = 0;
+import { glintId } from '../core/utils/id-generator';
 
 /**
  * Textarea component with ControlValueAccessor, auto-resize, and validation support.
@@ -146,7 +145,7 @@ export class GlintTextareaComponent implements ControlValueAccessor {
   /** Auto-resize to content height */
   autoResize = input(false);
   /** Disabled state */
-  disabled = input<boolean | undefined>(undefined);
+  disabled = input(false);
   /** Required state */
   required = input(false);
   /** Invalid state */
@@ -154,14 +153,14 @@ export class GlintTextareaComponent implements ControlValueAccessor {
   /** Error message */
   errorMessage = input('');
 
-  readonly textareaId = `glint-textarea-${nextId++}`;
+  readonly textareaId = glintId('glint-textarea');
   readonly errorId = `${this.textareaId}-error`;
 
   protected value = signal('');
   protected focused = signal(false);
 
   private disabledFromCVA = signal(false);
-  isDisabled = computed(() => this.disabled() === true || this.disabledFromCVA());
+  isDisabled = computed(() => this.disabled() || this.disabledFromCVA());
 
   private textareaRef = viewChild<ElementRef<HTMLTextAreaElement>>('textareaEl');
 

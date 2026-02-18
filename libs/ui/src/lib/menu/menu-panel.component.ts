@@ -1,27 +1,28 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   output,
   signal,
-  viewChildren,
 } from '@angular/core';
+import { CdkMenu, CdkMenuItem } from '@angular/cdk/menu';
 import type { GlintMenuItem } from './menu-item.model';
 
 /**
  * Internal menu panel rendered inside the CDK overlay.
+ * Uses CdkMenu + CdkMenuItem for keyboard navigation, focus management, and ARIA.
  * Not exported from the public API.
  */
 @Component({
   selector: 'glint-menu-panel',
   standalone: true,
+  imports: [CdkMenu, CdkMenuItem],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    'role': 'menu',
-    '(keydown)': 'onKeydown($event)',
-  },
   styles: `
     :host {
+      display: contents;
+    }
+
+    .glint-menu {
       display: block;
       min-inline-size: 12rem;
       padding-block: var(--glint-spacing-xs);
@@ -50,7 +51,7 @@ import type { GlintMenuItem } from './menu-item.model';
       transition: background-color var(--glint-duration-fast) var(--glint-easing);
     }
 
-    .menu-item:hover:not(.disabled) {
+    .menu-item:hover:not([aria-disabled="true"]) {
       background: color-mix(in oklch, var(--glint-color-primary), transparent 90%);
     }
 
@@ -59,7 +60,7 @@ import type { GlintMenuItem } from './menu-item.model';
       outline-offset: -2px;
     }
 
-    .menu-item.disabled {
+    .menu-item[aria-disabled="true"] {
       opacity: 0.5;
       cursor: not-allowed;
     }
@@ -71,62 +72,27 @@ import type { GlintMenuItem } from './menu-item.model';
     }
   `,
   template: `
-    @for (item of items(); track item.label) {
-      <button
-        #itemEl
-        class="menu-item"
-        [class.disabled]="item.disabled"
-        role="menuitem"
-        [attr.aria-disabled]="item.disabled || null"
-        [tabindex]="item.disabled ? -1 : 0"
-        (click)="onItemClick(item)"
-      >{{ item.label }}</button>
-      @if (item.separator) {
-        <div class="separator" role="separator"></div>
+    <div class="glint-menu" cdkMenu>
+      @for (item of items(); track item.label) {
+        <button
+          class="menu-item"
+          cdkMenuItem
+          [cdkMenuItemDisabled]="item.disabled ?? false"
+          (cdkMenuItemTriggered)="onItemClick(item)"
+        >{{ item.label }}</button>
+        @if (item.separator) {
+          <div class="separator" role="separator"></div>
+        }
       }
-    }
+    </div>
   `,
 })
 export class GlintMenuPanelComponent {
   items = signal<GlintMenuItem[]>([]);
   itemSelected = output<GlintMenuItem>();
 
-  private itemEls = viewChildren<ElementRef<HTMLButtonElement>>('itemEl');
-
   onItemClick(item: GlintMenuItem): void {
     if (item.disabled) return;
     this.itemSelected.emit(item);
-  }
-
-  onKeydown(event: KeyboardEvent): void {
-    const els = this.itemEls().map(e => e.nativeElement);
-    const current = els.indexOf(document.activeElement as HTMLButtonElement);
-
-    if (event.key === 'ArrowDown') {
-      event.preventDefault();
-      const next = this.findNext(current, 1, els);
-      if (next >= 0) els[next].focus();
-    } else if (event.key === 'ArrowUp') {
-      event.preventDefault();
-      const next = this.findNext(current, -1, els);
-      if (next >= 0) els[next].focus();
-    } else if (event.key === 'Home') {
-      event.preventDefault();
-      const next = this.findNext(-1, 1, els);
-      if (next >= 0) els[next].focus();
-    } else if (event.key === 'End') {
-      event.preventDefault();
-      const next = this.findNext(els.length, -1, els);
-      if (next >= 0) els[next].focus();
-    }
-  }
-
-  private findNext(from: number, dir: 1 | -1, els: HTMLButtonElement[]): number {
-    let i = from + dir;
-    while (i >= 0 && i < els.length) {
-      if (!els[i].classList.contains('disabled')) return i;
-      i += dir;
-    }
-    return -1;
   }
 }

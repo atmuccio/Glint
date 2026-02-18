@@ -27,10 +27,10 @@ import { ControlValueAccessor, NgControl } from '@angular/forms';
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.disabled]': 'isDisabled()',
-    'style': 'display: inline-block',
   },
   styles: `
     :host {
+      display: inline-block;
       font-family: var(--glint-font-family);
     }
 

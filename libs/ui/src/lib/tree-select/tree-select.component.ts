@@ -11,13 +11,13 @@ import {
   viewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
-import { OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
+import { OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
+import { createDropdownOverlayConfig } from '../core/overlay/overlay-config-factory';
+import { glintId } from '../core/utils/id-generator';
 import { TreeSelectPanelComponent } from './tree-select-panel.component';
 import type { GlintTreeNode } from '../core/tree/tree-node.model';
-
-let treeSelectNextId = 0;
 
 /**
  * Tree select dropdown component with ControlValueAccessor support.
@@ -46,12 +46,12 @@ let treeSelectNextId = 0;
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[style.display]': '"inline-block"',
     '[class.open]': 'isOpen()',
     '[class.disabled]': 'isDisabled()',
   },
   styles: `
     :host {
+      display: inline-block;
       position: relative;
       font-family: var(--glint-font-family);
       font-size: var(--glint-font-size);
@@ -154,7 +154,7 @@ export class GlintTreeSelectComponent implements ControlValueAccessor {
   /** Disabled state from template */
   disabled = input(false);
 
-  readonly panelId = `glint-tree-select-panel-${treeSelectNextId++}`;
+  readonly panelId = glintId('glint-tree-select-panel');
 
   /** Whether the panel is open */
   readonly isOpen = signal(false);
@@ -236,19 +236,8 @@ export class GlintTreeSelectComponent implements ControlValueAccessor {
 
     const triggerEl = this.triggerEl().nativeElement;
 
-    const config = new OverlayConfig({
-      positionStrategy: this.overlayService
-        .position()
-        .flexibleConnectedTo(triggerEl)
-        .withPositions([
-          { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 4 },
-          { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom', offsetY: -4 },
-        ])
-        .withPush(true),
-      scrollStrategy: this.overlayService.scrollStrategies.reposition(),
+    const config = createDropdownOverlayConfig(this.overlayService, triggerEl, {
       width: Math.max(triggerEl.offsetWidth, 200),
-      hasBackdrop: true,
-      backdropClass: 'cdk-overlay-transparent-backdrop',
     });
 
     const { overlayRef, injector } = this.overlayService.createZoneAwareOverlay(

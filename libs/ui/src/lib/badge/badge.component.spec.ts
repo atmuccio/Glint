@@ -41,4 +41,21 @@ describe('GlintBadgeComponent', () => {
     const badge = fixture.nativeElement.querySelector('glint-badge') as HTMLElement;
     expect(badge.getAttribute('data-size')).toBe('lg');
   });
+
+  it('should render empty content gracefully', () => {
+    const fixture = TestBed.createComponent(TestBadgeHostComponent);
+    fixture.componentInstance.text = '';
+    fixture.detectChanges();
+    const badge = fixture.nativeElement.querySelector('glint-badge') as HTMLElement;
+    expect(badge).toBeTruthy();
+    expect(badge.textContent?.trim()).toBe('');
+  });
+
+  it('should display large numbers', () => {
+    const fixture = TestBed.createComponent(TestBadgeHostComponent);
+    fixture.componentInstance.text = '999+';
+    fixture.detectChanges();
+    const badge = fixture.nativeElement.querySelector('glint-badge') as HTMLElement;
+    expect(badge.textContent?.trim()).toBe('999+');
+  });
 });

@@ -1,5 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { Component } from '@angular/core';
+import { OverlayModule } from '@angular/cdk/overlay';
+import { CdkMenuModule } from '@angular/cdk/menu';
 import { GlintMenuBarComponent } from './menubar.component';
 import type { GlintMenuItem } from '../menu/menu-item.model';
 
@@ -25,7 +27,9 @@ class TestMenuBarHostComponent {
 
 describe('GlintMenuBarComponent', () => {
   beforeEach(() => {
-    TestBed.configureTestingModule({ imports: [TestMenuBarHostComponent] });
+    TestBed.configureTestingModule({
+      imports: [TestMenuBarHostComponent, OverlayModule, CdkMenuModule],
+    });
   });
 
   afterEach(() => {
@@ -47,8 +51,9 @@ describe('GlintMenuBarComponent', () => {
   it('should have menubar role', () => {
     const fixture = TestBed.createComponent(TestMenuBarHostComponent);
     fixture.detectChanges();
-    const host = fixture.nativeElement.querySelector('glint-menubar');
-    expect(host.getAttribute('role')).toBe('menubar');
+    // CdkMenuBar adds role="menubar" on the inner container
+    const menubar = fixture.nativeElement.querySelector('[role="menubar"]');
+    expect(menubar).toBeTruthy();
   });
 
   it('should show dropdown on click', async () => {
@@ -58,11 +63,8 @@ describe('GlintMenuBarComponent', () => {
     buttons[0].click();
     fixture.detectChanges();
     await fixture.whenStable();
-    const menuItems = document.querySelectorAll('[role="menuitem"]');
-    // 3 top-level + 2 dropdown items
-    const dropdownItems = Array.from(menuItems).filter(
-      el => !el.classList.contains('menubar-item')
-    );
+    // CDK Menu opens dropdown items in an overlay
+    const dropdownItems = document.querySelectorAll('.dropdown-item[role="menuitem"]');
     expect(dropdownItems.length).toBe(2);
     // Clean up
     buttons[0].click();
@@ -81,8 +83,8 @@ describe('GlintMenuBarComponent', () => {
     buttons[0].click();
     fixture.detectChanges();
     await fixture.whenStable();
-    const panel = document.querySelector('glint-menu-panel');
-    expect(panel).toBeFalsy();
+    const dropdownItems = document.querySelectorAll('.dropdown-item[role="menuitem"]');
+    expect(dropdownItems.length).toBe(0);
   });
 
   it('should have menu items with menuitem role', () => {
