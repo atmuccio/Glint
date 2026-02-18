@@ -100,4 +100,11 @@ export { GlintImageCompareComponent } from './lib/image-compare/image-compare.co
 export { GlintCarouselComponent } from './lib/carousel/carousel.component';
 export { GlintGalleriaComponent } from './lib/galleria/galleria.component';
 export type { GlintGalleriaImage } from './lib/galleria/galleria.component';
+export { GlintColorPickerComponent } from './lib/colorpicker/colorpicker.component';
+export { GlintKnobComponent } from './lib/knob/knob.component';
+export { GlintFileUploadComponent } from './lib/file-upload/file-upload.component';
+export { GlintConfirmPopupService } from './lib/confirm-popup/confirm-popup.service';
+export type { GlintConfirmPopupConfig } from './lib/confirm-popup/confirm-popup.service';
+export { GlintBlockUiComponent } from './lib/block-ui/block-ui.component';
+export { GlintOverlayBadgeComponent } from './lib/overlay-badge/overlay-badge.component';
 export { DARK_ZONE, COMPACT_ZONE, DANGER_ZONE, SOFT_ZONE, DARK_COMPACT_ZONE } from './lib/presets/theme-presets';
