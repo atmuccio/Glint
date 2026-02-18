@@ -78,4 +78,11 @@ export { GlintInputGroupComponent, GlintInputGroupAddonDirective } from './lib/i
 export { GlintScrollTopComponent } from './lib/scroll-top/scroll-top.component';
 export { GlintMeterGroupComponent } from './lib/meter-group/meter-group.component';
 export type { GlintMeterItem } from './lib/meter-group/meter-group.component';
+export { GlintContextMenuDirective } from './lib/context-menu/context-menu.directive';
+export { GlintTieredMenuComponent } from './lib/tiered-menu/tiered-menu.component';
+export { GlintMenuBarComponent } from './lib/menubar/menubar.component';
+export { GlintPanelMenuComponent } from './lib/panel-menu/panel-menu.component';
+export { GlintDockComponent } from './lib/dock/dock.component';
+export { GlintCascadeSelectComponent } from './lib/cascade-select/cascade-select.component';
+export { GlintSpeedDialComponent } from './lib/speed-dial/speed-dial.component';
 export { DARK_ZONE, COMPACT_ZONE, DANGER_ZONE, SOFT_ZONE, DARK_COMPACT_ZONE } from './lib/presets/theme-presets';
