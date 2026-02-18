@@ -34,5 +34,8 @@ export { ZoneAwareOverlayService } from './overlay/zone-aware-overlay.service';
 // Utilities
 export { mergeZoneThemes } from './utils/merge-zone-themes';
 
+// Tree
+export type { GlintTreeNode } from './tree/tree-node.model';
+
 // Provider
 export { provideGlintUI } from './provide-glint-ui';
