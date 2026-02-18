@@ -143,7 +143,7 @@ describe('GlintDatepickerComponent', () => {
     );
     expect(currentMonthDay).toBeTruthy();
 
-    currentMonthDay!.click();
+    currentMonthDay?.click();
     fixture.detectChanges();
     await fixture.whenStable();
 
@@ -172,7 +172,7 @@ describe('GlintDatepickerComponent', () => {
     ) as HTMLElement;
     const initialText = monthLabel.textContent;
 
-    prevBtn!.click();
+    prevBtn?.click();
     fixture.detectChanges();
     await fixture.whenStable();
 
@@ -197,7 +197,7 @@ describe('GlintDatepickerComponent', () => {
     ) as HTMLElement;
     const initialText = monthLabel.textContent;
 
-    nextBtn!.click();
+    nextBtn?.click();
     fixture.detectChanges();
     await fixture.whenStable();
 

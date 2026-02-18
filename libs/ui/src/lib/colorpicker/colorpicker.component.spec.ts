@@ -6,8 +6,6 @@ import {
   GlintColorPickerComponent,
   hsbToHex,
   hexToHsb,
-  hsbToRgb,
-  rgbToHsb,
   hexToRgb,
 } from './colorpicker.component';
 
@@ -244,8 +242,6 @@ describe('GlintColorPickerComponent', () => {
     const fixture = createFixture();
     const emitted: string[] = [];
 
-    // Access the colorpicker component instance
-    const picker = fixture.nativeElement.querySelector('glint-colorpicker');
     // Listen via the output
     const pickerComponent = fixture.debugElement.children[0].componentInstance as GlintColorPickerComponent;
     pickerComponent.colorChange.subscribe((val: string) => emitted.push(val));

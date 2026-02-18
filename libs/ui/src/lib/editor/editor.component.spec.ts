@@ -51,8 +51,8 @@ describe('GlintEditorComponent', () => {
     expect(buttons.length).toBeGreaterThanOrEqual(9);
 
     // Check specific aria labels
-    const ariaLabels = Array.from(buttons).map((btn: any) =>
-      btn.getAttribute('aria-label')
+    const ariaLabels = Array.from(buttons).map((btn) =>
+      (btn as HTMLElement).getAttribute('aria-label')
     );
     expect(ariaLabels).toContain('Bold');
     expect(ariaLabels).toContain('Italic');

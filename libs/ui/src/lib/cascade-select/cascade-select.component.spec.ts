@@ -102,7 +102,7 @@ describe('GlintCascadeSelectComponent', () => {
     const items = getPanelItems();
     const booksItem = items.find(el => el.textContent?.includes('Books'));
     expect(booksItem).toBeTruthy();
-    booksItem!.click();
+    booksItem?.click();
     fixture.detectChanges();
     await fixture.whenStable();
 

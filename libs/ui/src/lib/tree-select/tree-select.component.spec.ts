@@ -143,7 +143,7 @@ describe('GlintTreeSelectComponent', () => {
     // Click the leaf node "Notes.txt" (last top-level item, rendered at index 2 since children are collapsed)
     const noteNode = nodes.find(n => n.textContent?.includes('Notes.txt'));
     expect(noteNode).toBeTruthy();
-    noteNode!.click();
+    noteNode?.click();
     fixture.detectChanges();
     await fixture.whenStable();
 
@@ -170,7 +170,7 @@ describe('GlintTreeSelectComponent', () => {
 
     const nodes = getTreeNodes();
     const noteNode = nodes.find(n => n.textContent?.includes('Notes.txt'));
-    noteNode!.click();
+    noteNode?.click();
     fixture.detectChanges();
     await fixture.whenStable();
 

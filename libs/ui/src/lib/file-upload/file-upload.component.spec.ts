@@ -201,7 +201,7 @@ describe('GlintFileUploadComponent', () => {
     fixture.detectChanges();
 
     expect(fixture.componentInstance.removedFile).toBeTruthy();
-    expect(fixture.componentInstance.removedFile!.name).toBe('test.txt');
+    expect(fixture.componentInstance.removedFile?.name).toBe('test.txt');
   });
 
   it('should respect accept attribute on input', () => {

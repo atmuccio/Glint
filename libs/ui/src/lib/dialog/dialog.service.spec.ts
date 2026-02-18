@@ -84,7 +84,7 @@ describe('GlintDialogService', () => {
 
     expect(document.querySelector('glint-dialog-container')).toBeTruthy();
 
-    fixture.componentInstance.lastRef!.close('result');
+    fixture.componentInstance.lastRef?.close('result');
     fixture.detectChanges();
     await fixture.whenStable();
 
@@ -99,9 +99,9 @@ describe('GlintDialogService', () => {
     fixture.detectChanges();
 
     let result: string | undefined;
-    fixture.componentInstance.lastRef!.afterClosed$.subscribe(r => result = r);
+    fixture.componentInstance.lastRef?.afterClosed$.subscribe(r => result = r);
 
-    fixture.componentInstance.lastRef!.close('test-result');
+    fixture.componentInstance.lastRef?.close('test-result');
 
     expect(result).toBe('test-result');
   });
@@ -115,11 +115,12 @@ describe('GlintDialogService', () => {
     await fixture.whenStable();
 
     // The dialog ref should be accessible in the content component
-    expect(fixture.componentInstance.lastRef).toBeTruthy();
-    expect(fixture.componentInstance.lastRef!.componentInstance).toBeTruthy();
+    const ref = fixture.componentInstance.lastRef;
+    expect(ref).toBeTruthy();
+    expect(ref?.componentInstance).toBeTruthy();
 
     // Close via the content component's ref
-    fixture.componentInstance.lastRef!.close();
+    ref?.close();
     fixture.detectChanges();
     await fixture.whenStable();
 

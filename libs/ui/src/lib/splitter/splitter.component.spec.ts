@@ -153,10 +153,11 @@ describe('GlintSplitterComponent', () => {
     gutter.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
     fixture.detectChanges();
 
-    expect(fixture.componentInstance.lastResizeEnd).toBeTruthy();
-    expect(fixture.componentInstance.lastResizeEnd!.sizes.length).toBe(2);
-    expect(fixture.componentInstance.lastResizeEnd!.sizes[0]).toBe(51);
-    expect(fixture.componentInstance.lastResizeEnd!.sizes[1]).toBe(49);
+    const result = fixture.componentInstance.lastResizeEnd;
+    expect(result).toBeTruthy();
+    expect(result?.sizes.length).toBe(2);
+    expect(result?.sizes[0]).toBe(51);
+    expect(result?.sizes[1]).toBe(49);
   });
 
   it('should respect minSize constraints on keyboard resize', () => {

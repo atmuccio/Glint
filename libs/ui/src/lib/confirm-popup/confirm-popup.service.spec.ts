@@ -40,7 +40,7 @@ describe('GlintConfirmPopupService', () => {
 
     const message = document.querySelector('.popup-message');
     expect(message).toBeTruthy();
-    expect(message!.textContent).toContain('Delete this item?');
+    expect(message?.textContent).toContain('Delete this item?');
   });
 
   it('should display header when provided', async () => {
@@ -49,7 +49,7 @@ describe('GlintConfirmPopupService', () => {
 
     const header = document.querySelector('.popup-header');
     expect(header).toBeTruthy();
-    expect(header!.textContent).toContain('Confirm Delete');
+    expect(header?.textContent).toContain('Confirm Delete');
   });
 
   it('should call accept callback on accept button click', async () => {

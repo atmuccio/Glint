@@ -30,7 +30,7 @@ describe('GlintFloatLabelComponent', () => {
 
     expect(input).toBeTruthy();
     expect(label).toBeTruthy();
-    expect(label!.textContent).toContain('Username');
+    expect(label?.textContent).toContain('Username');
   });
 
   it('should have the wrapper class applied', () => {
