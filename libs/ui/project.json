@@ -28,6 +28,13 @@
       },
       "defaultConfiguration": "production"
     },
+    "copy-license": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "test -f LICENSE && cp LICENSE dist/libs/ui/LICENSE || echo 'LICENSE not found, skipping'"
+      },
+      "dependsOn": ["build"]
+    },
     "nx-release-publish": {
       "options": {
         "packageRoot": "dist/{projectRoot}"
