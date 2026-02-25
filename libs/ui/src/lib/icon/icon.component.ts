@@ -80,9 +80,11 @@ export class GlintIconComponent {
       this.registrySets?.reduce((acc, set) => ({ ...acc, ...set }), {}) ?? {},
   );
 
-  protected readonly resolvedSize = computed(
-    () => this.size() || this.config?.size || undefined,
-  );
+  protected readonly resolvedSize = computed(() => {
+    const s = this.size() || this.config?.size || undefined;
+    if (s && /^\d+(\.\d+)?$/.test(s)) return `${s}px`;
+    return s;
+  });
 
   protected readonly resolvedStrokeWidth = computed(
     () => this.strokeWidth() || this.config?.strokeWidth || undefined,
