@@ -43,6 +43,28 @@
   font-size: 1.125rem;
 }
 
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  margin-inline-start: auto;
+  color: inherit;
+  text-decoration: none;
+  font-size: 0.875rem;
+  opacity: 0.7;
+  transition: opacity var(--glint-duration-fast) var(--glint-easing);
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+.github-label {
+  @media (max-width: 640px) {
+    display: none;
+  }
+}
+
 .page-content {
   padding-block: 2rem;
   padding-inline: 2.5rem;
