@@ -56,6 +56,11 @@ export class App {
 
   protected navItems: GlintMenuItem[] = [
     {
+      label: 'Home',
+      icon: 'home',
+      routerLink: '/',
+    },
+    {
       label: 'General',
       icon: 'star',
       items: [

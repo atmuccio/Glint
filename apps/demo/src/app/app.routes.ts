@@ -1,7 +1,12 @@
 import { Route } from '@angular/router';
 
 export const appRoutes: Route[] = [
-  { path: '', redirectTo: 'button', pathMatch: 'full' },
+  {
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./pages/home.component').then(m => m.HomeComponent),
+  },
   {
     path: 'button',
     loadComponent: () =>
