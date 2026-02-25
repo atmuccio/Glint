@@ -49,7 +49,7 @@ responsible for enforcement at:
 
 **atmuccio@users.noreply.github.com**
 
-All reports will be reviewed and investigated promptly and fairly. Community
+All reports will be reviewed and investigated fairly. Community
 leaders are obligated to respect the privacy and security of the reporter of
 any incident.
 
