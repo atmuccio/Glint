@@ -142,4 +142,9 @@ export const appRoutes: Route[] = [
     loadComponent: () =>
       import('./pages/utilities-demo.component').then(m => m.UtilitiesDemoComponent),
   },
+  {
+    path: 'shell',
+    loadComponent: () =>
+      import('./pages/shell-demo.component').then(m => m.ShellDemoComponent),
+  },
 ];

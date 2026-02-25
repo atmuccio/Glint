@@ -44,18 +44,21 @@ libs/ui/src/lib/
 ├── menu/                    # Menu (CDK overlay, data-driven)
 ├── message/                 # Message (inline, severities)
 ├── paginator/               # Paginator (rows, page events)
+├── panel-menu/              # PanelMenu (icons, collapsed mode, router links)
 ├── password/                # Password (CVA, strength meter)
 ├── popover/                 # Popover (CDK overlay)
 ├── presets/                 # Theme presets (DARK_ZONE, etc.)
 ├── progress-bar/            # ProgressBar (determinate/indeterminate)
 ├── progress-spinner/        # ProgressSpinner
 ├── radio-button/            # RadioButton (CVA)
+├── search/                  # Search (lightweight, non-CVA, model() binding)
 ├── select/                  # Select + SelectOption (CDK overlay, CVA)
+├── shell/                   # Shell layout (sidebar, header, content, DI token)
 ├── skeleton/                # Skeleton (shapes)
 ├── slider/                  # Slider (CVA, min/max/step)
 ├── split-button/            # SplitButton (CDK overlay)
-├── stepper/                 # Stepper + Step (content projection)
-├── table/                   # Table + Column directive (data-driven)
+├── stepper/                 # Stepper + Step (content projection, error states)
+├── table/                   # Table + Column directive (selection, empty template)
 ├── tabs/                    # Tabs + TabPanel (content projection)
 ├── tag/                     # Tag (severity, removable)
 ├── textarea/                # Textarea (CVA, auto-resize)
@@ -63,7 +66,7 @@ libs/ui/src/lib/
 ├── toast/                   # Toast service + component (imperative)
 ├── toggle-switch/           # ToggleSwitch (CVA)
 ├── toolbar/                 # Toolbar (slot directives)
-└── tooltip/                 # Tooltip directive (CDK overlay)
+└── tooltip/                 # Tooltip directive (CDK overlay, positioned)
 ```
 
 ### Component Patterns
@@ -74,6 +77,7 @@ Components follow five key architectural patterns:
 - **CDK Overlay**: Components needing positioned popups (Menu, Popover, Drawer, SplitButton, Tooltip, Dialog) use `ZoneAwareOverlayService` for zone-aware overlays
 - **Service-based (Imperative)**: Toast and ConfirmDialog provide injectable services with `show()`/`confirm()` APIs
 - **Data-driven**: Components accepting structured input arrays (Table, Menu, Breadcrumb, Timeline) use `input.required<T[]>()`
+- **Shell Layout**: CSS Grid-based app layout (Shell, ShellSidebar, ShellHeader, ShellContent) with `GLINT_SHELL_SIDEBAR` DI token for child components to detect sidebar state
 
 ## Coding Conventions
 

@@ -139,6 +139,49 @@ export function injectGlintDialog(): GlintDialog {
 }
 ```
 
+## App Shell Layout
+
+The shell provides a CSS Grid-based app layout with sidebar, header, and content areas. The sidebar supports collapse/expand with animated transitions.
+
+```text
++──────────────+────────────────────────+
+│ sidebar      │ header    (col2, row1) │
+│ (col1,       ├────────────────────────┤
+│  row 1/-1)   │ content   (col2, row2) │
+│              │ (scrollable)           │
++──────────────+────────────────────────+
+```
+
+### Shell DI Token
+`GLINT_SHELL_SIDEBAR` allows child components (e.g., PanelMenu) to detect sidebar state via DI:
+
+```typescript
+export interface GlintShellSidebarHost {
+  collapsed: Signal<boolean>;
+  width: Signal<string>;
+  collapsedWidth: Signal<string>;
+}
+```
+
+`GlintShellSidebarComponent` provides this token. `GlintPanelMenuComponent` optionally injects it to adapt to collapsed mode (hiding labels, showing icon-only items with tooltips).
+
+### Grid Layout
+`GlintShellComponent` uses a private CSS variable `--_sidebar-width` computed from the sidebar's signals:
+
+```css
+:host {
+  display: grid;
+  grid-template-columns: var(--_sidebar-width, 0px) 1fr;
+  grid-template-rows: auto 1fr;
+  transition: grid-template-columns var(--glint-duration-normal) var(--glint-easing);
+}
+```
+
+The sidebar width animates via CSS `transition` on the grid columns, driven by `contentChild()` signal reads.
+
+### Responsive Collapse
+`breakpointCollapse` input (default: 1024px) uses `matchMedia` via `afterNextRender` for SSR safety. Set to `0` to disable auto-collapse.
+
 ## Component API Conventions
 
 ### Inputs

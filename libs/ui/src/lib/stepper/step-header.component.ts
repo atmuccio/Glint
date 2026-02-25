@@ -14,8 +14,11 @@ import { CdkStepHeader } from '@angular/cdk/stepper';
   host: {
     'class': 'glint-step-header',
     '[class.active]': 'active()',
-    '[class.complete]': 'complete()',
+    '[class.complete]': 'complete() && !hasError()',
+    '[class.error]': 'hasError()',
+    '[attr.id]': '"glint-step-label-" + index()',
     '[attr.aria-selected]': 'active()',
+    '[attr.aria-controls]': '"glint-step-content-" + index()',
     '[attr.tabindex]': 'active() ? 0 : -1',
     'role': 'tab',
   },
@@ -54,6 +57,10 @@ import { CdkStepHeader } from '@angular/cdk/stepper';
       font-weight: 600;
       font-size: 0.875rem;
       flex-shrink: 0;
+      transition:
+        background-color var(--glint-duration-fast) var(--glint-easing),
+        border-color var(--glint-duration-fast) var(--glint-easing),
+        color var(--glint-duration-fast) var(--glint-easing);
     }
     .glint-step-header.active .step-number {
       background: var(--glint-color-primary);
@@ -62,8 +69,22 @@ import { CdkStepHeader } from '@angular/cdk/stepper';
     }
     .glint-step-header.complete .step-number {
       background: var(--glint-color-success);
-      color: white;
+      color: var(--glint-color-primary-contrast);
       border-color: var(--glint-color-success);
+    }
+    .glint-step-header:not(.active):hover {
+      color: var(--glint-color-text);
+    }
+    .glint-step-header.error {
+      color: var(--glint-color-error);
+    }
+    .glint-step-header.error:not(.active):hover {
+      color: var(--glint-color-error);
+    }
+    .glint-step-header.error .step-number {
+      background: var(--glint-color-error);
+      color: var(--glint-color-primary-contrast);
+      border-color: var(--glint-color-error);
     }
     .glint-step-header .step-label {
       font-weight: 500;
@@ -77,7 +98,9 @@ import { CdkStepHeader } from '@angular/cdk/stepper';
   `,
   template: `
     <span class="step-number">
-      @if (complete()) {
+      @if (hasError()) {
+        &#9888;
+      } @else if (complete()) {
         &#10003;
       } @else {
         {{ index() + 1 }}
@@ -100,4 +123,6 @@ export class GlintStepHeaderComponent extends CdkStepHeader {
   complete = input(false);
   /** Whether this step is optional. */
   optional = input(false);
+  /** Whether this step has a validation error. */
+  hasError = input(false);
 }

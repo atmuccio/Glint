@@ -1,79 +1,98 @@
-.layout {
-  display: flex;
-  min-height: 100vh;
-}
-
-.sidebar {
-  width: 240px;
-  flex-shrink: 0;
-  background: #111827;
-  color: #d1d5db;
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow-y: auto;
-}
-
 .sidebar-header {
-  padding: 1.5rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-block: 1rem;
+  padding-inline: 1rem;
+}
+
+.sidebar-header.collapsed {
+  justify-content: center;
+  padding-inline: 0.25rem;
+}
+
+.logo-icon {
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.logo-text {
+  display: flex;
+  flex-direction: column;
 }
 
 .logo {
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 700;
-  color: #fff;
-  margin: 0;
 }
 
 .version {
   font-size: 0.75rem;
-  color: #6b7280;
-  margin-top: 0.25rem;
-  display: block;
+  opacity: 0.5;
 }
 
-.nav-group {
-  padding: 1rem 0.75rem 0;
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  inline-size: 100%;
 }
 
-.nav-label {
-  display: block;
-  font-size: 0.6875rem;
+.header-title {
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #6b7280;
-  padding: 0 0.75rem;
-  margin-bottom: 0.375rem;
+  font-size: 1.125rem;
 }
 
-.sidebar a {
-  display: block;
-  padding: 0.5rem 0.75rem;
-  color: #9ca3af;
+.page-content {
+  padding-block: 2rem;
+  padding-inline: 2.5rem;
+  max-inline-size: 960px;
+}
+
+/* Search */
+.search-wrapper {
+  padding-block: 0.5rem;
+  padding-inline: 0.75rem;
+}
+
+.search-results {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.search-result-link {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding-block: 0.5rem;
+  padding-inline: 1rem;
+  color: inherit;
   text-decoration: none;
-  border-radius: 6px;
   font-size: 0.875rem;
-  transition: all 150ms ease;
-  border-left: 2px solid transparent;
+  transition: background-color var(--glint-duration-fast) var(--glint-easing);
 
   &:hover {
-    color: #e5e7eb;
-    background: rgba(255, 255, 255, 0.05);
+    background: color-mix(in oklch, var(--glint-color-text), transparent 92%);
   }
 
   &.active {
-    color: #60a5fa;
-    background: rgba(59, 130, 246, 0.1);
-    border-left-color: #3b82f6;
-    font-weight: 500;
+    color: var(--glint-color-primary);
+    font-weight: 600;
   }
 }
 
-.content {
-  flex: 1;
-  padding: 2rem 2.5rem;
-  overflow: auto;
-  max-width: 960px;
+.result-group {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.5;
+}
+
+.no-results {
+  padding-block: 1rem;
+  padding-inline: 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  opacity: 0.5;
 }

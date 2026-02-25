@@ -27,6 +27,16 @@ export const TOOLTIP_POSITIONS: ConnectedPosition[] = [
   { originX: 'start', originY: 'center', overlayX: 'end', overlayY: 'center', offsetX: -8 },
 ];
 
+/** Named tooltip position presets — each prefers a direction with fallbacks. */
+export type GlintTooltipPosition = 'auto' | 'above' | 'below' | 'before' | 'after';
+
+export const TOOLTIP_POSITION_MAP: Record<Exclude<GlintTooltipPosition, 'auto'>, ConnectedPosition[]> = {
+  above:  [TOOLTIP_POSITIONS[0], TOOLTIP_POSITIONS[1], TOOLTIP_POSITIONS[2], TOOLTIP_POSITIONS[3]],
+  below:  [TOOLTIP_POSITIONS[1], TOOLTIP_POSITIONS[0], TOOLTIP_POSITIONS[2], TOOLTIP_POSITIONS[3]],
+  after:  [TOOLTIP_POSITIONS[2], TOOLTIP_POSITIONS[3], TOOLTIP_POSITIONS[0], TOOLTIP_POSITIONS[1]],
+  before: [TOOLTIP_POSITIONS[3], TOOLTIP_POSITIONS[2], TOOLTIP_POSITIONS[0], TOOLTIP_POSITIONS[1]],
+};
+
 /**
  * Popover overlay positions.
  *

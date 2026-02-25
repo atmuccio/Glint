@@ -5,7 +5,7 @@ Angular Style Zone UI component library built on Angular CDK. Provides zoned, ca
 ## Features
 
 - **Style Zones** — Cascading theme customization via `<glint-style-zone>` wrapper components
-- **36+ Components** — Buttons, forms, data display, navigation, feedback, overlays
+- **40+ Components** — Buttons, forms, data display, navigation, feedback, overlays, shell layout
 - **Signal-based** — Built on Angular signals for reactive theme propagation
 - **Zone-aware Overlays** — Dialogs, menus, and tooltips inherit zone themes automatically
 - **Type-safe Theming** — Branded types (`CSSColor`, `CSSLength`) prevent category mistakes
@@ -18,10 +18,10 @@ Angular Style Zone UI component library built on Angular CDK. Provides zoned, ca
 | **Form** | Input, InputNumber, Textarea, Password, Select, Checkbox, RadioButton, ToggleSwitch, Slider |
 | **Data Display** | Card, Table, Badge, Tag, Avatar, Chip, Timeline |
 | **Containers** | Tabs, Accordion, Fieldset, Stepper, Toolbar |
-| **Navigation** | Menu, Breadcrumb, SplitButton, Paginator |
+| **Navigation** | Menu, PanelMenu, Breadcrumb, SplitButton, Paginator |
 | **Feedback** | Message, Toast, ProgressBar, ProgressSpinner, Skeleton |
 | **Overlay** | Dialog, ConfirmDialog, Drawer, Popover, Tooltip |
-| **Layout** | Divider, StyleZone |
+| **Layout** | Shell, ShellSidebar, ShellHeader, ShellContent, Divider, StyleZone |
 | **Theming** | Presets (DARK_ZONE, COMPACT_ZONE, DANGER_ZONE, SOFT_ZONE) |
 
 ## Theming

@@ -1,5 +1,4 @@
 import {
-  ComponentRef,
   DestroyRef,
   Directive,
   ElementRef,
@@ -8,9 +7,12 @@ import {
   input,
   signal,
 } from '@angular/core';
+import { OverlayRef } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
 import { createTooltipOverlayConfig } from '../core/overlay/overlay-config-factory';
+import { TOOLTIP_POSITION_MAP } from '../core/overlay/overlay-positions';
+import type { GlintTooltipPosition } from '../core/overlay/overlay-positions';
 import { GlintTooltipPanelComponent } from './tooltip.component';
 
 /**
@@ -44,8 +46,10 @@ export class GlintTooltipDirective {
   glintTooltipShowDelay = input(0);
   /** Delay in ms before hiding the tooltip */
   glintTooltipHideDelay = input(0);
+  /** Preferred position: 'auto' | 'above' | 'below' | 'before' | 'after' */
+  glintTooltipPosition = input<GlintTooltipPosition>('auto');
 
-  readonly tooltipId = `glint-tooltip-${nextTooltipId++}`;
+  protected readonly tooltipId = `glint-tooltip-${nextTooltipId++}`;
   /** Whether the tooltip is currently visible */
   protected readonly isVisible = signal(false);
 
@@ -53,8 +57,7 @@ export class GlintTooltipDirective {
   private elRef = inject(ElementRef<HTMLElement>);
   private injector = inject(Injector);
   private destroyRef = inject(DestroyRef);
-  private panelRef: ComponentRef<GlintTooltipPanelComponent> | null = null;
-  private overlayRef: import('@angular/cdk/overlay').OverlayRef | null = null;
+  private overlayRef: OverlayRef | null = null;
   private showTimer: ReturnType<typeof setTimeout> | null = null;
   private hideTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -65,7 +68,7 @@ export class GlintTooltipDirective {
     });
   }
 
-  scheduleShow(): void {
+  protected scheduleShow(): void {
     this.clearTimers();
     const delay = this.glintTooltipShowDelay();
     if (delay > 0) {
@@ -75,7 +78,7 @@ export class GlintTooltipDirective {
     }
   }
 
-  scheduleHide(): void {
+  protected scheduleHide(): void {
     this.clearTimers();
     const delay = this.glintTooltipHideDelay();
     if (delay > 0) {
@@ -96,10 +99,12 @@ export class GlintTooltipDirective {
     }
   }
 
-  show(): void {
+  protected show(): void {
     if (this.glintTooltipDisabled() || !this.glintTooltip() || this.overlayRef) return;
 
-    const config = createTooltipOverlayConfig(this.overlayService, this.elRef);
+    const pos = this.glintTooltipPosition();
+    const positions = pos !== 'auto' ? TOOLTIP_POSITION_MAP[pos] : undefined;
+    const config = createTooltipOverlayConfig(this.overlayService, this.elRef, { positions });
 
     const { overlayRef, injector } = this.overlayService.createZoneAwareOverlay(
       config,
@@ -110,19 +115,18 @@ export class GlintTooltipDirective {
     this.isVisible.set(true);
 
     const portal = new ComponentPortal(GlintTooltipPanelComponent, null, injector);
-    this.panelRef = overlayRef.attach(portal);
-    this.panelRef.instance.message = this.glintTooltip();
+    const panelRef = overlayRef.attach(portal);
+    panelRef.instance.message = this.glintTooltip();
 
     // Set the tooltip ID for aria-describedby
     overlayRef.overlayElement.setAttribute('id', this.tooltipId);
     overlayRef.overlayElement.setAttribute('role', 'tooltip');
   }
 
-  hide(): void {
+  protected hide(): void {
     if (this.overlayRef) {
       this.overlayRef.dispose();
       this.overlayRef = null;
-      this.panelRef = null;
       this.isVisible.set(false);
     }
   }

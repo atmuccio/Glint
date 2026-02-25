@@ -13,7 +13,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
       font-family: var(--glint-font-family);
       font-size: 0.8125rem;
       line-height: 1.4;
-      color: var(--glint-color-primary-contrast);
+      color: var(--glint-color-surface);
       background: var(--glint-color-text);
       padding: var(--glint-spacing-sm);
       border-radius: var(--glint-border-radius);

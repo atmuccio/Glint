@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { Component } from '@angular/core';
-import { GlintTableComponent, GlintSortEvent } from './table.component';
+import { Component, signal } from '@angular/core';
+import { GlintTableComponent, GlintSortEvent, GlintTableEmptyDirective } from './table.component';
 import { GlintColumnDirective } from './table-column.directive';
 
 @Component({
@@ -78,6 +78,46 @@ class TestTableColumnFeaturesHostComponent {
   ];
 }
 
+@Component({
+  selector: 'glint-test-table-selection',
+  standalone: true,
+  imports: [GlintTableComponent, GlintColumnDirective],
+  template: `
+    <glint-table [data]="data" [selectionMode]="selectionMode" [(selection)]="selection"
+                 (rowClick)="lastRowClick = $event" trackBy="id">
+      <ng-template glintColumn="id" header="ID" let-row>{{ row['id'] }}</ng-template>
+      <ng-template glintColumn="name" header="Name" let-row>{{ row['name'] }}</ng-template>
+    </glint-table>
+  `,
+})
+class TestTableSelectionHostComponent {
+  data = [
+    { id: 1, name: 'Alice' },
+    { id: 2, name: 'Bob' },
+    { id: 3, name: 'Charlie' },
+  ];
+  selectionMode: 'single' | 'multiple' | null = 'multiple';
+  selection = signal<Record<string, unknown>[]>([]);
+  lastRowClick: Record<string, unknown> | null = null;
+}
+
+@Component({
+  selector: 'glint-test-table-empty-template',
+  standalone: true,
+  imports: [GlintTableComponent, GlintColumnDirective, GlintTableEmptyDirective],
+  template: `
+    <glint-table [data]="data">
+      <ng-template glintColumn="name" header="Name" let-row>{{ row['name'] }}</ng-template>
+      <ng-template glintTableEmpty>
+        <p class="custom-empty">Nothing here!</p>
+      </ng-template>
+    </glint-table>
+  `,
+})
+class TestTableEmptyTemplateHostComponent {
+  data: Record<string, unknown>[] = [];
+}
+
 describe('GlintTableComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -85,6 +125,8 @@ describe('GlintTableComponent', () => {
         TestTableHostComponent,
         TestTableFixedLayoutHostComponent,
         TestTableColumnFeaturesHostComponent,
+        TestTableSelectionHostComponent,
+        TestTableEmptyTemplateHostComponent,
       ],
     });
   });
@@ -239,7 +281,6 @@ describe('GlintTableComponent', () => {
     const fixture = TestBed.createComponent(TestTableColumnFeaturesHostComponent);
     fixture.detectChanges();
     const headers = fixture.nativeElement.querySelectorAll('th');
-    // First column has default align='start', should have no alignment classes
     expect(headers[0].classList.contains('align-center')).toBe(false);
     expect(headers[0].classList.contains('align-end')).toBe(false);
   });
@@ -253,7 +294,124 @@ describe('GlintTableComponent', () => {
     const headers = fixture.nativeElement.querySelectorAll('th');
     headers[1].click(); // Sort by age
     fixture.detectChanges();
-    // Original data should remain in the same order
     expect(fixture.componentInstance.data).toEqual(originalOrder);
+  });
+
+  // --- Row selection: multiple mode ---
+
+  it('should render selection column when selectionMode is set', () => {
+    const fixture = TestBed.createComponent(TestTableSelectionHostComponent);
+    fixture.detectChanges();
+    const selCells = fixture.nativeElement.querySelectorAll('.selection-cell');
+    // 1 header + 3 rows = 4
+    expect(selCells.length).toBe(4);
+  });
+
+  it('should select a row on click', () => {
+    const fixture = TestBed.createComponent(TestTableSelectionHostComponent);
+    fixture.detectChanges();
+    const rows = fixture.nativeElement.querySelectorAll('tbody tr');
+    rows[0].click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.selection().length).toBe(1);
+    expect(fixture.componentInstance.selection()[0]['name']).toBe('Alice');
+  });
+
+  it('should deselect a row on second click', () => {
+    const fixture = TestBed.createComponent(TestTableSelectionHostComponent);
+    fixture.detectChanges();
+    const rows = fixture.nativeElement.querySelectorAll('tbody tr');
+    rows[0].click();
+    fixture.detectChanges();
+    rows[0].click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.selection().length).toBe(0);
+  });
+
+  it('should select multiple rows in multiple mode', () => {
+    const fixture = TestBed.createComponent(TestTableSelectionHostComponent);
+    fixture.detectChanges();
+    const rows = fixture.nativeElement.querySelectorAll('tbody tr');
+    rows[0].click();
+    fixture.detectChanges();
+    rows[1].click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.selection().length).toBe(2);
+  });
+
+  it('should toggle select all via header checkbox', () => {
+    const fixture = TestBed.createComponent(TestTableSelectionHostComponent);
+    fixture.detectChanges();
+    const headerCheckbox = fixture.nativeElement.querySelector('th.selection-cell .selection-checkbox');
+    headerCheckbox.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.selection().length).toBe(3);
+
+    headerCheckbox.click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.selection().length).toBe(0);
+  });
+
+  it('should apply selected class on selected rows', () => {
+    const fixture = TestBed.createComponent(TestTableSelectionHostComponent);
+    fixture.detectChanges();
+    const rows = fixture.nativeElement.querySelectorAll('tbody tr');
+    rows[0].click();
+    fixture.detectChanges();
+    expect(rows[0].classList.contains('selected')).toBe(true);
+    expect(rows[1].classList.contains('selected')).toBe(false);
+  });
+
+  // --- Row selection: single mode ---
+
+  it('should only select one row in single mode', () => {
+    const fixture = TestBed.createComponent(TestTableSelectionHostComponent);
+    fixture.componentInstance.selectionMode = 'single';
+    fixture.detectChanges();
+    const rows = fixture.nativeElement.querySelectorAll('tbody tr');
+    rows[0].click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.selection().length).toBe(1);
+    rows[1].click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.selection().length).toBe(1);
+    expect(fixture.componentInstance.selection()[0]['name']).toBe('Bob');
+  });
+
+  it('should render radio buttons in single mode', () => {
+    const fixture = TestBed.createComponent(TestTableSelectionHostComponent);
+    fixture.componentInstance.selectionMode = 'single';
+    fixture.detectChanges();
+    const radios = fixture.nativeElement.querySelectorAll('.selection-radio');
+    expect(radios.length).toBe(3);
+  });
+
+  // --- Row click ---
+
+  it('should emit rowClick on row click', () => {
+    const fixture = TestBed.createComponent(TestTableSelectionHostComponent);
+    fixture.detectChanges();
+    const rows = fixture.nativeElement.querySelectorAll('tbody tr');
+    rows[1].click();
+    fixture.detectChanges();
+    expect(fixture.componentInstance.lastRowClick).toBeTruthy();
+    expect(fixture.componentInstance.lastRowClick!['name']).toBe('Bob');
+  });
+
+  // --- Custom empty template ---
+
+  it('should render custom empty template when provided', () => {
+    const fixture = TestBed.createComponent(TestTableEmptyTemplateHostComponent);
+    fixture.detectChanges();
+    const customEmpty = fixture.nativeElement.querySelector('.custom-empty');
+    expect(customEmpty).toBeTruthy();
+    expect(customEmpty.textContent).toContain('Nothing here!');
+  });
+
+  it('should not show default empty message when custom template is provided', () => {
+    const fixture = TestBed.createComponent(TestTableEmptyTemplateHostComponent);
+    fixture.detectChanges();
+    const empty = fixture.nativeElement.querySelector('.empty');
+    expect(empty.textContent).not.toContain('No data available');
   });
 });

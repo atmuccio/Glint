@@ -74,12 +74,14 @@ import { GlintStepHeaderComponent } from './step-header.component';
           [active]="selectedIndex === i"
           [complete]="isComplete(i)"
           [optional]="step.optional"
+          [hasError]="step.hasError"
           (click)="step.select()"
         >{{ step.label }}</glint-step-header>
         @if (!last) {
           <div
             class="connector"
             [class.complete]="isComplete(i)"
+            aria-hidden="true"
           ></div>
         }
       }
@@ -89,8 +91,8 @@ import { GlintStepHeaderComponent } from './step-header.component';
         <div
           class="step-content"
           role="tabpanel"
-          [attr.id]="_getStepContentId(i)"
-          [attr.aria-labelledby]="_getStepLabelId(i)"
+          [attr.id]="'glint-step-content-' + i"
+          [attr.aria-labelledby]="'glint-step-label-' + i"
         >
           <ng-container [ngTemplateOutlet]="step.content" />
         </div>
@@ -153,7 +155,7 @@ export class GlintStepperComponent extends CdkStepper {
    * A step is visually complete if it precedes the active step or has been
    * explicitly marked `[completed]="true"`.
    */
-  isComplete(index: number): boolean {
+  protected isComplete(index: number): boolean {
     const step = this.steps.get(index);
     return index < this.selectedIndex || (!!step?.completed && index !== this.selectedIndex);
   }

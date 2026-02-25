@@ -1,14 +1,22 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
+  inject,
   input,
   signal,
 } from '@angular/core';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import type { GlintMenuItem } from '../menu/menu-item.model';
+import { GLINT_SHELL_SIDEBAR } from '../shell/shell.model';
+import { GlintTooltipDirective } from '../tooltip/tooltip.directive';
 
 /**
  * Accordion-style vertical menu where top-level items expand/collapse
  * to show nested items inline (no overlays).
+ *
+ * When placed inside a `<glint-shell-sidebar>`, automatically detects
+ * collapsed state and shows only icons with tooltips.
  *
  * @example
  * ```html
@@ -18,10 +26,12 @@ import type { GlintMenuItem } from '../menu/menu-item.model';
 @Component({
   selector: 'glint-panel-menu',
   standalone: true,
+  imports: [RouterLink, RouterLinkActive, GlintTooltipDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'style': 'display: block',
     'role': 'navigation',
+    '[attr.data-collapsed]': 'isCollapsed() || null',
   },
   styles: `
     :host {
@@ -32,7 +42,7 @@ import type { GlintMenuItem } from '../menu/menu-item.model';
     .panel-menu-header {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: var(--glint-spacing-sm);
       inline-size: 100%;
       padding-block: var(--glint-spacing-sm);
       padding-inline: var(--glint-spacing-md);
@@ -45,6 +55,8 @@ import type { GlintMenuItem } from '../menu/menu-item.model';
       font-weight: 600;
       cursor: pointer;
       text-align: start;
+      text-decoration: none;
+      overflow: hidden;
       transition:
         background-color var(--glint-duration-fast) var(--glint-easing),
         border-color var(--glint-duration-fast) var(--glint-easing);
@@ -68,6 +80,15 @@ import type { GlintMenuItem } from '../menu/menu-item.model';
       cursor: not-allowed;
     }
 
+    .panel-menu-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: 1.25rem;
+      block-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
     .panel-menu-label {
       flex: 1;
     }
@@ -88,7 +109,9 @@ import type { GlintMenuItem } from '../menu/menu-item.model';
 
     .panel-menu-child,
     .panel-menu-grandchild {
-      display: block;
+      display: flex;
+      align-items: center;
+      gap: var(--glint-spacing-sm);
       inline-size: 100%;
       padding-block: var(--glint-spacing-xs);
       padding-inline-end: var(--glint-spacing-md);
@@ -98,6 +121,7 @@ import type { GlintMenuItem } from '../menu/menu-item.model';
       font: inherit;
       cursor: pointer;
       text-align: start;
+      text-decoration: none;
       transition: background-color var(--glint-duration-fast) var(--glint-easing);
     }
 
@@ -107,6 +131,13 @@ import type { GlintMenuItem } from '../menu/menu-item.model';
 
     .panel-menu-grandchild {
       padding-inline-start: 3rem;
+    }
+
+    /* When icon is present, adjust child indent to align with icon */
+    .panel-menu-child .panel-menu-icon,
+    .panel-menu-grandchild .panel-menu-icon {
+      inline-size: 1rem;
+      block-size: 1rem;
     }
 
     .panel-menu-child:hover:not(.disabled),
@@ -125,46 +156,131 @@ import type { GlintMenuItem } from '../menu/menu-item.model';
       opacity: 0.5;
       cursor: not-allowed;
     }
+
+    /* Active route styling for child links */
+    .panel-menu-child.route-active,
+    .panel-menu-grandchild.route-active {
+      color: var(--glint-color-primary);
+      font-weight: 600;
+    }
+
+    /* --- Collapsed mode --- */
+    :host([data-collapsed]) .panel-menu-header {
+      justify-content: center;
+      padding-inline: var(--glint-spacing-xs);
+    }
+
+    :host([data-collapsed]) .panel-menu-label,
+    :host([data-collapsed]) .chevron {
+      display: none;
+    }
+
+    :host([data-collapsed]) .panel-menu-submenu {
+      display: none;
+    }
   `,
   template: `
     @for (item of items(); track item.label) {
       <div class="panel-menu-item">
-        <button
-          class="panel-menu-header"
-          [class.active]="isExpanded(item)"
-          [class.disabled]="item.disabled"
-          [attr.aria-expanded]="item.items?.length ? isExpanded(item) : null"
-          [attr.aria-disabled]="item.disabled || null"
-          (click)="onToggle(item)"
-        >
-          <span class="panel-menu-label">{{ item.label }}</span>
-          @if (item.items?.length) {
-            <span class="chevron" [class.expanded]="isExpanded(item)" aria-hidden="true">\u25B6</span>
-          }
-        </button>
+        @if (item.routerLink && !item.items?.length) {
+          <a
+            class="panel-menu-header"
+            [class.disabled]="item.disabled"
+            [routerLink]="item.routerLink"
+            routerLinkActive="active"
+            [attr.aria-label]="isCollapsed() ? item.label : null"
+            [glintTooltip]="item.label"
+            [glintTooltipDisabled]="!isCollapsed()"
+            glintTooltipPosition="after"
+          >
+            @if (item.icon) {
+              <span class="panel-menu-icon" [innerHTML]="item.icon" aria-hidden="true"></span>
+            }
+            <span class="panel-menu-label">{{ item.label }}</span>
+          </a>
+        } @else {
+          <button
+            class="panel-menu-header"
+            [class.active]="isExpanded(item)"
+            [class.disabled]="item.disabled"
+            [attr.aria-expanded]="item.items?.length && !isCollapsed() ? isExpanded(item) : null"
+            [attr.aria-disabled]="item.disabled || null"
+            [attr.aria-label]="isCollapsed() ? item.label : null"
+            [glintTooltip]="item.label"
+            [glintTooltipDisabled]="!isCollapsed()"
+            glintTooltipPosition="after"
+            (click)="onToggle(item)"
+          >
+            @if (item.icon) {
+              <span class="panel-menu-icon" [innerHTML]="item.icon" aria-hidden="true"></span>
+            }
+            <span class="panel-menu-label">{{ item.label }}</span>
+            @if (item.items?.length) {
+              <span class="chevron" [class.expanded]="isExpanded(item)" aria-hidden="true">\u25B6</span>
+            }
+          </button>
+        }
         @if (isExpanded(item) && item.items?.length) {
           <div class="panel-menu-submenu" role="group">
             @for (child of item.items; track child.label) {
-              <button
-                class="panel-menu-child"
-                [class.disabled]="child.disabled"
-                role="menuitem"
-                [attr.aria-disabled]="child.disabled || null"
-                (click)="onChildClick(child)"
-              >
-                {{ child.label }}
-              </button>
+              @if (child.routerLink) {
+                <a
+                  class="panel-menu-child"
+                  [class.disabled]="child.disabled"
+
+                  [routerLink]="child.routerLink"
+                  routerLinkActive="route-active"
+                  [attr.aria-disabled]="child.disabled || null"
+                >
+                  @if (child.icon) {
+                    <span class="panel-menu-icon" [innerHTML]="child.icon" aria-hidden="true"></span>
+                  }
+                  {{ child.label }}
+                </a>
+              } @else {
+                <button
+                  class="panel-menu-child"
+                  [class.disabled]="child.disabled"
+
+                  [attr.aria-disabled]="child.disabled || null"
+                  (click)="onChildClick(child)"
+                >
+                  @if (child.icon) {
+                    <span class="panel-menu-icon" [innerHTML]="child.icon" aria-hidden="true"></span>
+                  }
+                  {{ child.label }}
+                </button>
+              }
               @if (child.items?.length) {
                 @for (grandchild of child.items; track grandchild.label) {
-                  <button
-                    class="panel-menu-grandchild"
-                    [class.disabled]="grandchild.disabled"
-                    role="menuitem"
-                    [attr.aria-disabled]="grandchild.disabled || null"
-                    (click)="onChildClick(grandchild)"
-                  >
-                    {{ grandchild.label }}
-                  </button>
+                  @if (grandchild.routerLink) {
+                    <a
+                      class="panel-menu-grandchild"
+                      [class.disabled]="grandchild.disabled"
+    
+                      [routerLink]="grandchild.routerLink"
+                      routerLinkActive="route-active"
+                      [attr.aria-disabled]="grandchild.disabled || null"
+                    >
+                      @if (grandchild.icon) {
+                        <span class="panel-menu-icon" [innerHTML]="grandchild.icon" aria-hidden="true"></span>
+                      }
+                      {{ grandchild.label }}
+                    </a>
+                  } @else {
+                    <button
+                      class="panel-menu-grandchild"
+                      [class.disabled]="grandchild.disabled"
+    
+                      [attr.aria-disabled]="grandchild.disabled || null"
+                      (click)="onChildClick(grandchild)"
+                    >
+                      @if (grandchild.icon) {
+                        <span class="panel-menu-icon" [innerHTML]="grandchild.icon" aria-hidden="true"></span>
+                      }
+                      {{ grandchild.label }}
+                    </button>
+                  }
                 }
               }
             }
@@ -182,16 +298,28 @@ export class GlintPanelMenuComponent {
   multiple = input(false);
 
   /** Tracks which top-level items are expanded */
-  expandedItems = signal<Set<GlintMenuItem>>(new Set());
+  protected expandedItems = signal<Set<GlintMenuItem>>(new Set());
+
+  /** Sidebar host (optional — only present when inside glint-shell-sidebar) */
+  private sidebar = inject(GLINT_SHELL_SIDEBAR, { optional: true });
+
+  /** Whether the panel menu is in collapsed mode (icons only) */
+  protected isCollapsed = computed(() => this.sidebar?.collapsed() ?? false);
 
   /** Check if a top-level item is currently expanded */
-  isExpanded(item: GlintMenuItem): boolean {
+  protected isExpanded(item: GlintMenuItem): boolean {
     return this.expandedItems().has(item);
   }
 
   /** Toggle a top-level item's expanded state */
-  onToggle(item: GlintMenuItem): void {
+  protected onToggle(item: GlintMenuItem): void {
     if (item.disabled) return;
+
+    // In collapsed mode, don't expand submenus
+    if (this.isCollapsed() && item.items?.length) {
+      item.command?.();
+      return;
+    }
 
     const current = this.expandedItems();
 
@@ -213,7 +341,7 @@ export class GlintPanelMenuComponent {
   }
 
   /** Handle child or grandchild item click */
-  onChildClick(item: GlintMenuItem): void {
+  protected onChildClick(item: GlintMenuItem): void {
     if (item.disabled) return;
     item.command?.();
   }

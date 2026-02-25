@@ -2,10 +2,15 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  contentChild,
   contentChildren,
+  Directive,
+  inject,
   input,
+  model,
   output,
   signal,
+  TemplateRef,
 } from '@angular/core';
 import {
   CdkTable,
@@ -30,7 +35,27 @@ export interface GlintSortEvent {
 }
 
 /**
- * Data table with column definitions, sorting, and striped rows.
+ * Directive for providing a custom empty state template to the table.
+ *
+ * @example
+ * ```html
+ * <glint-table [data]="[]">
+ *   <ng-template glintTableEmpty>
+ *     <p>No results found. Try adjusting your filters.</p>
+ *   </ng-template>
+ * </glint-table>
+ * ```
+ */
+@Directive({
+  selector: '[glintTableEmpty]',
+  standalone: true,
+})
+export class GlintTableEmptyDirective {
+  readonly template = inject(TemplateRef);
+}
+
+/**
+ * Data table with column definitions, sorting, row selection, and striped rows.
  *
  * Internally uses Angular CDK Table (`CdkTable`) for efficient row rendering
  * and column management via `CdkColumnDef`, `CdkHeaderCellDef`, `CdkCellDef`,
@@ -39,7 +64,9 @@ export interface GlintSortEvent {
  *
  * @example
  * ```html
- * <glint-table [data]="users" [striped]="true" trackBy="id">
+ * <glint-table [data]="users" [striped]="true" trackBy="id"
+ *              selectionMode="multiple" [(selection)]="selectedUsers"
+ *              (rowClick)="onRowClick($event)">
  *   <ng-template glintColumn="name" header="Name" [sortable]="true" let-row>
  *     {{ row.name }}
  *   </ng-template>
@@ -169,13 +196,157 @@ export interface GlintSortEvent {
     td.align-end {
       text-align: end;
     }
+
+    /* Selection */
+    th.selection-cell,
+    td.selection-cell {
+      inline-size: 3rem;
+      text-align: center;
+      padding-inline: var(--glint-spacing-xs);
+    }
+
+    :host([data-selectable]) tr {
+      cursor: pointer;
+    }
+
+    tr.selected td {
+      background: color-mix(in oklch, var(--glint-color-primary), transparent 90%);
+    }
+
+    tr.selected:hover td {
+      background: color-mix(in oklch, var(--glint-color-primary), transparent 85%);
+    }
+
+    :host([data-striped]) tr.selected td,
+    :host([data-striped]) tr.selected:hover td {
+      background: color-mix(in oklch, var(--glint-color-primary), transparent 90%);
+    }
+
+    .selection-checkbox {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: 1.125rem;
+      block-size: 1.125rem;
+      border: 2px solid var(--glint-color-border);
+      border-radius: calc(var(--glint-border-radius) / 2);
+      background: var(--glint-color-surface);
+      cursor: pointer;
+      transition:
+        background-color var(--glint-duration-fast) var(--glint-easing),
+        border-color var(--glint-duration-fast) var(--glint-easing);
+    }
+
+    .selection-checkbox:hover {
+      border-color: var(--glint-color-primary);
+    }
+
+    .selection-checkbox:focus-visible,
+    .selection-radio:focus-visible {
+      outline: 2px solid var(--glint-color-focus-ring);
+      outline-offset: 2px;
+    }
+
+    .selection-checkbox.checked {
+      background: var(--glint-color-primary);
+      border-color: var(--glint-color-primary);
+      color: var(--glint-color-primary-contrast);
+    }
+
+    .selection-checkbox.indeterminate {
+      background: var(--glint-color-primary);
+      border-color: var(--glint-color-primary);
+      color: var(--glint-color-primary-contrast);
+    }
+
+    .selection-radio {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: 1.125rem;
+      block-size: 1.125rem;
+      border: 2px solid var(--glint-color-border);
+      border-radius: 50%;
+      background: var(--glint-color-surface);
+      cursor: pointer;
+      transition:
+        background-color var(--glint-duration-fast) var(--glint-easing),
+        border-color var(--glint-duration-fast) var(--glint-easing);
+    }
+
+    .selection-radio:hover {
+      border-color: var(--glint-color-primary);
+    }
+
+    .selection-radio.checked {
+      border-color: var(--glint-color-primary);
+    }
+
+    .selection-radio.checked::after {
+      content: '';
+      display: block;
+      inline-size: 0.5rem;
+      block-size: 0.5rem;
+      border-radius: 50%;
+      background: var(--glint-color-primary);
+    }
   `,
   host: {
     '[attr.data-striped]': 'striped() || null',
     '[attr.data-fixed-layout]': 'fixedLayout() || null',
+    '[attr.data-selectable]': 'selectionMode() || null',
   },
   template: `
     <table cdk-table [dataSource]="sortedData()" role="grid" [fixedLayout]="fixedLayout()">
+      <!-- Selection column -->
+      @if (selectionMode()) {
+        <ng-container cdkColumnDef="__selection">
+          <th cdk-header-cell *cdkHeaderCellDef class="selection-cell">
+            @if (selectionMode() === 'multiple') {
+              <span
+                class="selection-checkbox"
+                [class.checked]="allSelected()"
+                [class.indeterminate]="someSelected() && !allSelected()"
+                role="checkbox"
+                aria-label="Select all rows"
+                [attr.aria-checked]="allSelected() ? 'true' : someSelected() ? 'mixed' : 'false'"
+                tabindex="0"
+                (click)="toggleSelectAll()"
+                (keydown.enter)="toggleSelectAll()"
+                (keydown.space)="toggleSelectAll(); $event.preventDefault()"
+              >@if (allSelected()) {&#10003;} @else if (someSelected()) {&#8722;}</span>
+            }
+          </th>
+          <td cdk-cell *cdkCellDef="let row" class="selection-cell">
+            @if (selectionMode() === 'multiple') {
+              <span
+                class="selection-checkbox"
+                [class.checked]="isRowSelected(row)"
+                role="checkbox"
+                aria-label="Select row"
+                [attr.aria-checked]="isRowSelected(row)"
+                tabindex="0"
+                (click)="toggleRowSelection(row); $event.stopPropagation()"
+                (keydown.enter)="toggleRowSelection(row); $event.stopPropagation()"
+                (keydown.space)="toggleRowSelection(row); $event.stopPropagation(); $event.preventDefault()"
+              >@if (isRowSelected(row)) {&#10003;}</span>
+            } @else {
+              <span
+                class="selection-radio"
+                [class.checked]="isRowSelected(row)"
+                role="radio"
+                aria-label="Select row"
+                [attr.aria-checked]="isRowSelected(row)"
+                tabindex="0"
+                (click)="toggleRowSelection(row); $event.stopPropagation()"
+                (keydown.enter)="toggleRowSelection(row); $event.stopPropagation()"
+                (keydown.space)="toggleRowSelection(row); $event.stopPropagation(); $event.preventDefault()"
+              ></span>
+            }
+          </td>
+        </ng-container>
+      }
+
       @for (col of columns(); track col.field()) {
         <ng-container [cdkColumnDef]="col.field()">
           <th
@@ -213,11 +384,20 @@ export interface GlintSortEvent {
       }
 
       <tr cdk-header-row *cdkHeaderRowDef="displayedColumns()"></tr>
-      <tr cdk-row *cdkRowDef="let row; columns: displayedColumns()"></tr>
+      <tr cdk-row *cdkRowDef="let row; columns: displayedColumns()"
+          [class.selected]="isRowSelected(row)"
+          [attr.aria-selected]="selectionMode() ? isRowSelected(row) : null"
+          (click)="onRowClick(row)"></tr>
 
       <ng-template cdkNoDataRow>
         <tr>
-          <td class="empty" [attr.colspan]="columns().length">No data available</td>
+          <td class="empty" [attr.colspan]="displayedColumns().length">
+            @if (emptyTemplate()) {
+              <ng-container [ngTemplateOutlet]="emptyTemplate()!.template" />
+            } @else {
+              No data available
+            }
+          </td>
         </tr>
       </ng-template>
     </table>
@@ -232,20 +412,42 @@ export class GlintTableComponent {
   fixedLayout = input(false);
   /** Field name used to track row identity for efficient re-rendering */
   trackBy = input<string>();
-  /** Enable virtual scrolling (CdkTable integration point) */
-  virtualScroll = input(false);
+  /** Selection mode: 'single', 'multiple', or null (disabled) */
+  selectionMode = input<'single' | 'multiple' | null>(null);
+  /** Selected rows (two-way bindable) */
+  selection = model<Record<string, unknown>[]>([]);
   /** Emitted on sort change */
   sortChange = output<GlintSortEvent>();
+  /** Emitted when a row is clicked */
+  rowClick = output<Record<string, unknown>>();
 
   columns = contentChildren(GlintColumnDirective);
+  emptyTemplate = contentChild(GlintTableEmptyDirective);
 
   protected sortField = signal('');
   protected sortOrder = signal<'asc' | 'desc'>('asc');
 
   /** Column names for CdkTable's displayedColumns */
-  protected displayedColumns = computed(() =>
-    this.columns().map(col => col.field())
-  );
+  protected displayedColumns = computed(() => {
+    const cols = this.columns().map(col => col.field());
+    if (this.selectionMode()) {
+      return ['__selection', ...cols];
+    }
+    return cols;
+  });
+
+  /** Whether all rows are selected */
+  protected allSelected = computed(() => {
+    const data = this.sortedData();
+    const sel = this.selection();
+    return data.length > 0 && sel.length === data.length;
+  });
+
+  /** Whether some (but not all) rows are selected */
+  protected someSelected = computed(() => {
+    const sel = this.selection();
+    return sel.length > 0 && !this.allSelected();
+  });
 
   /** Returns a stable identity for a data row based on trackBy field or object reference */
   protected rowIdentity(row: Record<string, unknown>): unknown {
@@ -272,7 +474,55 @@ export class GlintTableComponent {
     });
   });
 
-  toggleSort(field: string): void {
+  /** Check if a row is currently selected */
+  protected isRowSelected(row: Record<string, unknown>): boolean {
+    const trackField = this.trackBy();
+    if (trackField) {
+      return this.selection().some(s => s[trackField] === row[trackField]);
+    }
+    return this.selection().includes(row);
+  }
+
+  /** Toggle selection of a single row */
+  protected toggleRowSelection(row: Record<string, unknown>): void {
+    if (!this.selectionMode()) return;
+
+    if (this.selectionMode() === 'single') {
+      this.selection.set(this.isRowSelected(row) ? [] : [row]);
+      return;
+    }
+
+    // Multiple mode
+    if (this.isRowSelected(row)) {
+      const trackField = this.trackBy();
+      if (trackField) {
+        this.selection.update(sel => sel.filter(s => s[trackField] !== row[trackField]));
+      } else {
+        this.selection.update(sel => sel.filter(s => s !== row));
+      }
+    } else {
+      this.selection.update(sel => [...sel, row]);
+    }
+  }
+
+  /** Toggle select all / deselect all */
+  protected toggleSelectAll(): void {
+    if (this.allSelected()) {
+      this.selection.set([]);
+    } else {
+      this.selection.set([...this.sortedData()]);
+    }
+  }
+
+  /** Handle row click */
+  protected onRowClick(row: Record<string, unknown>): void {
+    this.rowClick.emit(row);
+    if (this.selectionMode()) {
+      this.toggleRowSelection(row);
+    }
+  }
+
+  protected toggleSort(field: string): void {
     if (this.sortField() === field) {
       this.sortOrder.update(o => o === 'asc' ? 'desc' : 'asc');
     } else {
@@ -282,7 +532,7 @@ export class GlintTableComponent {
     this.sortChange.emit({ field: this.sortField(), order: this.sortOrder() });
   }
 
-  getAriaSort(field: string): string | null {
+  protected getAriaSort(field: string): string | null {
     if (this.sortField() !== field) return null;
     return this.sortOrder() === 'asc' ? 'ascending' : 'descending';
   }

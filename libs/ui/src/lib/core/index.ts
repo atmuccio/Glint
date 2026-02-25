@@ -30,7 +30,8 @@ export { GlintStyleZoneComponent } from './style-zone/style-zone.component';
 
 // Overlay
 export { ZoneAwareOverlayService } from './overlay/zone-aware-overlay.service';
-export { DROPDOWN_POSITIONS, TOOLTIP_POSITIONS, POPOVER_POSITIONS, DROPDOWN_END_POSITIONS, SUBMENU_POSITIONS } from './overlay/overlay-positions';
+export { DROPDOWN_POSITIONS, TOOLTIP_POSITIONS, TOOLTIP_POSITION_MAP, POPOVER_POSITIONS, DROPDOWN_END_POSITIONS, SUBMENU_POSITIONS } from './overlay/overlay-positions';
+export type { GlintTooltipPosition } from './overlay/overlay-positions';
 export { createDropdownOverlayConfig, createTooltipOverlayConfig, createPopoverOverlayConfig } from './overlay/overlay-config-factory';
 export type { DropdownOverlayOptions, TooltipOverlayOptions, PopoverOverlayOptions } from './overlay/overlay-config-factory';
 

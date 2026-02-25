@@ -1,63 +1,54 @@
-<div class="layout">
-  <nav class="sidebar">
-    <div class="sidebar-header">
-      <h1 class="logo">@glint/ui</h1>
-      <span class="version">v0.1.0</span>
+<glint-shell [breakpointCollapse]="1024">
+  <glint-style-zone [theme]="DARK_ZONE">
+    <glint-shell-sidebar [(collapsed)]="sidebarCollapsed" width="240px" collapsedWidth="56px">
+      <div class="sidebar-header" [class.collapsed]="sidebarCollapsed()">
+        <span class="logo-icon">&#9670;</span>
+        @if (!sidebarCollapsed()) {
+          <div class="logo-text">
+            <span class="logo">@glint/ui</span>
+            <span class="version">v0.1.0</span>
+          </div>
+        }
+      </div>
+      <glint-divider />
+      @if (!sidebarCollapsed()) {
+        <div class="search-wrapper">
+          <glint-search [(value)]="searchQuery" placeholder="Search components..." variant="filled" />
+        </div>
+      }
+      @if (searchQuery()) {
+        <div class="search-results">
+          @for (link of filteredLinks(); track link.routerLink) {
+            <a class="search-result-link"
+               [routerLink]="link.routerLink"
+               routerLinkActive="active"
+               (click)="clearSearch()">
+              <span class="result-group">{{ link.group }}</span>
+              {{ link.label }}
+            </a>
+          }
+          @if (!filteredLinks().length) {
+            <div class="no-results">No matches</div>
+          }
+        </div>
+      } @else {
+        <glint-panel-menu [items]="navItems" [multiple]="true" />
+      }
+    </glint-shell-sidebar>
+  </glint-style-zone>
+
+  <glint-shell-header>
+    <div class="header-content">
+      <glint-button variant="ghost" size="sm" (click)="sidebarCollapsed.set(!sidebarCollapsed())">
+        &#9776;
+      </glint-button>
+      <span class="header-title">Component Catalog</span>
     </div>
-    <div class="nav-group">
-      <span class="nav-label">General</span>
-      <a routerLink="/button" routerLinkActive="active">Button</a>
+  </glint-shell-header>
+
+  <glint-shell-content>
+    <div class="page-content">
+      <router-outlet />
     </div>
-    <div class="nav-group">
-      <span class="nav-label">Form</span>
-      <a routerLink="/input" routerLinkActive="active">Input</a>
-      <a routerLink="/text-inputs" routerLinkActive="active">Text Inputs</a>
-      <a routerLink="/select" routerLinkActive="active">Select</a>
-      <a routerLink="/form-controls" routerLinkActive="active">Form Controls</a>
-      <a routerLink="/selection" routerLinkActive="active">Selection Controls</a>
-      <a routerLink="/advanced-inputs" routerLinkActive="active">Advanced Inputs</a>
-      <a routerLink="/advanced-selects" routerLinkActive="active">Advanced Selects</a>
-    </div>
-    <div class="nav-group">
-      <span class="nav-label">Data Display</span>
-      <a routerLink="/card" routerLinkActive="active">Card</a>
-      <a routerLink="/data-display" routerLinkActive="active">Data Display</a>
-      <a routerLink="/table" routerLinkActive="active">Table</a>
-      <a routerLink="/tabs" routerLinkActive="active">Tabs</a>
-      <a routerLink="/accordion" routerLinkActive="active">Accordion</a>
-      <a routerLink="/trees" routerLinkActive="active">Trees</a>
-      <a routerLink="/lists" routerLinkActive="active">Lists &amp; Data</a>
-      <a routerLink="/media" routerLinkActive="active">Media</a>
-    </div>
-    <div class="nav-group">
-      <span class="nav-label">Feedback</span>
-      <a routerLink="/feedback" routerLinkActive="active">Messages &amp; Progress</a>
-      <a routerLink="/toast" routerLinkActive="active">Toast</a>
-      <a routerLink="/dialog" routerLinkActive="active">Dialog</a>
-    </div>
-    <div class="nav-group">
-      <span class="nav-label">Navigation</span>
-      <a routerLink="/navigation" routerLinkActive="active">Menu &amp; Breadcrumb</a>
-      <a routerLink="/stepper-timeline" routerLinkActive="active">Stepper &amp; Timeline</a>
-      <a routerLink="/advanced-menus" routerLinkActive="active">Advanced Menus</a>
-    </div>
-    <div class="nav-group">
-      <span class="nav-label">Layout</span>
-      <a routerLink="/divider" routerLinkActive="active">Divider</a>
-      <a routerLink="/containers" routerLinkActive="active">Containers</a>
-      <a routerLink="/panels" routerLinkActive="active">Panels &amp; Editors</a>
-      <a routerLink="/utilities" routerLinkActive="active">Utilities</a>
-    </div>
-    <div class="nav-group">
-      <span class="nav-label">Overlay</span>
-      <a routerLink="/tooltip" routerLinkActive="active">Tooltip</a>
-    </div>
-    <div class="nav-group">
-      <span class="nav-label">Theming</span>
-      <a routerLink="/theme" routerLinkActive="active">Theme Zones</a>
-    </div>
-  </nav>
-  <main class="content">
-    <router-outlet />
-  </main>
-</div>
+  </glint-shell-content>
+</glint-shell>
