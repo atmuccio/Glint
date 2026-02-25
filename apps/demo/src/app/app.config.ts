@@ -4,12 +4,16 @@ import {
 } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { appRoutes } from './app.routes';
-import { provideGlintUI } from '@glint/ui';
+import { provideGlintUI, provideGlintIcons, mapIcons, lucideToSvg } from '@glint/ui';
+import { Github, Home, Zap, Layers, Shield, Package } from 'lucide';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideRouter(appRoutes),
     provideGlintUI(),
+    provideGlintIcons(
+      mapIcons({ github: Github, home: Home, zap: Zap, layers: Layers, shield: Shield, package: Package }, lucideToSvg),
+    ),
   ],
 };
