@@ -14,6 +14,7 @@ import { ComponentPortal } from '@angular/cdk/portal';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
 import { SUBMENU_POSITIONS } from '../core/overlay/overlay-positions';
 import type { GlintMenuItem } from '../menu/menu-item.model';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Internal panel component for CascadeSelect. Renders a list of items and
@@ -24,6 +25,7 @@ import type { GlintMenuItem } from '../menu/menu-item.model';
 @Component({
   selector: 'glint-cascade-select-panel',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'role': 'listbox',
@@ -103,7 +105,7 @@ import type { GlintMenuItem } from '../menu/menu-item.model';
         >
           <span>{{ item.label }}</span>
           @if (item.items && item.items.length > 0) {
-            <span class="submenu-indicator" aria-hidden="true">&#9654;</span>
+            <span class="submenu-indicator" aria-hidden="true"><glint-icon name="chevronRight" /></span>
           }
         </button>
       }

@@ -26,6 +26,7 @@ import {
   CdkNoDataRow,
 } from '@angular/cdk/table';
 import { NgTemplateOutlet } from '@angular/common';
+import { GlintIconComponent } from '../icon/icon.component';
 import { GlintColumnDirective } from './table-column.directive';
 
 /** Sort event */
@@ -92,6 +93,7 @@ export class GlintTableEmptyDirective {
     CdkCell,
     CdkNoDataRow,
     NgTemplateOutlet,
+    GlintIconComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: `
@@ -314,7 +316,7 @@ export class GlintTableEmptyDirective {
                 (click)="toggleSelectAll()"
                 (keydown.enter)="toggleSelectAll()"
                 (keydown.space)="toggleSelectAll(); $event.preventDefault()"
-              >@if (allSelected()) {&#10003;} @else if (someSelected()) {&#8722;}</span>
+              >@if (allSelected()) {<glint-icon name="check" />} @else if (someSelected()) {<glint-icon name="minus" />}</span>
             }
           </th>
           <td cdk-cell *cdkCellDef="let row" class="selection-cell">
@@ -329,7 +331,7 @@ export class GlintTableEmptyDirective {
                 (click)="toggleRowSelection(row); $event.stopPropagation()"
                 (keydown.enter)="toggleRowSelection(row); $event.stopPropagation()"
                 (keydown.space)="toggleRowSelection(row); $event.stopPropagation(); $event.preventDefault()"
-              >@if (isRowSelected(row)) {&#10003;}</span>
+              >@if (isRowSelected(row)) {<glint-icon name="check" />}</span>
             } @else {
               <span
                 class="selection-radio"
@@ -367,7 +369,11 @@ export class GlintTableEmptyDirective {
                 class="sort-icon"
                 [class.active]="sortField() === col.field()"
                 aria-hidden="true"
-              >{{ sortField() === col.field() ? (sortOrder() === 'asc' ? '\u25B2' : '\u25BC') : '\u21C5' }}</span>
+              >@if (sortField() === col.field()) {
+                <glint-icon [name]="sortOrder() === 'asc' ? 'arrowUp' : 'arrowDown'" />
+              } @else {
+                <glint-icon name="arrowUpDown" />
+              }</span>
             }
           </th>
           <td

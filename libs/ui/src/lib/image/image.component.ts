@@ -13,6 +13,7 @@ import {
 import { OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Image component with optional fullscreen preview.
@@ -28,6 +29,7 @@ import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.serv
 @Component({
   selector: 'glint-image',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'class': 'glint-image',
@@ -59,7 +61,7 @@ import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.serv
           type="button"
           aria-label="Close preview"
           (click)="closePreview()"
-        >&#10005;</button>
+        ><glint-icon name="x" /></button>
         <img
           class="glint-image-preview-img"
           [src]="src()"

@@ -57,14 +57,15 @@ export class App {
   protected navItems: GlintMenuItem[] = [
     {
       label: 'General',
-      icon: '&#9679;',
+      icon: 'star',
       items: [
         { label: 'Button', routerLink: '/button' },
+        { label: 'Icons', routerLink: '/icons' },
       ],
     },
     {
       label: 'Form',
-      icon: '&#9998;',
+      icon: 'pencil',
       items: [
         { label: 'Input', routerLink: '/input' },
         { label: 'Text Inputs', routerLink: '/text-inputs' },
@@ -77,7 +78,7 @@ export class App {
     },
     {
       label: 'Data Display',
-      icon: '&#9638;',
+      icon: 'layoutGrid',
       items: [
         { label: 'Card', routerLink: '/card' },
         { label: 'Data Display', routerLink: '/data-display' },
@@ -91,7 +92,7 @@ export class App {
     },
     {
       label: 'Feedback',
-      icon: '&#9888;',
+      icon: 'triangleAlert',
       items: [
         { label: 'Messages & Progress', routerLink: '/feedback' },
         { label: 'Toast', routerLink: '/toast' },
@@ -100,7 +101,7 @@ export class App {
     },
     {
       label: 'Navigation',
-      icon: '&#9776;',
+      icon: 'menu',
       items: [
         { label: 'Menu & Breadcrumb', routerLink: '/navigation' },
         { label: 'Stepper & Timeline', routerLink: '/stepper-timeline' },
@@ -109,7 +110,7 @@ export class App {
     },
     {
       label: 'Layout',
-      icon: '&#9707;',
+      icon: 'maximize',
       items: [
         { label: 'Shell', routerLink: '/shell' },
         { label: 'Divider', routerLink: '/divider' },
@@ -120,14 +121,14 @@ export class App {
     },
     {
       label: 'Overlay',
-      icon: '&#9633;',
+      icon: 'externalLink',
       items: [
         { label: 'Tooltip', routerLink: '/tooltip' },
       ],
     },
     {
       label: 'Theming',
-      icon: '&#9788;',
+      icon: 'eye',
       items: [
         { label: 'Theme Zones', routerLink: '/theme' },
       ],

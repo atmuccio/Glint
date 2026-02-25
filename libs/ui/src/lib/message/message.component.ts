@@ -5,6 +5,7 @@ import {
   input,
   signal,
 } from '@angular/core';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Static inline message for displaying contextual feedback.
@@ -18,6 +19,7 @@ import {
 @Component({
   selector: 'glint-message',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'role': 'alert',
@@ -101,10 +103,10 @@ import {
     }
   `,
   template: `
-    <span class="icon">{{ severityIcon() }}</span>
+    <glint-icon class="icon" [name]="severityIcon()" />
     <span class="content"><ng-content /></span>
     @if (closable()) {
-      <button class="close" aria-label="Close" (click)="closed.set(true)">&#10005;</button>
+      <button class="close" aria-label="Close" (click)="closed.set(true)"><glint-icon name="x" /></button>
     }
   `,
 })
@@ -118,10 +120,10 @@ export class GlintMessageComponent {
 
   protected severityIcon = computed(() => {
     switch (this.severity()) {
-      case 'success': return '\u2713';
-      case 'info': return '\u24D8';
-      case 'warning': return '\u26A0';
-      case 'danger': return '\u2716';
+      case 'success': return 'circleCheck';
+      case 'info': return 'info';
+      case 'warning': return 'triangleAlert';
+      case 'danger': return 'circleX';
     }
   });
 }

@@ -182,6 +182,49 @@ The sidebar width animates via CSS `transition` on the grid columns, driven by `
 ### Responsive Collapse
 `breakpointCollapse` input (default: 1024px) uses `matchMedia` via `afterNextRender` for SSR safety. Set to `0` to disable auto-collapse.
 
+## Icon System
+
+### Overview
+Library-agnostic SVG icon renderer with hierarchical DI registry. The system is designed so the public API accepts raw SVG strings from any source, while defaulting to Lucide icons for internal components.
+
+### Architecture
+```
+GlintIconComponent          — renders SVG strings, looks up by name
+GLINT_ICON_REGISTRY         — multi:true InjectionToken<Record<string, string>[]>
+provideGlintIcons()         — registers a Record<string, string> in the registry
+mapIcons<T>(icons, fn)      — generic adapter: converts any format → SVG strings
+lucideToSvg()               — Lucide IconNode → SVG string converter
+provideGlintUI()            — auto-registers ~36 default Lucide icons
+```
+
+### DI Pattern
+Uses `multi: true` providers. The component flattens all providers with a single `reduce()`. Later providers override earlier ones. Child injectors naturally override parent injectors via Angular's DI hierarchy.
+
+```typescript
+// Register raw SVG strings
+provideGlintIcons({ logo: '<svg>...</svg>' })
+
+// Register Lucide icons via adapter
+import { Home, Users } from 'lucide';
+provideGlintIcons(mapIcons({ home: Home, users: Users }, lucideToSvg))
+
+// Register any icon library
+provideGlintIcons(mapIcons(heroicons, myHeroConverter))
+```
+
+### Component Implementation
+- Uses `afterRenderEffect({ write })` to set `innerHTML` from resolved SVG string
+- Sizes via `--glint-icon-size` CSS variable (defaults to `1em`)
+- Inherits `currentColor` for seamless theme integration
+- Dev-mode warning when icon name not found in registry
+- `aria-hidden="true"` for decorative icons, `aria-label` for meaningful ones
+
+### GlintMenuItem.icon
+The `icon` field on `GlintMenuItem` is a registered icon name (string). Menu components render it via `<glint-icon [name]="item.icon" />` instead of the previous `[innerHTML]` approach, eliminating the XSS vector.
+
+### Test Infrastructure
+`provideGlintTestIcons()` registers all icon names with minimal placeholder SVGs. Add to TestBed for specs testing components that contain `<glint-icon>`.
+
 ## Component API Conventions
 
 ### Inputs

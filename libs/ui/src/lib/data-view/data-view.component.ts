@@ -11,6 +11,7 @@ import {
   untracked,
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
+import { GlintIconComponent } from '../icon/icon.component';
 import { GlintPaginatorComponent, GlintPageEvent } from '../paginator/paginator.component';
 
 /**
@@ -31,7 +32,7 @@ import { GlintPaginatorComponent, GlintPageEvent } from '../paginator/paginator.
 @Component({
   selector: 'glint-data-view',
   standalone: true,
-  imports: [NgTemplateOutlet, GlintPaginatorComponent],
+  imports: [NgTemplateOutlet, GlintIconComponent, GlintPaginatorComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[attr.data-layout]': 'currentLayout()',
@@ -124,7 +125,7 @@ import { GlintPaginatorComponent, GlintPageEvent } from '../paginator/paginator.
           [attr.aria-checked]="currentLayout() === 'list'"
           aria-label="List layout"
           (click)="setLayout('list')"
-        >&#9776;</button>
+        ><glint-icon name="menu" /></button>
         <button
           class="layout-btn"
           [class.active]="currentLayout() === 'grid'"
@@ -132,7 +133,7 @@ import { GlintPaginatorComponent, GlintPageEvent } from '../paginator/paginator.
           [attr.aria-checked]="currentLayout() === 'grid'"
           aria-label="Grid layout"
           (click)="setLayout('grid')"
-        >&#9638;</button>
+        ><glint-icon name="layoutGrid" /></button>
       </div>
     </div>
 

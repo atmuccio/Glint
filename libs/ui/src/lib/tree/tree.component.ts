@@ -8,6 +8,7 @@ import {
   signal,
 } from '@angular/core';
 import { GlintTreeNode } from '../core/tree/tree-node.model';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Hierarchical tree view with expand/collapse, selection, and filtering.
@@ -31,7 +32,7 @@ import { GlintTreeNode } from '../core/tree/tree-node.model';
 @Component({
   selector: 'glint-tree',
   standalone: true,
-  imports: [],
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'role': 'tree',
@@ -211,7 +212,7 @@ import { GlintTreeNode } from '../core/tree/tree-node.model';
               aria-hidden="true"
               type="button"
             >
-              <span class="chevron" [class.expanded]="entry.node.expanded">&#9654;</span>
+              <span class="chevron" [class.expanded]="entry.node.expanded"><glint-icon name="chevronRight" /></span>
             </button>
           } @else {
             <span class="toggle-placeholder"></span>
@@ -223,9 +224,7 @@ import { GlintTreeNode } from '../core/tree/tree-node.model';
               role="checkbox"
               [attr.aria-checked]="isSelected(entry.node)"
             >
-              <svg class="tree-checkbox-icon" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+              <glint-icon class="tree-checkbox-icon" name="check" />
             </span>
           }
           <span class="tree-label">{{ entry.node.label }}</span>

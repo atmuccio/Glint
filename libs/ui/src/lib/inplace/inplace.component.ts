@@ -6,6 +6,7 @@ import {
   model,
   output,
 } from '@angular/core';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Marker directive for the display slot of Inplace.
@@ -49,6 +50,7 @@ export class GlintInplaceContentDirective {}
 @Component({
   selector: 'glint-inplace',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'style': 'display: block',
@@ -131,7 +133,7 @@ export class GlintInplaceContentDirective {}
             type="button"
             aria-label="Close"
             (click)="onDeactivate()"
-          >&#10005;</button>
+          ><glint-icon name="x" /></button>
         }
       </div>
     }

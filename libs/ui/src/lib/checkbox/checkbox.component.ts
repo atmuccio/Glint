@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
 import { glintId } from '../core/utils/id-generator';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Checkbox component with ControlValueAccessor and indeterminate state support.
@@ -24,6 +25,7 @@ import { glintId } from '../core/utils/id-generator';
 @Component({
   selector: 'glint-checkbox',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.checked]': 'checked()',
@@ -125,12 +127,8 @@ import { glintId } from '../core/utils/id-generator';
       (click)="onToggle()"
       (keydown.space)="onToggle(); $event.preventDefault()"
     >
-      <svg class="check checkmark" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <svg class="check dash" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3 6H9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-      </svg>
+      <glint-icon class="check checkmark" name="check" />
+      <glint-icon class="check dash" name="minus" />
     </span>
     <label [attr.for]="inputId"><ng-content /></label>
   `,

@@ -26,6 +26,12 @@ libs/ui/src/lib/
 │   ├── style-zone/          # StyleZoneComponent
 │   ├── overlay/             # ZoneAwareOverlayService
 │   └── utils/               # mergeZoneThemes, dev-validation
+├── icon/                    # Icon system (agnostic renderer, Lucide defaults)
+│   ├── icon.component.ts    # GlintIconComponent (SVG renderer)
+│   ├── icon.registry.ts     # GLINT_ICON_REGISTRY + provideGlintIcons()
+│   ├── icon.config.ts       # GLINT_ICON_CONFIG + provideGlintIconConfig()
+│   ├── map-icons.ts         # mapIcons<T>() + lucideToSvg()
+│   └── default-icons.ts     # ~36 Lucide icons registered by provideGlintUI()
 ├── accordion/               # Accordion + AccordionPanel (content projection)
 ├── avatar/                  # Avatar + AvatarGroup
 ├── badge/                   # Badge (severity, size)
@@ -78,6 +84,7 @@ Components follow five key architectural patterns:
 - **Service-based (Imperative)**: Toast and ConfirmDialog provide injectable services with `show()`/`confirm()` APIs
 - **Data-driven**: Components accepting structured input arrays (Table, Menu, Breadcrumb, Timeline) use `input.required<T[]>()`
 - **Shell Layout**: CSS Grid-based app layout (Shell, ShellSidebar, ShellHeader, ShellContent) with `GLINT_SHELL_SIDEBAR` DI token for child components to detect sidebar state
+- **Icon System**: `GlintIconComponent` renders SVG strings from hierarchical `GLINT_ICON_REGISTRY` (multi:true DI). `provideGlintUI()` registers ~36 Lucide defaults. Users extend via `provideGlintIcons(mapIcons(icons, converter))`. `GlintMenuItem.icon` is a registered icon name.
 
 ## Coding Conventions
 

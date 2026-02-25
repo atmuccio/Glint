@@ -16,6 +16,7 @@ import {
 import { OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /** Image item for the Galleria */
 export interface GlintGalleriaImage {
@@ -41,6 +42,7 @@ export interface GlintGalleriaImage {
 @Component({
   selector: 'glint-galleria',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'class': 'glint-galleria',
@@ -334,13 +336,13 @@ export interface GlintGalleriaImage {
     <div class="galleria-container" [class]="'thumbnails-' + thumbnailsPosition()">
       <div class="galleria-main">
         @if (showNavigators() && images().length > 1) {
-          <button class="nav prev" (click)="prev()" type="button" aria-label="Previous image">&#9664;</button>
+          <button class="nav prev" (click)="prev()" type="button" aria-label="Previous image"><glint-icon name="chevronLeft" /></button>
         }
         @if (activeImage(); as img) {
           <img [src]="img.src" [alt]="img.alt ?? ''" class="main-image" />
         }
         @if (showNavigators() && images().length > 1) {
-          <button class="nav next" (click)="next()" type="button" aria-label="Next image">&#9654;</button>
+          <button class="nav next" (click)="next()" type="button" aria-label="Next image"><glint-icon name="chevronRight" /></button>
         }
         @if (fullscreen()) {
           <button class="fullscreen-btn" (click)="openFullscreen()" type="button" aria-label="Fullscreen">&#x26F6;</button>
@@ -372,16 +374,16 @@ export interface GlintGalleriaImage {
 
     <ng-template #fullscreenTemplate>
       <div class="galleria-fullscreen">
-        <button class="fullscreen-close" (click)="closeFullscreen()" type="button" aria-label="Close fullscreen">&#10005;</button>
+        <button class="fullscreen-close" (click)="closeFullscreen()" type="button" aria-label="Close fullscreen"><glint-icon name="x" /></button>
         <div class="galleria-main">
           @if (images().length > 1) {
-            <button class="nav prev" (click)="prev()" type="button" aria-label="Previous image">&#9664;</button>
+            <button class="nav prev" (click)="prev()" type="button" aria-label="Previous image"><glint-icon name="chevronLeft" /></button>
           }
           @if (activeImage(); as img) {
             <img [src]="img.src" [alt]="img.alt ?? ''" class="main-image" />
           }
           @if (images().length > 1) {
-            <button class="nav next" (click)="next()" type="button" aria-label="Next image">&#9654;</button>
+            <button class="nav next" (click)="next()" type="button" aria-label="Next image"><glint-icon name="chevronRight" /></button>
           }
         </div>
         @if (showThumbnails()) {

@@ -4,6 +4,7 @@ import { provideRouter } from '@angular/router';
 import { GlintPanelMenuComponent } from './panel-menu.component';
 import type { GlintMenuItem } from '../menu/menu-item.model';
 import { GLINT_SHELL_SIDEBAR, GlintShellSidebarHost } from '../shell/shell.model';
+import { provideGlintTestIcons } from '../testing/test-utils';
 
 @Component({
   selector: 'glint-test-panel-menu-host',
@@ -47,14 +48,14 @@ class TestPanelMenuIconsHostComponent {
   items: GlintMenuItem[] = [
     {
       label: 'Dashboard',
-      icon: '&#9670;',
+      icon: 'star',
       items: [
-        { label: 'Overview', icon: '&#9679;' },
+        { label: 'Overview', icon: 'check' },
       ],
     },
     {
       label: 'Settings',
-      icon: '&#9881;',
+      icon: 'pencil',
       items: [],
     },
   ];
@@ -80,12 +81,12 @@ class TestPanelMenuCollapsedHostComponent {
   items: GlintMenuItem[] = [
     {
       label: 'Dashboard',
-      icon: '&#9670;',
+      icon: 'star',
       items: [{ label: 'Overview' }],
     },
     {
       label: 'Settings',
-      icon: '&#9881;',
+      icon: 'pencil',
       items: [],
     },
   ];
@@ -124,6 +125,7 @@ describe('GlintPanelMenuComponent', () => {
       ],
       providers: [
         provideRouter([]),
+        provideGlintTestIcons(),
       ],
     });
   });
@@ -221,7 +223,8 @@ describe('GlintPanelMenuComponent', () => {
   it('should render icons when provided', () => {
     const fixture = TestBed.createComponent(TestPanelMenuIconsHostComponent);
     fixture.detectChanges();
-    const icons = fixture.nativeElement.querySelectorAll('.panel-menu-icon');
+    // Item icons are glint-icon elements with non-chevron names
+    const icons = fixture.nativeElement.querySelectorAll('.panel-menu-header > glint-icon');
     expect(icons.length).toBe(2);
   });
 
@@ -231,14 +234,15 @@ describe('GlintPanelMenuComponent', () => {
     const headers = fixture.nativeElement.querySelectorAll('.panel-menu-header');
     headers[0].click();
     fixture.detectChanges();
-    const childIcons = fixture.nativeElement.querySelectorAll('.panel-menu-child .panel-menu-icon');
+    const childIcons = fixture.nativeElement.querySelectorAll('.panel-menu-child > glint-icon');
     expect(childIcons.length).toBe(1);
   });
 
   it('should not render icon element when icon is not provided', () => {
     const fixture = TestBed.createComponent(TestPanelMenuHostComponent);
     fixture.detectChanges();
-    const icons = fixture.nativeElement.querySelectorAll('.panel-menu-icon');
+    // Items without icons should not have direct glint-icon children (only chevrons inside .chevron span)
+    const icons = fixture.nativeElement.querySelectorAll('.panel-menu-header > glint-icon');
     expect(icons.length).toBe(0);
   });
 

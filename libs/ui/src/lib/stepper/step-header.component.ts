@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { CdkStepHeader } from '@angular/cdk/stepper';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Step header button used inside the stepper.
@@ -9,6 +10,7 @@ import { CdkStepHeader } from '@angular/cdk/stepper';
 @Component({
   selector: 'glint-step-header',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{ provide: CdkStepHeader, useExisting: GlintStepHeaderComponent }],
   host: {
@@ -99,9 +101,9 @@ import { CdkStepHeader } from '@angular/cdk/stepper';
   template: `
     <span class="step-number">
       @if (hasError()) {
-        &#9888;
+        <glint-icon name="triangleAlert" />
       } @else if (complete()) {
-        &#10003;
+        <glint-icon name="check" />
       } @else {
         {{ index() + 1 }}
       }

@@ -13,6 +13,7 @@ import {
 } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
 import { glintId } from '../core/utils/id-generator';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Numeric input with spinner buttons, min/max/step, and ControlValueAccessor support.
@@ -26,6 +27,7 @@ import { glintId } from '../core/utils/id-generator';
 @Component({
   selector: 'glint-input-number',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[attr.data-variant]': 'variant()',
@@ -138,7 +140,7 @@ import { glintId } from '../core/utils/id-generator';
       outline-offset: -2px;
     }
 
-    .spinner-btn svg {
+    .spinner-btn glint-icon {
       inline-size: 0.625rem;
       block-size: 0.625rem;
     }
@@ -205,9 +207,7 @@ import { glintId } from '../core/utils/id-generator';
             [disabled]="isDisabled() || isAtMax()"
             (mousedown)="onIncrement($event)"
           >
-            <svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2 7L5 3L8 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <glint-icon name="chevronUp" />
           </button>
           <button
             class="spinner-btn"
@@ -217,9 +217,7 @@ import { glintId } from '../core/utils/id-generator';
             [disabled]="isDisabled() || isAtMin()"
             (mousedown)="onDecrement($event)"
           >
-            <svg viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2 3L5 7L8 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+            <glint-icon name="chevronDown" />
           </button>
         </span>
       }

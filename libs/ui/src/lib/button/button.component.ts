@@ -321,6 +321,12 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
       background: color-mix(in oklch, var(--glint-color-error), white 80%);
     }
 
+    .content {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--glint-spacing-xs);
+    }
+
     /* ── Loading state ──────────────────────────── */
     :host([data-loading]) .content {
       visibility: hidden;

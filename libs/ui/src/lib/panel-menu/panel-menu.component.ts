@@ -10,6 +10,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import type { GlintMenuItem } from '../menu/menu-item.model';
 import { GLINT_SHELL_SIDEBAR } from '../shell/shell.model';
 import { GlintTooltipDirective } from '../tooltip/tooltip.directive';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Accordion-style vertical menu where top-level items expand/collapse
@@ -26,7 +27,7 @@ import { GlintTooltipDirective } from '../tooltip/tooltip.directive';
 @Component({
   selector: 'glint-panel-menu',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, GlintTooltipDirective],
+  imports: [RouterLink, RouterLinkActive, GlintTooltipDirective, GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'style': 'display: block',
@@ -193,9 +194,7 @@ import { GlintTooltipDirective } from '../tooltip/tooltip.directive';
             [glintTooltipDisabled]="!isCollapsed()"
             glintTooltipPosition="after"
           >
-            @if (item.icon) {
-              <span class="panel-menu-icon" [innerHTML]="item.icon" aria-hidden="true"></span>
-            }
+            @if (item.icon) { <glint-icon [name]="item.icon" /> }
             <span class="panel-menu-label">{{ item.label }}</span>
           </a>
         } @else {
@@ -211,12 +210,10 @@ import { GlintTooltipDirective } from '../tooltip/tooltip.directive';
             glintTooltipPosition="after"
             (click)="onToggle(item)"
           >
-            @if (item.icon) {
-              <span class="panel-menu-icon" [innerHTML]="item.icon" aria-hidden="true"></span>
-            }
+            @if (item.icon) { <glint-icon [name]="item.icon" /> }
             <span class="panel-menu-label">{{ item.label }}</span>
             @if (item.items?.length) {
-              <span class="chevron" [class.expanded]="isExpanded(item)" aria-hidden="true">\u25B6</span>
+              <span class="chevron" [class.expanded]="isExpanded(item)" aria-hidden="true"><glint-icon name="chevronRight" /></span>
             }
           </button>
         }
@@ -232,9 +229,7 @@ import { GlintTooltipDirective } from '../tooltip/tooltip.directive';
                   routerLinkActive="route-active"
                   [attr.aria-disabled]="child.disabled || null"
                 >
-                  @if (child.icon) {
-                    <span class="panel-menu-icon" [innerHTML]="child.icon" aria-hidden="true"></span>
-                  }
+                  @if (child.icon) { <glint-icon [name]="child.icon" /> }
                   {{ child.label }}
                 </a>
               } @else {
@@ -245,9 +240,7 @@ import { GlintTooltipDirective } from '../tooltip/tooltip.directive';
                   [attr.aria-disabled]="child.disabled || null"
                   (click)="onChildClick(child)"
                 >
-                  @if (child.icon) {
-                    <span class="panel-menu-icon" [innerHTML]="child.icon" aria-hidden="true"></span>
-                  }
+                  @if (child.icon) { <glint-icon [name]="child.icon" /> }
                   {{ child.label }}
                 </button>
               }
@@ -262,9 +255,7 @@ import { GlintTooltipDirective } from '../tooltip/tooltip.directive';
                       routerLinkActive="route-active"
                       [attr.aria-disabled]="grandchild.disabled || null"
                     >
-                      @if (grandchild.icon) {
-                        <span class="panel-menu-icon" [innerHTML]="grandchild.icon" aria-hidden="true"></span>
-                      }
+                      @if (grandchild.icon) { <glint-icon [name]="grandchild.icon" /> }
                       {{ grandchild.label }}
                     </a>
                   } @else {
@@ -275,9 +266,7 @@ import { GlintTooltipDirective } from '../tooltip/tooltip.directive';
                       [attr.aria-disabled]="grandchild.disabled || null"
                       (click)="onChildClick(grandchild)"
                     >
-                      @if (grandchild.icon) {
-                        <span class="panel-menu-icon" [innerHTML]="grandchild.icon" aria-hidden="true"></span>
-                      }
+                      @if (grandchild.icon) { <glint-icon [name]="grandchild.icon" /> }
                       {{ grandchild.label }}
                     </button>
                   }

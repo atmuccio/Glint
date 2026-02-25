@@ -12,6 +12,7 @@ import {
   TemplateRef,
 } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Data-driven content slider / carousel.
@@ -30,7 +31,7 @@ import { NgTemplateOutlet } from '@angular/common';
 @Component({
   selector: 'glint-carousel',
   standalone: true,
-  imports: [NgTemplateOutlet],
+  imports: [NgTemplateOutlet, GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'class': 'glint-carousel',
@@ -151,7 +152,7 @@ import { NgTemplateOutlet } from '@angular/common';
     <div class="carousel-container" [class.vertical]="orientation() === 'vertical'">
       @if (showNavigators()) {
         <button class="nav-button prev" (click)="prev()" [disabled]="!canGoPrev()" type="button" aria-label="Previous">
-          &#9664;
+          <glint-icon name="chevronLeft" />
         </button>
       }
       <div class="carousel-viewport">
@@ -167,7 +168,7 @@ import { NgTemplateOutlet } from '@angular/common';
       </div>
       @if (showNavigators()) {
         <button class="nav-button next" (click)="next()" [disabled]="!canGoNext()" type="button" aria-label="Next">
-          &#9654;
+          <glint-icon name="chevronRight" />
         </button>
       }
     </div>

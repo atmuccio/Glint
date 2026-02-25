@@ -18,6 +18,7 @@ import { createDropdownOverlayConfig } from '../core/overlay/overlay-config-fact
 import { CascadeSelectPanelComponent } from './cascade-select-panel.component';
 import type { GlintMenuItem } from '../menu/menu-item.model';
 import { glintId } from '../core/utils/id-generator';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Cascading dropdown where selecting an item with children opens a nested panel.
@@ -35,6 +36,7 @@ import { glintId } from '../core/utils/id-generator';
 @Component({
   selector: 'glint-cascade-select',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.open]': 'isOpen()',
@@ -129,7 +131,7 @@ import { glintId } from '../core/utils/id-generator';
       } @else {
         <span class="cascade-value placeholder">{{ placeholder() }}</span>
       }
-      <span class="cascade-caret" aria-hidden="true">&#9662;</span>
+      <span class="cascade-caret" aria-hidden="true"><glint-icon name="chevronDown" /></span>
     </div>
   `,
 })

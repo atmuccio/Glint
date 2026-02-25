@@ -18,6 +18,7 @@ import { createDropdownOverlayConfig } from '../core/overlay/overlay-config-fact
 import { glintId } from '../core/utils/id-generator';
 import { TreeSelectPanelComponent } from './tree-select-panel.component';
 import type { GlintTreeNode } from '../core/tree/tree-node.model';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Tree select dropdown component with ControlValueAccessor support.
@@ -44,6 +45,7 @@ import type { GlintTreeNode } from '../core/tree/tree-node.model';
 @Component({
   selector: 'glint-tree-select',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.open]': 'isOpen()',
@@ -138,7 +140,7 @@ import type { GlintTreeNode } from '../core/tree/tree-node.model';
       } @else {
         <span class="tree-select-label placeholder">{{ placeholder() }}</span>
       }
-      <span class="tree-select-caret" aria-hidden="true">&#9662;</span>
+      <span class="tree-select-caret" aria-hidden="true"><glint-icon name="chevronDown" /></span>
     </div>
   `,
 })

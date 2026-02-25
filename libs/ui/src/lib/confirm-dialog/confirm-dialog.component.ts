@@ -6,6 +6,7 @@ import {
 } from '@angular/core';
 import { GLINT_DIALOG_DATA } from '../dialog/dialog.config';
 import { GlintDialogRef } from '../dialog/dialog-ref';
+import { GlintIconComponent } from '../icon/icon.component';
 import type { GlintConfirmConfig } from './confirm-dialog.service';
 
 /**
@@ -14,6 +15,7 @@ import type { GlintConfirmConfig } from './confirm-dialog.service';
 @Component({
   selector: 'glint-confirm-dialog',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: `
     :host {
@@ -91,7 +93,7 @@ import type { GlintConfirmConfig } from './confirm-dialog.service';
   template: `
     @if (config.severity) {
       <div class="icon" [class]="config.severity">
-        {{ severityIcon() }}
+        <glint-icon [name]="severityIcon()" />
       </div>
     }
     <div class="message">{{ config.message }}</div>
@@ -107,9 +109,9 @@ export class GlintConfirmDialogComponent {
 
   protected severityIcon = computed(() => {
     switch (this.config.severity) {
-      case 'info': return '\u24D8';
-      case 'warning': return '\u26A0';
-      case 'danger': return '\u2716';
+      case 'info': return 'info';
+      case 'warning': return 'triangleAlert';
+      case 'danger': return 'circleX';
       default: return '';
     }
   });

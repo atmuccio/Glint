@@ -4,6 +4,7 @@ import {
   input,
   output,
 } from '@angular/core';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Tag component for displaying labels with optional icon and remove button.
@@ -17,6 +18,7 @@ import {
 @Component({
   selector: 'glint-tag',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[attr.data-severity]': 'severity()',
@@ -99,7 +101,7 @@ import {
         type="button"
         aria-label="Remove"
         (click)="removed.emit()"
-      >&#10005;</button>
+      ><glint-icon name="x" /></button>
     }
   `,
 })

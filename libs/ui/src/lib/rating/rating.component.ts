@@ -7,6 +7,7 @@ import {
   signal,
 } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Star rating component with ControlValueAccessor.
@@ -21,6 +22,7 @@ import { ControlValueAccessor, NgControl } from '@angular/forms';
 @Component({
   selector: 'glint-rating',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'role': 'radiogroup',
@@ -70,7 +72,7 @@ import { ControlValueAccessor, NgControl } from '@angular/forms';
       box-shadow: 0 0 0 2px var(--glint-color-surface), 0 0 0 4px var(--glint-color-focus-ring);
     }
 
-    .cancel-icon svg {
+    .cancel-icon glint-icon {
       inline-size: 1.25rem;
       block-size: 1.25rem;
     }
@@ -97,19 +99,21 @@ import { ControlValueAccessor, NgControl } from '@angular/forms';
       box-shadow: 0 0 0 2px var(--glint-color-surface), 0 0 0 4px var(--glint-color-focus-ring);
     }
 
-    .star svg {
+    .star glint-icon {
       inline-size: 1.5rem;
       block-size: 1.5rem;
     }
 
-    .star.filled svg {
+    .star.filled glint-icon {
       color: var(--glint-color-warning);
-      fill: var(--glint-color-warning);
     }
 
-    .star.empty svg {
+    .star.filled svg {
+      fill: currentColor;
+    }
+
+    .star.empty glint-icon {
       color: var(--glint-color-border);
-      fill: none;
     }
   `,
   template: `
@@ -123,9 +127,7 @@ import { ControlValueAccessor, NgControl } from '@angular/forms';
         (keydown.enter)="onClear()"
         (keydown.space)="onClear(); $event.preventDefault()"
       >
-        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M6 6L14 14M14 6L6 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
+        <glint-icon name="x" />
       </button>
     }
     @for (star of starsArray(); track star) {
@@ -144,15 +146,7 @@ import { ControlValueAccessor, NgControl } from '@angular/forms';
         (keydown.arrowLeft)="onArrow(-1, $event)"
         (mouseenter)="onStarHover(star)"
       >
-        @if (isStarFilled(star)) {
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/>
-          </svg>
-        } @else {
-          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
-          </svg>
-        }
+        <glint-icon name="star" />
       </span>
     }
   `,

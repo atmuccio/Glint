@@ -6,7 +6,8 @@
     "@angular/common": "^21.1.0",
     "@angular/core": "^21.1.0",
     "@angular/forms": "^21.1.0",
-    "rxjs": "^7.0.0"
+    "rxjs": "^7.0.0",
+    "lucide": ">=0.400.0"
   },
   "sideEffects": false
 }

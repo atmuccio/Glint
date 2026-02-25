@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { Component, signal } from '@angular/core';
 import { GlintStepperComponent } from './stepper.component';
 import { GlintStepComponent } from './step.component';
+import { provideGlintTestIcons } from '../testing/test-utils';
 
 @Component({
   selector: 'glint-test-stepper-host',
@@ -40,6 +41,7 @@ describe('GlintStepperComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [TestStepperHostComponent, TestStepperErrorHostComponent],
+      providers: [provideGlintTestIcons()],
     });
   });
 
@@ -156,8 +158,9 @@ describe('GlintStepperComponent', () => {
     const fixture = TestBed.createComponent(TestStepperErrorHostComponent);
     fixture.detectChanges();
     const stepNumber = fixture.nativeElement.querySelector('glint-step-header .step-number');
-    // Warning triangle ⚠ = &#9888;
-    expect(stepNumber.textContent?.trim()).toBe('⚠');
+    const icon = stepNumber.querySelector('glint-icon');
+    expect(icon).toBeTruthy();
+    expect(icon.getAttribute('name')).toBe('triangleAlert');
   });
 
   it('should not apply complete class when hasError overrides completed', () => {

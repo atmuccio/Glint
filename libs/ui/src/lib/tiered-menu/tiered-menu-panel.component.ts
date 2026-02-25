@@ -6,6 +6,7 @@ import {
 } from '@angular/core';
 import { CdkMenu, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import type { GlintMenuItem } from '../menu/menu-item.model';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Internal panel component for TieredMenu.
@@ -19,7 +20,7 @@ import type { GlintMenuItem } from '../menu/menu-item.model';
 @Component({
   selector: 'glint-tiered-menu-panel',
   standalone: true,
-  imports: [CdkMenu, CdkMenuItem, CdkMenuTrigger],
+  imports: [CdkMenu, CdkMenuItem, CdkMenuTrigger, GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: `
     :host {
@@ -95,7 +96,7 @@ import type { GlintMenuItem } from '../menu/menu-item.model';
             [cdkMenuTriggerFor]="submenuTemplate"
           >
             <span class="menu-item-label">{{ item.label }}</span>
-            <span class="submenu-indicator" aria-hidden="true">&#9654;</span>
+            <span class="submenu-indicator" aria-hidden="true"><glint-icon name="chevronRight" /></span>
           </button>
           <ng-template #submenuTemplate>
             <div class="glint-tiered-menu" cdkMenu>
@@ -108,7 +109,7 @@ import type { GlintMenuItem } from '../menu/menu-item.model';
                     [cdkMenuTriggerFor]="nestedSubmenuTemplate"
                   >
                     <span class="menu-item-label">{{ subItem.label }}</span>
-                    <span class="submenu-indicator" aria-hidden="true">&#9654;</span>
+                    <span class="submenu-indicator" aria-hidden="true"><glint-icon name="chevronRight" /></span>
                   </button>
                   <ng-template #nestedSubmenuTemplate>
                     <div class="glint-tiered-menu" cdkMenu>

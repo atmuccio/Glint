@@ -4,6 +4,7 @@ import {
   input,
   model,
 } from '@angular/core';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Collapsible panel container with header, content, and footer slots.
@@ -20,6 +21,7 @@ import {
 @Component({
   selector: 'glint-panel',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'style': 'display: block',
@@ -114,7 +116,7 @@ import {
             [attr.aria-expanded]="!collapsed()"
             (click)="toggle()"
           >
-            <span class="chevron" [class.collapsed]="collapsed()">&#9654;</span>
+            <span class="chevron" [class.collapsed]="collapsed()"><glint-icon name="chevronRight" /></span>
             {{ header() }}
           </button>
         } @else {

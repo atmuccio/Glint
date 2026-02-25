@@ -12,6 +12,7 @@ import {
   CdkDropList,
   moveItemInArray,
 } from '@angular/cdk/drag-drop';
+import { GlintIconComponent } from '../icon/icon.component';
 import { resolveItemLabel } from '../core/utils/label-resolver';
 import { filterByLabel } from '../core/utils/filter-utils';
 
@@ -33,7 +34,7 @@ import { filterByLabel } from '../core/utils/filter-utils';
 @Component({
   selector: 'glint-order-list',
   standalone: true,
-  imports: [CdkDropList, CdkDrag],
+  imports: [CdkDropList, CdkDrag, GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.disabled]': 'disabled()',
@@ -194,25 +195,25 @@ import { filterByLabel } from '../core/utils/filter-utils';
         aria-label="Move to top"
         [disabled]="!canMoveUp()"
         (click)="moveToTop()"
-      >&#8648;</button>
+      ><glint-icon name="chevronsUp" /></button>
       <button
         type="button"
         aria-label="Move up"
         [disabled]="!canMoveUp()"
         (click)="moveUp()"
-      >&#9650;</button>
+      ><glint-icon name="arrowUp" /></button>
       <button
         type="button"
         aria-label="Move down"
         [disabled]="!canMoveDown()"
         (click)="moveDown()"
-      >&#9660;</button>
+      ><glint-icon name="arrowDown" /></button>
       <button
         type="button"
         aria-label="Move to bottom"
         [disabled]="!canMoveDown()"
         (click)="moveToBottom()"
-      >&#8650;</button>
+      ><glint-icon name="chevronsDown" /></button>
     </div>
     <div class="list-container">
       @if (header()) {

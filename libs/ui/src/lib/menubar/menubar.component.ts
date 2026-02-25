@@ -5,6 +5,7 @@ import {
 } from '@angular/core';
 import { CdkMenu, CdkMenuBar, CdkMenuItem, CdkMenuTrigger } from '@angular/cdk/menu';
 import type { GlintMenuItem } from '../menu/menu-item.model';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Horizontal menu bar with dropdown submenus, similar to a desktop application menu bar.
@@ -19,7 +20,7 @@ import type { GlintMenuItem } from '../menu/menu-item.model';
 @Component({
   selector: 'glint-menubar',
   standalone: true,
-  imports: [CdkMenu, CdkMenuBar, CdkMenuItem, CdkMenuTrigger],
+  imports: [CdkMenu, CdkMenuBar, CdkMenuItem, CdkMenuTrigger, GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'style': 'display: block',
@@ -136,7 +137,7 @@ import type { GlintMenuItem } from '../menu/menu-item.model';
             [cdkMenuTriggerFor]="dropdownTemplate"
           >
             {{ item.label }}
-            <span class="caret">&#9662;</span>
+            <span class="caret"><glint-icon name="chevronDown" /></span>
           </button>
           <ng-template #dropdownTemplate>
             <div class="dropdown-menu" cdkMenu>

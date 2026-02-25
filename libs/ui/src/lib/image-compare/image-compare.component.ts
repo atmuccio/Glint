@@ -9,6 +9,7 @@ import {
   signal,
   untracked,
 } from '@angular/core';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Before/after image comparison slider.
@@ -30,6 +31,7 @@ import {
 @Component({
   selector: 'glint-image-compare',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'class': 'glint-image-compare',
@@ -60,7 +62,7 @@ import {
         (keydown)="onKeydown($event)"
       >
         <div class="handle-line"></div>
-        <div class="handle-circle">&#8596;</div>
+        <div class="handle-circle"><glint-icon name="arrowLeftRight" /></div>
         <div class="handle-line"></div>
       </div>
     </div>

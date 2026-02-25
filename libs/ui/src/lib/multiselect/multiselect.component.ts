@@ -19,6 +19,7 @@ import { createDropdownOverlayConfig } from '../core/overlay/overlay-config-fact
 import { resolveItemLabel } from '../core/utils/label-resolver';
 import { GlintMultiSelectPanelComponent } from './multiselect-panel.component';
 import { glintId } from '../core/utils/id-generator';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * MultiSelect component with chips, filtering, select all, and grouping.
@@ -48,6 +49,7 @@ import { glintId } from '../core/utils/id-generator';
 @Component({
   selector: 'glint-multiselect',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.open]': 'isOpen()',
@@ -196,7 +198,7 @@ import { glintId } from '../core/utils/id-generator';
           [class.placeholder]="!selectedValues().length"
         >{{ displayText() }}</span>
       }
-      <span class="multiselect-caret" aria-hidden="true">&#9662;</span>
+      <span class="multiselect-caret" aria-hidden="true"><glint-icon name="chevronDown" /></span>
     </div>
   `,
 })

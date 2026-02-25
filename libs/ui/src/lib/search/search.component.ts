@@ -6,6 +6,7 @@ import {
   model,
   viewChild,
 } from '@angular/core';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Lightweight search input for filtering and quick-find scenarios.
@@ -20,6 +21,7 @@ import {
 @Component({
   selector: 'glint-search',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'role': 'search',
@@ -121,7 +123,7 @@ import {
     }
   `,
   template: `
-    <span class="search-icon" aria-hidden="true">&#128269;</span>
+    <glint-icon class="search-icon" name="search" aria-hidden="true" />
     <input #inputEl class="search-input" type="search"
            [attr.aria-label]="placeholder()"
            [placeholder]="placeholder()"
@@ -129,7 +131,7 @@ import {
            (input)="onInput($event)" />
     @if (value()) {
       <button class="clear-btn" type="button" aria-label="Clear search"
-              (click)="clear()">&#10005;</button>
+              (click)="clear()"><glint-icon name="x" /></button>
     }
   `,
 })

@@ -11,6 +11,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { ControlValueAccessor, NgControl } from '@angular/forms';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Simple rich text editor using `contenteditable` with a formatting toolbar.
@@ -25,6 +26,7 @@ import { ControlValueAccessor, NgControl } from '@angular/forms';
 @Component({
   selector: 'glint-editor',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.disabled]': 'isDisabled()',
@@ -132,7 +134,7 @@ import { ControlValueAccessor, NgControl } from '@angular/forms';
         </button>
         <span class="toolbar-separator"></span>
         <button type="button" class="toolbar-btn" (click)="execCommand('removeFormat')" title="Clear formatting" aria-label="Clear formatting">
-          &#10006;
+          <glint-icon name="x" />
         </button>
       </div>
     }

@@ -147,4 +147,9 @@ export const appRoutes: Route[] = [
     loadComponent: () =>
       import('./pages/shell-demo.component').then(m => m.ShellDemoComponent),
   },
+  {
+    path: 'icons',
+    loadComponent: () =>
+      import('./pages/icons-demo.component').then(m => m.IconsDemoComponent),
+  },
 ];

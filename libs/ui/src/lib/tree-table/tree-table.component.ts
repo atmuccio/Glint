@@ -11,6 +11,7 @@ import {
 import { NgTemplateOutlet } from '@angular/common';
 import { GlintTreeTableColumnDirective } from './tree-table-column.directive';
 import { GlintTreeNode } from '../core/tree/tree-node.model';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /** Flat entry representing a visible tree row with its depth level. */
 interface FlatTreeEntry {
@@ -40,7 +41,7 @@ interface FlatTreeEntry {
 @Component({
   selector: 'glint-tree-table',
   standalone: true,
-  imports: [NgTemplateOutlet],
+  imports: [NgTemplateOutlet, GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     style: 'display: block',
@@ -163,7 +164,7 @@ interface FlatTreeEntry {
                   <span [style.padding-inline-start.rem]="entry.depth * 1.5" class="tree-cell">
                     @if (entry.node.children?.length && !entry.node.leaf) {
                       <button class="toggle" (click)="toggleNode(entry.node); $event.stopPropagation()" type="button">
-                        <span class="chevron" [class.expanded]="entry.node.expanded">&#9654;</span>
+                        <span class="chevron" [class.expanded]="entry.node.expanded"><glint-icon name="chevronRight" /></span>
                       </button>
                     } @else {
                       <span class="toggle-placeholder"></span>

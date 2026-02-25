@@ -4,6 +4,7 @@ import {
   input,
   model,
 } from '@angular/core';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Fieldset with legend and optional collapse toggle.
@@ -18,6 +19,7 @@ import {
 @Component({
   selector: 'glint-fieldset',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: `
     :host {
@@ -78,7 +80,7 @@ import {
             [attr.aria-expanded]="!collapsed()"
             (click)="toggle()"
           >
-            <span class="chevron" [class.collapsed]="collapsed()">&#9660;</span>
+            <span class="chevron" [class.collapsed]="collapsed()"><glint-icon name="chevronDown" /></span>
             {{ legend() }}
           </button>
         } @else {

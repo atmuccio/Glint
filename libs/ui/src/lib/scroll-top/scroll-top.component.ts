@@ -7,6 +7,7 @@ import {
   input,
   signal,
 } from '@angular/core';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Floating action button that appears after the user scrolls past a threshold.
@@ -22,6 +23,7 @@ import {
 @Component({
   selector: 'glint-scroll-top',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[style.position]': '"fixed"',
@@ -75,7 +77,7 @@ import {
         (click)="scrollToTop()"
         aria-label="Scroll to top"
         type="button"
-      >&#9650;</button>
+      ><glint-icon name="chevronUp" /></button>
     }
   `,
 })

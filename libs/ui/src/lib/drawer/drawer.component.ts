@@ -14,6 +14,7 @@ import {
 import { OverlayConfig, OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Drawer (side panel) component that slides in from the edge.
@@ -29,6 +30,7 @@ import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.serv
 @Component({
   selector: 'glint-drawer',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: `
     .drawer-container {
@@ -88,7 +90,7 @@ import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.serv
         @if (header()) {
           <div class="drawer-header">
             <h2 class="drawer-title">{{ header() }}</h2>
-            <button class="drawer-close" aria-label="Close" (click)="close()">&#10005;</button>
+            <button class="drawer-close" aria-label="Close" (click)="close()"><glint-icon name="x" /></button>
           </div>
         }
         <div class="drawer-body">

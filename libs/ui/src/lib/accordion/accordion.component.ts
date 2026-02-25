@@ -6,6 +6,7 @@ import {
 import { NgTemplateOutlet } from '@angular/common';
 import { CdkAccordion } from '@angular/cdk/accordion';
 import { GlintAccordionPanelComponent } from './accordion-panel.component';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Accordion container with expandable panels.
@@ -24,7 +25,7 @@ import { GlintAccordionPanelComponent } from './accordion-panel.component';
 @Component({
   selector: 'glint-accordion',
   standalone: true,
-  imports: [NgTemplateOutlet],
+  imports: [NgTemplateOutlet, GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   hostDirectives: [{ directive: CdkAccordion, inputs: ['multi: multiple'] }],
   styles: `
@@ -101,7 +102,7 @@ import { GlintAccordionPanelComponent } from './accordion-panel.component';
           (keydown)="onKeydown($event)"
         >
           <span>{{ panel.header() }}</span>
-          <span class="chevron" [class.open]="panel.expanded()" aria-hidden="true">&#9660;</span>
+          <span class="chevron" [class.open]="panel.expanded()" aria-hidden="true"><glint-icon name="chevronDown" /></span>
         </button>
         @if (panel.expanded()) {
           <div

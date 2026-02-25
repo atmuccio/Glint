@@ -4,6 +4,7 @@ import {
   input,
   output,
 } from '@angular/core';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Chip component for compact elements like tags in an input field.
@@ -18,6 +19,7 @@ import {
 @Component({
   selector: 'glint-chip',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: `
     :host {
@@ -73,7 +75,7 @@ import {
     }
     <ng-content />
     @if (removable()) {
-      <button class="remove" type="button" aria-label="Remove" (click)="removed.emit()">&#10005;</button>
+      <button class="remove" type="button" aria-label="Remove" (click)="removed.emit()"><glint-icon name="x" /></button>
     }
   `,
 })

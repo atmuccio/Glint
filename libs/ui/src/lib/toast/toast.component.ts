@@ -4,6 +4,7 @@ import {
   inject,
 } from '@angular/core';
 import { GlintToastService } from './toast.service';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Toast container component. Place once in the app root.
@@ -16,6 +17,7 @@ import { GlintToastService } from './toast.service';
 @Component({
   selector: 'glint-toast',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[attr.data-position]': 'position()',
@@ -139,7 +141,7 @@ import { GlintToastService } from './toast.service';
   template: `
     @for (msg of messages(); track msg.id) {
       <div class="toast" [attr.data-severity]="msg.severity" role="alert">
-        <span class="icon">{{ severityIcon(msg.severity) }}</span>
+        <glint-icon class="icon" [name]="severityIcon(msg.severity)" />
         <div class="content">
           <div class="summary">{{ msg.summary }}</div>
           @if (msg.detail) {
@@ -147,7 +149,7 @@ import { GlintToastService } from './toast.service';
           }
         </div>
         @if (msg.closable !== false) {
-          <button class="close" aria-label="Close" (click)="dismiss(msg.id)">&#10005;</button>
+          <button class="close" aria-label="Close" (click)="dismiss(msg.id)"><glint-icon name="x" /></button>
         }
       </div>
     }
@@ -161,10 +163,10 @@ export class GlintToastComponent {
 
   protected severityIcon(severity: string): string {
     switch (severity) {
-      case 'success': return '\u2713';
-      case 'info': return '\u24D8';
-      case 'warning': return '\u26A0';
-      case 'danger': return '\u2716';
+      case 'success': return 'circleCheck';
+      case 'info': return 'info';
+      case 'warning': return 'triangleAlert';
+      case 'danger': return 'circleX';
       default: return '';
     }
   }

@@ -13,6 +13,7 @@ import {
   moveItemInArray,
   transferArrayItem,
 } from '@angular/cdk/drag-drop';
+import { GlintIconComponent } from '../icon/icon.component';
 import { resolveItemLabel } from '../core/utils/label-resolver';
 import { filterByLabel } from '../core/utils/filter-utils';
 
@@ -35,7 +36,7 @@ import { filterByLabel } from '../core/utils/filter-utils';
 @Component({
   selector: 'glint-pick-list',
   standalone: true,
-  imports: [CdkDropList, CdkDrag],
+  imports: [CdkDropList, CdkDrag, GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.disabled]': 'disabled()',
@@ -238,25 +239,25 @@ import { filterByLabel } from '../core/utils/filter-utils';
         aria-label="Move all to target"
         [disabled]="source().length === 0"
         (click)="moveAllToTarget()"
-      >&#8658;</button>
+      ><glint-icon name="chevronsRight" /></button>
       <button
         type="button"
         aria-label="Move selected to target"
         [disabled]="sourceSelection().length === 0"
         (click)="moveSelectedToTarget()"
-      >&#8594;</button>
+      ><glint-icon name="arrowRight" /></button>
       <button
         type="button"
         aria-label="Move selected to source"
         [disabled]="targetSelection().length === 0"
         (click)="moveSelectedToSource()"
-      >&#8592;</button>
+      ><glint-icon name="arrowLeft" /></button>
       <button
         type="button"
         aria-label="Move all to source"
         [disabled]="target().length === 0"
         (click)="moveAllToSource()"
-      >&#8656;</button>
+      ><glint-icon name="chevronsLeft" /></button>
     </div>
 
     <!-- Target list -->

@@ -15,6 +15,7 @@ import { DROPDOWN_END_POSITIONS } from '../core/overlay/overlay-positions';
 import { createDropdownOverlayConfig } from '../core/overlay/overlay-config-factory';
 import { GlintMenuPanelComponent } from '../menu/menu-panel.component';
 import type { GlintMenuItem } from '../menu/menu-item.model';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Split button with a primary action and a dropdown menu.
@@ -27,6 +28,7 @@ import type { GlintMenuItem } from '../menu/menu-item.model';
 @Component({
   selector: 'glint-split-button',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[attr.data-severity]': 'severity()',
@@ -92,7 +94,7 @@ import type { GlintMenuItem } from '../menu/menu-item.model';
   template: `
     <button class="primary" type="button" (click)="primaryClick.emit()">{{ label() }}</button>
     <button class="dropdown" type="button" (click)="toggleMenu()" aria-label="More options" aria-haspopup="true" [attr.aria-expanded]="isOpen()">
-      <span class="chevron">&#9660;</span>
+      <span class="chevron"><glint-icon name="chevronDown" /></span>
     </button>
   `,
 })

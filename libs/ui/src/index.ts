@@ -120,4 +120,13 @@ export { GLINT_SHELL_SIDEBAR } from './lib/shell/shell.model';
 export type { GlintShellSidebarHost } from './lib/shell/shell.model';
 export { GlintSearchComponent } from './lib/search/search.component';
 export { DARK_ZONE, COMPACT_ZONE, DANGER_ZONE, SOFT_ZONE, DARK_COMPACT_ZONE } from './lib/presets/theme-presets';
-export { cleanupOverlays } from './lib/testing/test-utils';
+
+// Icon system
+export { GlintIconComponent } from './lib/icon/icon.component';
+export { GLINT_ICON_REGISTRY, provideGlintIcons } from './lib/icon/icon.registry';
+export { GLINT_ICON_CONFIG, provideGlintIconConfig } from './lib/icon/icon.config';
+export type { GlintIconConfig } from './lib/icon/icon.config';
+export { mapIcons, lucideToSvg } from './lib/icon/map-icons';
+
+// Testing
+export { cleanupOverlays, provideGlintTestIcons } from './lib/testing/test-utils';

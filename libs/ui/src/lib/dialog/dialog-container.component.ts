@@ -8,6 +8,7 @@ import { CdkDialogContainer } from '@angular/cdk/dialog';
 import { CdkPortalOutlet } from '@angular/cdk/portal';
 import { GlintDialogConfig, GLINT_DIALOG_CONFIG } from './dialog.config';
 import { GlintDialogRef } from './dialog-ref';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Internal dialog container that wraps dialog content.
@@ -23,7 +24,7 @@ import { GlintDialogRef } from './dialog-ref';
 @Component({
   selector: 'glint-dialog-container',
   standalone: true,
-  imports: [CdkPortalOutlet],
+  imports: [CdkPortalOutlet, GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
   host: {
@@ -102,7 +103,7 @@ import { GlintDialogRef } from './dialog-ref';
             type="button"
             aria-label="Close dialog"
             (click)="glintDialogRef.close()"
-          >&#10005;</button>
+          ><glint-icon name="x" /></button>
         }
       </div>
     }

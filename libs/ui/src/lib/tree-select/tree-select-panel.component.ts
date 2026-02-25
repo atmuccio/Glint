@@ -6,6 +6,7 @@ import {
   signal,
 } from '@angular/core';
 import type { GlintTreeNode } from '../core/tree/tree-node.model';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /** Flattened node for rendering, carrying depth and expansion state. */
 interface FlatTreeNode {
@@ -22,6 +23,7 @@ interface FlatTreeNode {
 @Component({
   selector: 'glint-tree-select-panel',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'role': 'tree',
@@ -186,16 +188,14 @@ interface FlatTreeNode {
             [class.expanded]="flat.expanded"
             (click)="onToggleExpand(flat.node, $event)"
             aria-hidden="true"
-          >&#9654;</span>
+          ><glint-icon name="chevronRight" /></span>
         } @else {
           <span class="toggle-placeholder"></span>
         }
         @if (selectionMode() === 'checkbox') {
           <span class="checkbox-box" [class.checked]="isNodeSelected(flat.node)">
             @if (isNodeSelected(flat.node)) {
-              <svg class="checkbox-check" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M2 6L5 9L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
+              <glint-icon class="checkbox-check" name="check" />
             }
           </span>
         }

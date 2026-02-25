@@ -6,6 +6,7 @@ import {
   inject,
   input,
 } from '@angular/core';
+import { GlintIconComponent } from '../icon/icon.component';
 import { GLINT_SELECT } from './select.model';
 
 let nextOptionId = 0;
@@ -24,6 +25,7 @@ let nextOptionId = 0;
 @Component({
   selector: 'glint-select-option',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'role': 'option',
@@ -89,7 +91,7 @@ let nextOptionId = 0;
   `,
   template: `
     @if (showCheckbox()) {
-      <span class="checkbox" aria-hidden="true">@if (selected()) {&#10003;}</span>
+      <span class="checkbox" aria-hidden="true">@if (selected()) {<glint-icon name="check" />}</span>
     }
     <ng-content />
   `,

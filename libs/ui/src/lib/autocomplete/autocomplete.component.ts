@@ -19,6 +19,7 @@ import { createDropdownOverlayConfig } from '../core/overlay/overlay-config-fact
 import { resolveItemLabel } from '../core/utils/label-resolver';
 import { AutoCompletePanelComponent } from './autocomplete-panel.component';
 import { glintId } from '../core/utils/id-generator';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * AutoComplete component with suggestion dropdown, single/multiple selection, and CVA.
@@ -47,6 +48,7 @@ import { glintId } from '../core/utils/id-generator';
 @Component({
   selector: 'glint-autocomplete',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.open]': 'isOpen()',
@@ -231,7 +233,7 @@ import { glintId } from '../core/utils/id-generator';
             type="button"
             tabindex="-1"
             aria-label="Show suggestions"
-          >&#9662;</button>
+          ><glint-icon name="chevronDown" /></button>
         }
       </div>
     } @else {
@@ -258,7 +260,7 @@ import { glintId } from '../core/utils/id-generator';
             type="button"
             tabindex="-1"
             aria-label="Show suggestions"
-          >&#9662;</button>
+          ><glint-icon name="chevronDown" /></button>
         }
       </div>
     }

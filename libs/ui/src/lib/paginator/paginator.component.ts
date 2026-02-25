@@ -6,6 +6,7 @@ import {
   model,
   output,
 } from '@angular/core';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /** Paginator state change event */
 export interface GlintPageEvent {
@@ -31,6 +32,7 @@ export interface GlintPageEvent {
 @Component({
   selector: 'glint-paginator',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'role': 'navigation',
@@ -96,13 +98,13 @@ export interface GlintPageEvent {
       [disabled]="currentPage() === 0"
       aria-label="First page"
       (click)="goToPage(0)"
-    >&#171;</button>
+    ><glint-icon name="chevronsLeft" /></button>
     <button
       class="page-btn"
       [disabled]="currentPage() === 0"
       aria-label="Previous page"
       (click)="goToPage(currentPage() - 1)"
-    >&#8249;</button>
+    ><glint-icon name="chevronLeft" /></button>
 
     @for (p of visiblePages(); track p) {
       <button
@@ -118,13 +120,13 @@ export interface GlintPageEvent {
       [disabled]="currentPage() >= totalPages() - 1"
       aria-label="Next page"
       (click)="goToPage(currentPage() + 1)"
-    >&#8250;</button>
+    ><glint-icon name="chevronRight" /></button>
     <button
       class="page-btn"
       [disabled]="currentPage() >= totalPages() - 1"
       aria-label="Last page"
       (click)="goToPage(totalPages() - 1)"
-    >&#187;</button>
+    ><glint-icon name="chevronsRight" /></button>
 
     <span class="info">{{ first() + 1 }}–{{ Math.min(first() + rows(), totalRecords()) }} of {{ totalRecords() }}</span>
   `,

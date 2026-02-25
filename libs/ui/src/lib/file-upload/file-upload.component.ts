@@ -7,6 +7,7 @@ import {
   signal,
   viewChild,
 } from '@angular/core';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Format bytes into human-readable file size string.
@@ -37,6 +38,7 @@ function formatFileSize(bytes: number): string {
 @Component({
   selector: 'glint-file-upload',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'style': 'display: block',
@@ -263,7 +265,7 @@ function formatFileSize(bytes: number): string {
               type="button"
               aria-label="Remove"
               (click)="onRemoveFile(file)"
-            >&#10005;</button>
+            ><glint-icon name="x" /></button>
           </li>
         }
       </ul>

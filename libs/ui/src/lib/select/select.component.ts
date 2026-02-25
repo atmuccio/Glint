@@ -24,6 +24,7 @@ import { createDropdownOverlayConfig } from '../core/overlay/overlay-config-fact
 import { GLINT_SELECT, GlintSelectHost, DEFAULT_COMPARE_WITH, CompareWithFn } from './select.model';
 import { GlintSelectOptionComponent } from './select-option.component';
 import { glintId } from '../core/utils/id-generator';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Select component with single/multi-select, search, keyboard navigation, and CVA.
@@ -44,6 +45,7 @@ import { glintId } from '../core/utils/id-generator';
 @Component({
   selector: 'glint-select',
   standalone: true,
+  imports: [GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styleUrl: './select.component.css',
   host: {
@@ -77,7 +79,7 @@ import { glintId } from '../core/utils/id-generator';
       } @else {
         <span class="value-text placeholder">{{ placeholder() }}</span>
       }
-      <span class="arrow" aria-hidden="true">&#9662;</span>
+      <span class="arrow" aria-hidden="true"><glint-icon name="chevronDown" /></span>
     </div>
 
     <ng-template #panelTemplate>
