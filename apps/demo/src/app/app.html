@@ -1,0 +1,58 @@
+<glint-shell [breakpointCollapse]="1024">
+  <glint-style-zone [theme]="DARK_ZONE">
+    <glint-shell-sidebar [(collapsed)]="sidebarCollapsed" width="240px" collapsedWidth="56px">
+      <div class="sidebar-header" [class.collapsed]="sidebarCollapsed()">
+        <span class="logo-icon">&#9670;</span>
+        @if (!sidebarCollapsed()) {
+          <div class="logo-text">
+            <span class="logo">@glint-ng/core</span>
+            <span class="version">v0.1.0</span>
+          </div>
+        }
+      </div>
+      <glint-divider />
+      @if (!sidebarCollapsed()) {
+        <div class="search-wrapper">
+          <glint-search [(value)]="searchQuery" placeholder="Search components..." variant="filled" />
+        </div>
+      }
+      @if (searchQuery()) {
+        <div class="search-results">
+          @for (link of filteredLinks(); track link.routerLink) {
+            <a class="search-result-link"
+               [routerLink]="link.routerLink"
+               routerLinkActive="active"
+               (click)="clearSearch()">
+              <span class="result-group">{{ link.group }}</span>
+              {{ link.label }}
+            </a>
+          }
+          @if (!filteredLinks().length) {
+            <div class="no-results">No matches</div>
+          }
+        </div>
+      } @else {
+        <glint-panel-menu [items]="navItems" [multiple]="true" />
+      }
+    </glint-shell-sidebar>
+  </glint-style-zone>
+
+  <glint-shell-header>
+    <div class="header-content">
+      <glint-button variant="ghost" size="sm" (click)="sidebarCollapsed.set(!sidebarCollapsed())">
+        &#9776;
+      </glint-button>
+      <span class="header-title">Component Catalog</span>
+      <a class="github-link" href="https://github.com/atmuccio/Glint" target="_blank" rel="noopener">
+        <glint-icon name="github" size="18" />
+        <span class="github-label">GitHub</span>
+      </a>
+    </div>
+  </glint-shell-header>
+
+  <glint-shell-content>
+    <div class="page-content">
+      <router-outlet />
+    </div>
+  </glint-shell-content>
+</glint-shell>

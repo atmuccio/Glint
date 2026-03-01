@@ -1,0 +1,37 @@
+{
+  "name": "@glint-ng/core",
+  "version": "0.1.0",
+  "description": "Angular Style Zone UI component library — themeable components built on Angular CDK with signal-based cascading style customization",
+  "license": "MIT",
+  "author": "Anthony Muccio",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atmuccio/Glint.git",
+    "directory": "libs/ui"
+  },
+  "homepage": "https://atmuccio.github.io/Glint",
+  "bugs": {
+    "url": "https://github.com/atmuccio/Glint/issues"
+  },
+  "keywords": [
+    "angular",
+    "ui",
+    "components",
+    "theming",
+    "style-zone",
+    "cdk",
+    "signals"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@angular/cdk": "^21.1.0",
+    "@angular/common": "^21.1.0",
+    "@angular/core": "^21.1.0",
+    "@angular/forms": "^21.1.0",
+    "rxjs": "^7.0.0",
+    "lucide": ">=0.400.0"
+  },
+  "sideEffects": false
+}

@@ -1,0 +1,34 @@
+/**
+ * @glint-ng/core — Global Stylesheet Entry Point
+ *
+ * Import this file in your application's styles.scss:
+ *   @use '@glint-ng/core/styles/glint-ui';
+ *
+ * This establishes the CSS layer order and applies a minimal reset.
+ * Component styles are handled inline or via component CSS files.
+ */
+@use 'layers';
+
+@layer glint.reset {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer glint.components {
+  .glint-dialog-backdrop {
+    background: rgb(0 0 0 / 0.4);
+  }
+}
