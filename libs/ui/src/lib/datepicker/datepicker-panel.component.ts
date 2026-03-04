@@ -290,8 +290,7 @@ export interface CalendarDay {
                 </div>
                 <div class="calendar-days">
                   @for (day of getCalendarDaysForMonth(monthOffset); track day.date.getTime()) {
-                    @if (dayTemplate()) {
-                      <button
+                    <button
                         class="day"
                         [class.today]="isToday(day.date)"
                         [class.selected]="isSelected(day.date)"
@@ -302,7 +301,8 @@ export interface CalendarDay {
                         [attr.aria-disabled]="isDateDisabled(day.date) || null"
                         (click)="onDayClick(day.date)"
                         type="button"
-                      ><ng-container
+                      >@if (dayTemplate()) {
+                        <ng-container
                           [ngTemplateOutlet]="dayTemplate()!"
                           [ngTemplateOutletContext]="{
                             $implicit: day.date,
@@ -312,21 +312,10 @@ export interface CalendarDay {
                             inRange: isInRange(day.date),
                             otherMonth: day.otherMonth
                           }"
-                        /></button>
-                    } @else {
-                      <button
-                        class="day"
-                        [class.today]="isToday(day.date)"
-                        [class.selected]="isSelected(day.date)"
-                        [class.other-month]="day.otherMonth"
-                        [class.disabled]="isDateDisabled(day.date)"
-                        [class.in-range]="isInRange(day.date)"
-                        [attr.aria-selected]="isSelected(day.date)"
-                        [attr.aria-disabled]="isDateDisabled(day.date) || null"
-                        (click)="onDayClick(day.date)"
-                        type="button"
-                      >{{ day.date.getDate() }}</button>
-                    }
+                        />
+                      } @else {
+                        {{ day.date.getDate() }}
+                      }</button>
                   }
                 </div>
               </div>
