@@ -301,9 +301,9 @@ export interface CalendarDay {
                         [attr.aria-disabled]="isDateDisabled(day.date) || null"
                         (click)="onDayClick(day.date)"
                         type="button"
-                      >@if (dayTemplate()) {
+                      >@if (dayTemplate(); as tmpl) {
                         <ng-container
-                          [ngTemplateOutlet]="dayTemplate()!"
+                          [ngTemplateOutlet]="tmpl"
                           [ngTemplateOutletContext]="{
                             $implicit: day.date,
                             selected: isSelected(day.date),
