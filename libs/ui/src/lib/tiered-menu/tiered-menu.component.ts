@@ -14,7 +14,6 @@ import {
 import { ComponentPortal } from '@angular/cdk/portal';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
 import { createDropdownOverlayConfig } from '../core/overlay/overlay-config-factory';
-import { resolveNativeElement } from '../core/overlay/overlay-utils';
 import type { OverlayTarget } from '../core/overlay/overlay-utils';
 import { GlintTieredMenuPanelComponent } from './tiered-menu-panel.component';
 import type { GlintMenuItem } from '../menu/menu-item.model';
@@ -146,9 +145,9 @@ export class GlintTieredMenuComponent {
     this.closed.emit();
   }
 
-  private resolveTarget(): HTMLElement {
+  private resolveTarget(): OverlayTarget {
     const t = this.target();
-    if (t) return resolveNativeElement(t);
+    if (t) return t;
     const prev = this.elRef.nativeElement.previousElementSibling as HTMLElement;
     if (prev) return prev;
     return this.elRef.nativeElement;
