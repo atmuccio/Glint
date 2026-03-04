@@ -171,11 +171,6 @@ import { GlintIconComponent } from '../icon/icon.component';
       padding-inline: var(--glint-spacing-xs);
     }
 
-    :host([data-collapsed]) .panel-menu-label,
-    :host([data-collapsed]) .chevron {
-      display: none;
-    }
-
     :host([data-collapsed]) .panel-menu-submenu {
       display: none;
     }
@@ -195,7 +190,7 @@ import { GlintIconComponent } from '../icon/icon.component';
             glintTooltipPosition="after"
           >
             @if (item.icon) { <glint-icon [name]="item.icon" /> }
-            <span class="panel-menu-label">{{ item.label }}</span>
+            @if (!isCollapsed()) { <span class="panel-menu-label">{{ item.label }}</span> }
           </a>
         } @else {
           <button
@@ -211,8 +206,8 @@ import { GlintIconComponent } from '../icon/icon.component';
             (click)="onToggle(item)"
           >
             @if (item.icon) { <glint-icon [name]="item.icon" /> }
-            <span class="panel-menu-label">{{ item.label }}</span>
-            @if (item.items?.length) {
+            @if (!isCollapsed()) { <span class="panel-menu-label">{{ item.label }}</span> }
+            @if (item.items?.length && !isCollapsed()) {
               <span class="chevron" [class.expanded]="isExpanded(item)" aria-hidden="true"><glint-icon name="chevronRight" /></span>
             }
           </button>

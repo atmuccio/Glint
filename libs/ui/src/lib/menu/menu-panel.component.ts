@@ -6,6 +6,7 @@ import {
 } from '@angular/core';
 import { CdkMenu, CdkMenuItem } from '@angular/cdk/menu';
 import type { GlintMenuItem } from './menu-item.model';
+import { GlintIconComponent } from '../icon/icon.component';
 
 /**
  * Internal menu panel rendered inside the CDK overlay.
@@ -15,7 +16,7 @@ import type { GlintMenuItem } from './menu-item.model';
 @Component({
   selector: 'glint-menu-panel',
   standalone: true,
-  imports: [CdkMenu, CdkMenuItem],
+  imports: [CdkMenu, CdkMenuItem, GlintIconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: `
     :host {
@@ -76,10 +77,11 @@ import type { GlintMenuItem } from './menu-item.model';
       @for (item of items(); track item.label) {
         <button
           class="menu-item"
+          [class]="item.styleClass"
           cdkMenuItem
           [cdkMenuItemDisabled]="item.disabled ?? false"
           (cdkMenuItemTriggered)="onItemClick(item)"
-        >{{ item.label }}</button>
+        >@if (item.icon) { <glint-icon [name]="item.icon" /> }{{ item.label }}</button>
         @if (item.separator) {
           <div class="separator" role="separator"></div>
         }

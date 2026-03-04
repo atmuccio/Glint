@@ -255,11 +255,20 @@ describe('GlintPanelMenuComponent', () => {
     expect(menu.hasAttribute('data-collapsed')).toBe(true);
   });
 
-  it('should still render labels in DOM when collapsed (hidden via CSS)', () => {
+  it('should not render labels or chevrons in DOM when collapsed', () => {
     const fixture = TestBed.createComponent(TestPanelMenuCollapsedHostComponent);
     fixture.detectChanges();
     const labels = fixture.nativeElement.querySelectorAll('.panel-menu-label');
-    expect(labels.length).toBeGreaterThan(0);
+    expect(labels.length).toBe(0);
+    const chevrons = fixture.nativeElement.querySelectorAll('.chevron');
+    expect(chevrons.length).toBe(0);
+  });
+
+  it('should still render icons in DOM when collapsed', () => {
+    const fixture = TestBed.createComponent(TestPanelMenuCollapsedHostComponent);
+    fixture.detectChanges();
+    const icons = fixture.nativeElement.querySelectorAll('glint-icon');
+    expect(icons.length).toBeGreaterThan(0);
   });
 
   // --- Router link items ---
