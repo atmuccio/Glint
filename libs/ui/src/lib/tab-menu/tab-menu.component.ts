@@ -2,10 +2,14 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  ElementRef,
+  inject,
   input,
   signal,
 } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { NavigationEnd, Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { filter } from 'rxjs';
 import type { GlintMenuItem } from '../menu/menu-item.model';
 import { GlintIconComponent } from '../icon/icon.component';
 
@@ -42,6 +46,7 @@ let nextId = 0;
       display: flex;
       border-block-end: 2px solid var(--glint-color-border);
       gap: 0;
+      overflow-x: auto;
     }
 
     .tab-item {
@@ -103,6 +108,8 @@ let nextId = 0;
             [id]="tabId + '-' + i"
             [routerLink]="item.disabled ? null : item.routerLink"
             routerLinkActive="active"
+            #rla="routerLinkActive"
+            [attr.aria-selected]="rla.isActive"
             [attr.aria-disabled]="item.disabled || null"
             [tabindex]="focusedIndex() === i ? 0 : -1"
           >
@@ -115,6 +122,7 @@ let nextId = 0;
             [class.disabled]="item.disabled"
             role="tab"
             [id]="tabId + '-' + i"
+            [attr.aria-selected]="false"
             [attr.aria-disabled]="item.disabled || null"
             [tabindex]="focusedIndex() === i ? 0 : -1"
             (click)="onItemClick(item)"
@@ -141,6 +149,22 @@ export class GlintTabMenuComponent {
   protected readonly visibleItems = computed(() =>
     this.items().filter(item => item.visible !== false),
   );
+
+  private readonly hostEl = inject(ElementRef);
+  private readonly router = inject(Router);
+
+  constructor() {
+    // Sync focusedIndex with active route tab after navigation
+    this.router.events.pipe(
+      filter((e): e is NavigationEnd => e instanceof NavigationEnd),
+      takeUntilDestroyed(),
+    ).subscribe(() => {
+      queueMicrotask(() => this.syncFocusedIndexToActiveRoute());
+    });
+
+    // Also sync on initial render
+    queueMicrotask(() => this.syncFocusedIndexToActiveRoute());
+  }
 
   /** Handle item click for command-based items */
   protected onItemClick(item: GlintMenuItem): void {
@@ -198,5 +222,16 @@ export class GlintTabMenuComponent {
   private focusTab(index: number): void {
     const el = document.getElementById(`${this.tabId}-${index}`);
     el?.focus();
+  }
+
+  private syncFocusedIndexToActiveRoute(): void {
+    const host = this.hostEl.nativeElement as HTMLElement;
+    const tabs = host.querySelectorAll('[role="tab"]');
+    for (let i = 0; i < tabs.length; i++) {
+      if (tabs[i].classList.contains('active')) {
+        this.focusedIndex.set(i);
+        return;
+      }
+    }
   }
 }
