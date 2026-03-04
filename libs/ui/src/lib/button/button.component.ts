@@ -45,8 +45,7 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
       line-height: 1.25;
       border: 1px solid transparent;
       border-radius: var(--glint-border-radius);
-      padding-block: var(--glint-spacing-sm);
-      padding-inline: var(--glint-spacing-md);
+      padding: 0;
       cursor: pointer;
       user-select: none;
       text-decoration: none;
@@ -64,13 +63,19 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
     /* ── Sizes ─────────────────────────────────── */
     :host([data-size="sm"]) {
       font-size: 0.875rem;
+      gap: var(--glint-spacing-xs);
+    }
+
+    :host([data-size="sm"]) button {
       padding-block: var(--glint-spacing-xs);
       padding-inline: var(--glint-spacing-sm);
-      gap: var(--glint-spacing-xs);
     }
 
     :host([data-size="lg"]) {
       font-size: 1.125rem;
+    }
+
+    :host([data-size="lg"]) button {
       padding-block: var(--glint-spacing-md);
       padding-inline: var(--glint-spacing-lg);
     }
@@ -362,7 +367,9 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
       align-items: center;
       justify-content: center;
       cursor: inherit;
-      padding: 0;
+      padding-block: var(--glint-spacing-sm);
+      padding-inline: var(--glint-spacing-md);
+      width: 100%;
       border: none;
       background: none;
       font: inherit;

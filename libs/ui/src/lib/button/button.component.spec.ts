@@ -121,4 +121,20 @@ describe('GlintButtonComponent', () => {
     const nativeBtn = fixture.nativeElement.querySelector('button') as HTMLButtonElement;
     expect(nativeBtn.type).toBe('button');
   });
+
+  it('should have inner button fill the host element', async () => {
+    TestBed.configureTestingModule({
+      imports: [TestButtonHostComponent],
+    });
+    const fixture = TestBed.createComponent(TestButtonHostComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const host = fixture.nativeElement.querySelector('glint-button') as HTMLElement;
+    const button = host.querySelector('button') as HTMLButtonElement;
+    expect(button).toBeTruthy();
+    // Verify button width is set to fill host
+    const styles = getComputedStyle(button);
+    expect(styles.width).not.toBe('auto');
+  });
 });
