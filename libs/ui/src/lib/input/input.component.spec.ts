@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { GlintInputComponent } from './input.component';
@@ -15,6 +15,7 @@ import { GlintInputComponent } from './input.component';
       [variant]="variant"
       [invalid]="invalid"
       [errorMessage]="errorMessage"
+      [autocomplete]="autocomplete"
       [formControl]="ctrl"
     />
   `,
@@ -26,6 +27,7 @@ class TestInputFormHostComponent {
   variant: 'outline' | 'filled' | 'underline' = 'outline';
   invalid = false;
   errorMessage = '';
+  autocomplete = '';
 }
 
 /** Host without FormControl — for testing [disabled] input prop */
@@ -184,19 +186,9 @@ describe('GlintInputComponent', () => {
   });
 
   it('should forward autocomplete attribute to inner input', async () => {
-    @Component({
-      selector: 'glint-test-input-autocomplete-host',
-      standalone: true,
-      imports: [GlintInputComponent],
-      template: `<glint-input label="Email" [autocomplete]="autocomplete()" />`,
-    })
-    class TestInputAutocompleteHostComponent {
-      autocomplete = signal('');
-    }
-
-    TestBed.configureTestingModule({ imports: [TestInputAutocompleteHostComponent] });
-    const fixture = TestBed.createComponent(TestInputAutocompleteHostComponent);
-    fixture.componentInstance.autocomplete.set('email');
+    TestBed.configureTestingModule({ imports: [TestInputFormHostComponent] });
+    const fixture = TestBed.createComponent(TestInputFormHostComponent);
+    fixture.componentInstance.autocomplete = 'email';
     fixture.detectChanges();
     await fixture.whenStable();
 
@@ -205,16 +197,8 @@ describe('GlintInputComponent', () => {
   });
 
   it('should not set autocomplete when empty', async () => {
-    @Component({
-      selector: 'glint-test-input-no-autocomplete-host',
-      standalone: true,
-      imports: [GlintInputComponent],
-      template: `<glint-input label="Name" />`,
-    })
-    class TestInputNoAutocompleteHostComponent {}
-
-    TestBed.configureTestingModule({ imports: [TestInputNoAutocompleteHostComponent] });
-    const fixture = TestBed.createComponent(TestInputNoAutocompleteHostComponent);
+    TestBed.configureTestingModule({ imports: [TestInputFormHostComponent] });
+    const fixture = TestBed.createComponent(TestInputFormHostComponent);
     fixture.detectChanges();
     await fixture.whenStable();
 
