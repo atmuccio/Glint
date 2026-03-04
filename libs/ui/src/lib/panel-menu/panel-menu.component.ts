@@ -81,7 +81,7 @@ import { GlintIconComponent } from '../icon/icon.component';
       cursor: not-allowed;
     }
 
-    .panel-menu-icon {
+    .panel-menu-header > glint-icon {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -135,8 +135,8 @@ import { GlintIconComponent } from '../icon/icon.component';
     }
 
     /* When icon is present, adjust child indent to align with icon */
-    .panel-menu-child .panel-menu-icon,
-    .panel-menu-grandchild .panel-menu-icon {
+    .panel-menu-child > glint-icon,
+    .panel-menu-grandchild > glint-icon {
       inline-size: 1rem;
       block-size: 1rem;
     }
