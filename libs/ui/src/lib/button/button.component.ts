@@ -366,14 +366,11 @@ import { ZONE_THEME } from '../core/tokens/zone-theme.token';
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      cursor: inherit;
       padding-block: var(--glint-spacing-sm);
       padding-inline: var(--glint-spacing-md);
       width: 100%;
       border: none;
       background: none;
-      font: inherit;
-      color: inherit;
     }
   `,
   template: `
