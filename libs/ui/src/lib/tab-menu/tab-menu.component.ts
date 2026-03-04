@@ -34,10 +34,10 @@ let nextId = 0;
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'class': 'glint-tab-menu',
-    'style': 'display: block',
   },
   styles: `
     :host {
+      display: block;
       font-family: var(--glint-font-family);
       font-size: var(--glint-font-size);
     }
@@ -45,7 +45,6 @@ let nextId = 0;
     .tab-list {
       display: flex;
       border-block-end: 2px solid var(--glint-color-border);
-      gap: 0;
       overflow-x: auto;
     }
 
