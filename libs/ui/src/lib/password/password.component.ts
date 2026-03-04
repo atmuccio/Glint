@@ -31,6 +31,7 @@ import { GlintIconComponent } from '../icon/icon.component';
   host: {
     '[class.focused]': 'focused()',
     '[class.disabled]': 'isDisabled()',
+    '[class.invalid]': 'invalid()',
   },
   styles: `
     :host {
@@ -44,6 +45,11 @@ import { GlintIconComponent } from '../icon/icon.component';
       margin-block-end: var(--glint-spacing-xs);
       font-weight: 500;
       color: var(--glint-color-text);
+      transition: color var(--glint-duration-normal) var(--glint-easing);
+    }
+
+    :host(.invalid) .label {
+      color: color-mix(in oklch, var(--glint-color-text), var(--glint-color-error) 40%);
     }
 
     .input-wrapper {
@@ -61,6 +67,10 @@ import { GlintIconComponent } from '../icon/icon.component';
     :host(.focused) .input-wrapper {
       border-color: var(--glint-color-focus-ring);
       box-shadow: 0 0 0 2px color-mix(in oklch, var(--glint-color-focus-ring), transparent 70%);
+    }
+
+    :host(.invalid) .input-wrapper {
+      border-color: var(--glint-color-error);
     }
 
     input {
@@ -103,6 +113,13 @@ import { GlintIconComponent } from '../icon/icon.component';
       outline-offset: -2px;
     }
 
+    /* ── Error message ─────────────────────────── */
+    .error {
+      margin-block-start: var(--glint-spacing-xs);
+      font-size: 0.875em;
+      color: var(--glint-color-error);
+    }
+
     .strength-meter {
       display: flex;
       gap: 2px;
@@ -132,6 +149,9 @@ import { GlintIconComponent } from '../icon/icon.component';
         [type]="visible() ? 'text' : 'password'"
         [placeholder]="placeholder()"
         [attr.aria-label]="label() || 'Password'"
+        [attr.aria-invalid]="invalid() || null"
+        [attr.aria-describedby]="invalid() && errorMessage() ? errorId : null"
+        [attr.autocomplete]="autocomplete() || null"
         (input)="onInput($event)"
         (focus)="focused.set(true)"
         (blur)="onBlur()"
@@ -150,6 +170,9 @@ import { GlintIconComponent } from '../icon/icon.component';
         }
       </button>
     </div>
+    @if (invalid() && errorMessage()) {
+      <div class="error" [id]="errorId" role="alert">{{ errorMessage() }}</div>
+    }
     @if (showStrength() && value()) {
       <div class="strength-meter">
         <div class="strength-bar" [class]="strengthLevel()"></div>
@@ -168,8 +191,15 @@ export class GlintPasswordComponent implements ControlValueAccessor {
   showStrength = input(false);
   /** Disabled state */
   disabled = input<boolean | undefined>(undefined);
+  /** Invalid state */
+  invalid = input(false);
+  /** Error message to show when invalid */
+  errorMessage = input<string>('');
+  /** Autocomplete hint forwarded to native input */
+  autocomplete = input<string>('');
 
   readonly inputId = glintId('glint-password');
+  readonly errorId = `${this.inputId}-error`;
 
   protected value = signal('');
   protected focused = signal(false);

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { GlintInputComponent } from './input.component';
@@ -181,5 +181,44 @@ describe('GlintInputComponent', () => {
     input.dispatchEvent(new Event('blur'));
     fixture.detectChanges();
     expect(host.classList.contains('focused')).toBe(false);
+  });
+
+  it('should forward autocomplete attribute to inner input', async () => {
+    @Component({
+      selector: 'glint-test-input-autocomplete-host',
+      standalone: true,
+      imports: [GlintInputComponent],
+      template: `<glint-input label="Email" [autocomplete]="autocomplete()" />`,
+    })
+    class TestInputAutocompleteHostComponent {
+      autocomplete = signal('');
+    }
+
+    TestBed.configureTestingModule({ imports: [TestInputAutocompleteHostComponent] });
+    const fixture = TestBed.createComponent(TestInputAutocompleteHostComponent);
+    fixture.componentInstance.autocomplete.set('email');
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    expect(input.getAttribute('autocomplete')).toBe('email');
+  });
+
+  it('should not set autocomplete when empty', async () => {
+    @Component({
+      selector: 'glint-test-input-no-autocomplete-host',
+      standalone: true,
+      imports: [GlintInputComponent],
+      template: `<glint-input label="Name" />`,
+    })
+    class TestInputNoAutocompleteHostComponent {}
+
+    TestBed.configureTestingModule({ imports: [TestInputNoAutocompleteHostComponent] });
+    const fixture = TestBed.createComponent(TestInputNoAutocompleteHostComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    expect(input.getAttribute('autocomplete')).toBeNull();
   });
 });
