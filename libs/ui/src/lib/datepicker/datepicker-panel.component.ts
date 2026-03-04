@@ -5,7 +5,10 @@ import {
   input,
   output,
   signal,
+  TemplateRef,
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import type { GlintDatepickerDayContext } from './datepicker-day.directive';
 
 /** Day cell entry for the calendar grid */
 export interface CalendarDay {
@@ -20,6 +23,7 @@ export interface CalendarDay {
 @Component({
   selector: 'glint-datepicker-panel',
   standalone: true,
+  imports: [NgTemplateOutlet],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'glint-datepicker-panel',
@@ -286,18 +290,43 @@ export interface CalendarDay {
                 </div>
                 <div class="calendar-days">
                   @for (day of getCalendarDaysForMonth(monthOffset); track day.date.getTime()) {
-                    <button
-                      class="day"
-                      [class.today]="isToday(day.date)"
-                      [class.selected]="isSelected(day.date)"
-                      [class.other-month]="day.otherMonth"
-                      [class.disabled]="isDateDisabled(day.date)"
-                      [class.in-range]="isInRange(day.date)"
-                      [attr.aria-selected]="isSelected(day.date)"
-                      [attr.aria-disabled]="isDateDisabled(day.date) || null"
-                      (click)="onDayClick(day.date)"
-                      type="button"
-                    >{{ day.date.getDate() }}</button>
+                    @if (dayTemplate()) {
+                      <button
+                        class="day"
+                        [class.today]="isToday(day.date)"
+                        [class.selected]="isSelected(day.date)"
+                        [class.other-month]="day.otherMonth"
+                        [class.disabled]="isDateDisabled(day.date)"
+                        [class.in-range]="isInRange(day.date)"
+                        [attr.aria-selected]="isSelected(day.date)"
+                        [attr.aria-disabled]="isDateDisabled(day.date) || null"
+                        (click)="onDayClick(day.date)"
+                        type="button"
+                      ><ng-container
+                          [ngTemplateOutlet]="dayTemplate()!"
+                          [ngTemplateOutletContext]="{
+                            $implicit: day.date,
+                            selected: isSelected(day.date),
+                            disabled: isDateDisabled(day.date),
+                            today: isToday(day.date),
+                            inRange: isInRange(day.date),
+                            otherMonth: day.otherMonth
+                          }"
+                        /></button>
+                    } @else {
+                      <button
+                        class="day"
+                        [class.today]="isToday(day.date)"
+                        [class.selected]="isSelected(day.date)"
+                        [class.other-month]="day.otherMonth"
+                        [class.disabled]="isDateDisabled(day.date)"
+                        [class.in-range]="isInRange(day.date)"
+                        [attr.aria-selected]="isSelected(day.date)"
+                        [attr.aria-disabled]="isDateDisabled(day.date) || null"
+                        (click)="onDayClick(day.date)"
+                        type="button"
+                      >{{ day.date.getDate() }}</button>
+                    }
                   }
                 </div>
               </div>
@@ -388,6 +417,8 @@ export class GlintDatepickerPanelComponent {
   minDate = input<Date | null>(null);
   /** Maximum selectable date */
   maxDate = input<Date | null>(null);
+  /** Custom day cell template */
+  dayTemplate = input<TemplateRef<GlintDatepickerDayContext> | null>(null);
 
   /** Emitted when a date is selected */
   dateSelect = output<Date>();
