@@ -76,8 +76,7 @@ import { GlintIconComponent } from '../icon/icon.component';
     <div class="glint-menu" cdkMenu>
       @for (item of items(); track item.label) {
         <button
-          class="menu-item"
-          [class]="item.styleClass"
+          [class]="'menu-item' + (item.styleClass ? ' ' + item.styleClass : '')"
           cdkMenuItem
           [cdkMenuItemDisabled]="item.disabled ?? false"
           (cdkMenuItemTriggered)="onItemClick(item)"
