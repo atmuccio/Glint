@@ -51,6 +51,45 @@ export const POPOVER_POSITIONS: ConnectedPosition[] = [
 ];
 
 /**
+ * Named popover alignment type.
+ * - `'center'`: Default center-aligned popover (POPOVER_POSITIONS)
+ * - `'start'`: Start-aligned (left in LTR)
+ * - `'end'`: End-aligned (right in LTR)
+ */
+export type GlintPopoverAlign = 'center' | 'start' | 'end';
+
+/**
+ * Start-aligned popover positions.
+ *
+ * Preferred: below-start, above-start, right-center, left-center.
+ */
+export const POPOVER_START_POSITIONS: ConnectedPosition[] = [
+  { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 8 },
+  { originX: 'start', originY: 'top', overlayX: 'start', overlayY: 'bottom', offsetY: -8 },
+  { originX: 'end', originY: 'center', overlayX: 'start', overlayY: 'center', offsetX: 8 },
+  { originX: 'start', originY: 'center', overlayX: 'end', overlayY: 'center', offsetX: -8 },
+];
+
+/**
+ * End-aligned popover positions.
+ *
+ * Preferred: below-end, above-end, right-center, left-center.
+ */
+export const POPOVER_END_POSITIONS: ConnectedPosition[] = [
+  { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 8 },
+  { originX: 'end', originY: 'top', overlayX: 'end', overlayY: 'bottom', offsetY: -8 },
+  { originX: 'end', originY: 'center', overlayX: 'start', overlayY: 'center', offsetX: 8 },
+  { originX: 'start', originY: 'center', overlayX: 'end', overlayY: 'center', offsetX: -8 },
+];
+
+/** Map of popover alignment to position arrays. */
+export const POPOVER_ALIGN_POSITIONS: Record<GlintPopoverAlign, ConnectedPosition[]> = {
+  center: POPOVER_POSITIONS,
+  start: POPOVER_START_POSITIONS,
+  end: POPOVER_END_POSITIONS,
+};
+
+/**
  * End-aligned dropdown positions (right-aligned).
  *
  * Preferred: below-end, above-end.

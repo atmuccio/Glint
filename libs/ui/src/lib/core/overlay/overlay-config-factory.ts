@@ -5,6 +5,8 @@ import {
   TOOLTIP_POSITIONS,
   POPOVER_POSITIONS,
 } from './overlay-positions';
+import { resolveNativeElement } from './overlay-utils';
+import type { OverlayTarget } from './overlay-utils';
 
 /**
  * Options for configuring a dropdown overlay.
@@ -36,13 +38,13 @@ export interface DropdownOverlayOptions {
  */
 export function createDropdownOverlayConfig(
   overlayService: ZoneAwareOverlayService,
-  targetEl: HTMLElement | import('@angular/core').ElementRef,
+  targetEl: OverlayTarget,
   options?: DropdownOverlayOptions,
 ): OverlayConfig {
   const positions = options?.positions ?? DROPDOWN_POSITIONS;
   const positionStrategy = overlayService
     .position()
-    .flexibleConnectedTo(targetEl)
+    .flexibleConnectedTo(resolveNativeElement(targetEl))
     .withPositions(positions);
 
   if (options?.withPush !== false) {
@@ -78,13 +80,13 @@ export interface TooltipOverlayOptions {
  */
 export function createTooltipOverlayConfig(
   overlayService: ZoneAwareOverlayService,
-  targetEl: HTMLElement | import('@angular/core').ElementRef,
+  targetEl: OverlayTarget,
   options?: TooltipOverlayOptions,
 ): OverlayConfig {
   return new OverlayConfig({
     positionStrategy: overlayService
       .position()
-      .flexibleConnectedTo(targetEl)
+      .flexibleConnectedTo(resolveNativeElement(targetEl))
       .withPositions(options?.positions ?? TOOLTIP_POSITIONS),
     scrollStrategy: overlayService.scrollStrategies.reposition(),
   });
@@ -113,13 +115,13 @@ export interface PopoverOverlayOptions {
  */
 export function createPopoverOverlayConfig(
   overlayService: ZoneAwareOverlayService,
-  targetEl: HTMLElement | import('@angular/core').ElementRef,
+  targetEl: OverlayTarget,
   options?: PopoverOverlayOptions,
 ): OverlayConfig {
   return new OverlayConfig({
     positionStrategy: overlayService
       .position()
-      .flexibleConnectedTo(targetEl)
+      .flexibleConnectedTo(resolveNativeElement(targetEl))
       .withPositions(options?.positions ?? POPOVER_POSITIONS),
     scrollStrategy: overlayService.scrollStrategies.reposition(),
     hasBackdrop: options?.hasBackdrop ?? true,
