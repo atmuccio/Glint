@@ -14,6 +14,8 @@ import {
 import { ComponentPortal } from '@angular/cdk/portal';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
 import { createDropdownOverlayConfig } from '../core/overlay/overlay-config-factory';
+import { resolveNativeElement } from '../core/overlay/overlay-utils';
+import type { OverlayTarget } from '../core/overlay/overlay-utils';
 import { GlintTieredMenuPanelComponent } from './tiered-menu-panel.component';
 import type { GlintMenuItem } from '../menu/menu-item.model';
 
@@ -65,7 +67,7 @@ export class GlintTieredMenuComponent {
   /** Emitted when the popup menu is closed */
   closed = output<void>();
   /** Target element to position against when in popup mode */
-  target = input<ElementRef | HTMLElement | undefined>(undefined);
+  target = input<OverlayTarget | undefined>(undefined);
 
   private readonly overlay = inject(ZoneAwareOverlayService);
   private readonly injector = inject(Injector);
@@ -144,11 +146,11 @@ export class GlintTieredMenuComponent {
     this.closed.emit();
   }
 
-  private resolveTarget(): ElementRef | HTMLElement {
+  private resolveTarget(): HTMLElement {
     const t = this.target();
-    if (t) return t;
+    if (t) return resolveNativeElement(t);
     const prev = this.elRef.nativeElement.previousElementSibling as HTMLElement;
     if (prev) return prev;
-    return this.elRef;
+    return this.elRef.nativeElement;
   }
 }
