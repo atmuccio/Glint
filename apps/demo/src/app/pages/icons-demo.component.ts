@@ -174,22 +174,9 @@ provideGlintIcons(mapIcons(heroicons, myHeroConverter))
 provideGlintIcons({{ '{' }} logo: '&lt;svg&gt;...&lt;/svg&gt;' {{ '}' }})</pre>
     </div>
   `,
+  host: { class: 'demo-page' },
   styles: `
     :host { display: block; }
-    h2 { margin-block: 0 0.25rem; font-size: 1.75rem; font-weight: 600; color: #1e293b; }
-    .page-desc { color: #64748b; margin-block: 0 2rem; font-size: 1.25rem; }
-    .demo-section {
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 0.625rem;
-      padding: 2rem;
-      margin-block-end: 1.5rem;
-    }
-    .demo-section h3 { margin-block: 0 1rem; font-size: 1rem; font-weight: 600; color: #334155; }
-    .section-desc { color: #64748b; margin-block: -0.5rem 1rem; font-size: 0.875rem; }
-    .row { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
-    code { background: #f1f5f9; padding: 0.125rem 0.375rem; border-radius: 0.25rem; font-size: 0.8125rem; }
-
     .icon-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(7.5rem, 1fr));

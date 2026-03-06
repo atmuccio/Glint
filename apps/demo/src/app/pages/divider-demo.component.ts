@@ -32,20 +32,9 @@ import { GlintDividerComponent } from '@glint-ng/core';
       </div>
     </div>
   `,
+  host: { class: 'demo-page' },
   styles: `
     :host { display: block; }
-    h2 { margin-block: 0 0.25rem; font-size: 1.75rem; font-weight: 600; color: #1e293b; }
-    .page-desc { color: #64748b; margin-block: 0 2rem; font-size: 1.25rem; }
-    .demo-section {
-      background: white;
-      border: 1px solid #e2e8f0;
-      border-radius: 0.625rem;
-      padding: 2rem;
-      margin-block-end: 1.5rem;
-    }
-    .demo-section h3 { margin-block: 0 1rem; font-size: 1rem; font-weight: 600; color: #334155; }
-    .row { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
-    .stack { display: flex; flex-direction: column; gap: 1rem; }
     .vertical-row {
       display: flex;
       align-items: center;

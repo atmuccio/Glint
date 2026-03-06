@@ -27,6 +27,7 @@ import type { GlintMenuItem } from '@glint-ng/core';
     GlintDividerComponent,
     GlintStyleZoneComponent,
   ],
+  host: { class: 'demo-page' },
   styles: `
     :host { display: block; }
 
