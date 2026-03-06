@@ -15,6 +15,7 @@ import { GlintInputComponent } from './input.component';
       [variant]="variant"
       [invalid]="invalid"
       [errorMessage]="errorMessage"
+      [autocomplete]="autocomplete"
       [formControl]="ctrl"
     />
   `,
@@ -26,6 +27,7 @@ class TestInputFormHostComponent {
   variant: 'outline' | 'filled' | 'underline' = 'outline';
   invalid = false;
   errorMessage = '';
+  autocomplete = '';
 }
 
 /** Host without FormControl — for testing [disabled] input prop */
@@ -181,5 +183,26 @@ describe('GlintInputComponent', () => {
     input.dispatchEvent(new Event('blur'));
     fixture.detectChanges();
     expect(host.classList.contains('focused')).toBe(false);
+  });
+
+  it('should forward autocomplete attribute to inner input', async () => {
+    TestBed.configureTestingModule({ imports: [TestInputFormHostComponent] });
+    const fixture = TestBed.createComponent(TestInputFormHostComponent);
+    fixture.componentInstance.autocomplete = 'email';
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    expect(input.getAttribute('autocomplete')).toBe('email');
+  });
+
+  it('should not set autocomplete when empty', async () => {
+    TestBed.configureTestingModule({ imports: [TestInputFormHostComponent] });
+    const fixture = TestBed.createComponent(TestInputFormHostComponent);
+    fixture.detectChanges();
+    await fixture.whenStable();
+
+    const input = fixture.nativeElement.querySelector('input') as HTMLInputElement;
+    expect(input.getAttribute('autocomplete')).toBeNull();
   });
 });

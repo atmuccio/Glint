@@ -162,6 +162,7 @@ import { glintId } from '../core/utils/id-generator';
         [required]="required()"
         [attr.aria-invalid]="invalid() || null"
         [attr.aria-describedby]="invalid() && errorMessage() ? errorId : null"
+        [attr.autocomplete]="autocomplete() || null"
         (input)="onInput($event)"
         (focus)="onFocus()"
         (blur)="onBlur()"
@@ -195,6 +196,8 @@ export class GlintInputComponent implements ControlValueAccessor {
   invalid = input(false);
   /** Error message to show when invalid */
   errorMessage = input<string>('');
+  /** Autocomplete hint forwarded to native input */
+  autocomplete = input<string>('');
 
   /** Unique IDs for a11y */
   readonly inputId = glintId('glint-input');
