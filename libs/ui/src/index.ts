@@ -94,6 +94,7 @@ export { GlintOrganizationChartComponent } from './lib/organization-chart/organi
 export { GlintAutoCompleteComponent } from './lib/autocomplete/autocomplete.component';
 export { GlintMultiSelectComponent } from './lib/multiselect/multiselect.component';
 export { GlintDatepickerComponent } from './lib/datepicker/datepicker.component';
+export { GlintDatepickerDayDirective, type GlintDatepickerDayContext } from './lib/datepicker/datepicker-day.directive';
 export { GlintDataViewComponent } from './lib/data-view/data-view.component';
 export { GlintScrollerComponent } from './lib/scroller/scroller.component';
 export { GlintImageComponent } from './lib/image/image.component';

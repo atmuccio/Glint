@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  contentChild,
   DestroyRef,
   ElementRef,
   inject,
@@ -22,6 +23,7 @@ import { createDropdownOverlayConfig } from '../core/overlay/overlay-config-fact
 import { GlintDatepickerPanelComponent } from './datepicker-panel.component';
 import { glintId } from '../core/utils/id-generator';
 import { GlintIconComponent } from '../icon/icon.component';
+import { GlintDatepickerDayDirective } from './datepicker-day.directive';
 
 /**
  * Date picker with calendar dropdown, ControlValueAccessor support,
@@ -168,6 +170,7 @@ import { GlintIconComponent } from '../icon/icon.component';
         [firstDayOfWeek]="firstDayOfWeek()"
         [minDate]="minDate()"
         [maxDate]="maxDate()"
+        [dayTemplate]="dayTemplate()?.template ?? null"
         (dateSelect)="onDateSelect($event)"
         (clearValue)="onClearValue()"
       />
@@ -184,6 +187,7 @@ import { GlintIconComponent } from '../icon/icon.component';
         [firstDayOfWeek]="firstDayOfWeek()"
         [minDate]="minDate()"
         [maxDate]="maxDate()"
+        [dayTemplate]="dayTemplate()?.template ?? null"
         (dateSelect)="onDateSelect($event)"
         (monthChange)="monthChange.emit($event)"
         (clearValue)="onClearValue()"
@@ -225,6 +229,9 @@ export class GlintDatepickerComponent implements ControlValueAccessor {
   dateSelect = output<Date>();
   /** Emitted when the current month changes */
   monthChange = output<{ month: number; year: number }>();
+
+  /** Custom day cell template projected via `glintDatepickerDay` directive */
+  readonly dayTemplate = contentChild(GlintDatepickerDayDirective);
 
   readonly inputId = glintId('glint-datepicker');
 

@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { OverlayModule } from '@angular/cdk/overlay';
 import { GlintDatepickerComponent } from './datepicker.component';
+import { GlintDatepickerDayDirective } from './datepicker-day.directive';
 
 @Component({
   selector: 'glint-test-datepicker-host',
@@ -32,6 +33,22 @@ class TestDatepickerHostComponent {
   minDate: Date | null = null;
   maxDate: Date | null = null;
   inline = false;
+}
+
+@Component({
+  selector: 'glint-test-datepicker-day-template-host',
+  standalone: true,
+  imports: [GlintDatepickerComponent, GlintDatepickerDayDirective, ReactiveFormsModule],
+  template: `
+    <glint-datepicker [inline]="true" [formControl]="ctrl">
+      <ng-template glintDatepickerDay let-date let-selected="selected" let-today="today" let-disabled="disabled" let-inRange="inRange" let-otherMonth="otherMonth">
+        <span class="custom-day" [attr.data-selected]="selected" [attr.data-today]="today" [attr.data-disabled]="disabled" [attr.data-other-month]="otherMonth">Day-{{ date.getDate() }}</span>
+      </ng-template>
+    </glint-datepicker>
+  `,
+})
+class TestDatepickerDayTemplateHostComponent {
+  ctrl = new FormControl<Date | Date[] | null>(null);
 }
 
 describe('GlintDatepickerComponent', () => {
@@ -309,5 +326,79 @@ describe('GlintDatepickerComponent', () => {
     expect(buttons.length).toBe(2);
     expect(buttons[0].textContent?.trim()).toBe('Today');
     expect(buttons[1].textContent?.trim()).toBe('Clear');
+  });
+
+  // ── Custom day template ───────────────────────
+
+  describe('custom day template', () => {
+    beforeEach(() => {
+      TestBed.configureTestingModule({
+        imports: [TestDatepickerDayTemplateHostComponent, OverlayModule],
+      });
+    });
+
+    it('should render custom day template with correct content', () => {
+      const fixture = TestBed.createComponent(TestDatepickerDayTemplateHostComponent);
+      fixture.detectChanges();
+
+      const customDays = fixture.nativeElement.querySelectorAll('.custom-day') as NodeListOf<HTMLElement>;
+      expect(customDays.length).toBe(42);
+
+      // Verify custom content format "Day-{number}"
+      const firstCurrentMonthDay = Array.from(customDays).find(
+        (el) => el.getAttribute('data-other-month') === 'false'
+      );
+      expect(firstCurrentMonthDay).toBeTruthy();
+      expect(firstCurrentMonthDay!.textContent).toContain('Day-');
+    });
+
+    it('should pass correct context to custom day template', () => {
+      const fixture = TestBed.createComponent(TestDatepickerDayTemplateHostComponent);
+      fixture.detectChanges();
+
+      const customDays = fixture.nativeElement.querySelectorAll('.custom-day') as NodeListOf<HTMLElement>;
+
+      // Find today's cell
+      const todayEl = Array.from(customDays).find(
+        (el) => el.getAttribute('data-today') === 'true'
+      );
+      expect(todayEl).toBeTruthy();
+      expect(todayEl!.textContent).toContain(`Day-${new Date().getDate()}`);
+
+      // Verify selected context is false when nothing is selected
+      expect(todayEl!.getAttribute('data-selected')).toBe('false');
+    });
+
+    it('should reflect selected state in custom day template context', () => {
+      const fixture = TestBed.createComponent(TestDatepickerDayTemplateHostComponent);
+      const today = new Date();
+      fixture.componentInstance.ctrl.setValue(today);
+      fixture.detectChanges();
+
+      const customDays = fixture.nativeElement.querySelectorAll('.custom-day') as NodeListOf<HTMLElement>;
+
+      const todayEl = Array.from(customDays).find(
+        (el) => el.getAttribute('data-today') === 'true'
+      );
+      expect(todayEl).toBeTruthy();
+      expect(todayEl!.getAttribute('data-selected')).toBe('true');
+    });
+
+    it('should still select dates when using custom day template', () => {
+      const fixture = TestBed.createComponent(TestDatepickerDayTemplateHostComponent);
+      fixture.detectChanges();
+
+      // Click a day button (the custom template is inside the button)
+      const dayButtons = fixture.nativeElement.querySelectorAll('.day') as NodeListOf<HTMLButtonElement>;
+      const currentMonthBtn = Array.from(dayButtons).find(
+        (btn) => !btn.classList.contains('other-month') && !btn.classList.contains('disabled')
+      );
+      expect(currentMonthBtn).toBeTruthy();
+
+      currentMonthBtn!.click();
+      fixture.detectChanges();
+
+      expect(fixture.componentInstance.ctrl.value).toBeInstanceOf(Date);
+    });
   });
 });
