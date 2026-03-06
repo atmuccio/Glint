@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
-import { Component, viewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, signal, viewChild } from '@angular/core';
 import { GlintPopoverComponent } from './popover.component';
 import { cleanupOverlays } from '../testing/test-utils';
+import type { GlintPopoverAlign } from '../core/overlay/overlay-positions';
 
 @Component({
   selector: 'glint-test-popover-host',
@@ -16,6 +17,64 @@ import { cleanupOverlays } from '../testing/test-utils';
 })
 class TestPopoverHostComponent {
   popover = viewChild.required<GlintPopoverComponent>('popover');
+}
+
+@Component({
+  selector: 'glint-test-popover-elementref-host',
+  standalone: true,
+  imports: [GlintPopoverComponent],
+  template: `
+    <button #btn class="trigger">Info</button>
+    <glint-popover #popover [target]="btnRef()">
+      <p>Popover content</p>
+    </glint-popover>
+  `,
+})
+class TestPopoverElementRefHostComponent implements AfterViewInit {
+  popover = viewChild.required<GlintPopoverComponent>('popover');
+  btn = viewChild.required<ElementRef>('btn');
+  btnRef = signal<ElementRef | undefined>(undefined);
+
+  ngAfterViewInit(): void {
+    this.btnRef.set(this.btn());
+  }
+}
+
+@Component({
+  selector: 'glint-test-popover-component-ref-host',
+  standalone: true,
+  imports: [GlintPopoverComponent],
+  template: `
+    <button #btn class="trigger">Info</button>
+    <glint-popover #popover [target]="componentTarget()">
+      <p>Popover content</p>
+    </glint-popover>
+  `,
+})
+class TestPopoverComponentRefHostComponent implements AfterViewInit {
+  popover = viewChild.required<GlintPopoverComponent>('popover');
+  btn = viewChild.required<ElementRef>('btn');
+  componentTarget = signal<{ elementRef: ElementRef } | undefined>(undefined);
+
+  ngAfterViewInit(): void {
+    this.componentTarget.set({ elementRef: this.btn() });
+  }
+}
+
+@Component({
+  selector: 'glint-test-popover-align-host',
+  standalone: true,
+  imports: [GlintPopoverComponent],
+  template: `
+    <button class="trigger" (click)="popover.toggle()">Info</button>
+    <glint-popover #popover [align]="align()">
+      <p>Aligned content</p>
+    </glint-popover>
+  `,
+})
+class TestPopoverAlignHostComponent {
+  popover = viewChild.required<GlintPopoverComponent>('popover');
+  align = signal<GlintPopoverAlign>('center');
 }
 
 describe('GlintPopoverComponent', () => {
@@ -87,6 +146,73 @@ describe('GlintPopoverComponent', () => {
     fixture.detectChanges();
     await fixture.whenStable();
     const panel = document.querySelector('[role="dialog"]');
+    expect(panel).toBeTruthy();
+    fixture.componentInstance.popover().close();
+    fixture.detectChanges();
+  });
+
+  it('should accept ElementRef as target', async () => {
+    TestBed.configureTestingModule({ imports: [TestPopoverElementRefHostComponent] });
+    const fixture = TestBed.createComponent(TestPopoverElementRefHostComponent);
+    fixture.detectChanges();
+    fixture.componentInstance.popover().open();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const panel = document.querySelector('.popover-panel');
+    expect(panel).toBeTruthy();
+    fixture.componentInstance.popover().close();
+    fixture.detectChanges();
+  });
+
+  it('should accept component ref with elementRef as target', async () => {
+    TestBed.configureTestingModule({ imports: [TestPopoverComponentRefHostComponent] });
+    const fixture = TestBed.createComponent(TestPopoverComponentRefHostComponent);
+    fixture.detectChanges();
+    fixture.componentInstance.popover().open();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const panel = document.querySelector('.popover-panel');
+    expect(panel).toBeTruthy();
+    fixture.componentInstance.popover().close();
+    fixture.detectChanges();
+  });
+
+  it('should open with align="start"', async () => {
+    TestBed.configureTestingModule({ imports: [TestPopoverAlignHostComponent] });
+    const fixture = TestBed.createComponent(TestPopoverAlignHostComponent);
+    fixture.componentInstance.align.set('start');
+    fixture.detectChanges();
+    fixture.componentInstance.popover().open();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const panel = document.querySelector('.popover-panel');
+    expect(panel).toBeTruthy();
+    fixture.componentInstance.popover().close();
+    fixture.detectChanges();
+  });
+
+  it('should open with align="end"', async () => {
+    TestBed.configureTestingModule({ imports: [TestPopoverAlignHostComponent] });
+    const fixture = TestBed.createComponent(TestPopoverAlignHostComponent);
+    fixture.componentInstance.align.set('end');
+    fixture.detectChanges();
+    fixture.componentInstance.popover().open();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const panel = document.querySelector('.popover-panel');
+    expect(panel).toBeTruthy();
+    fixture.componentInstance.popover().close();
+    fixture.detectChanges();
+  });
+
+  it('should open with align="center" (default)', async () => {
+    TestBed.configureTestingModule({ imports: [TestPopoverAlignHostComponent] });
+    const fixture = TestBed.createComponent(TestPopoverAlignHostComponent);
+    fixture.detectChanges();
+    fixture.componentInstance.popover().open();
+    fixture.detectChanges();
+    await fixture.whenStable();
+    const panel = document.querySelector('.popover-panel');
     expect(panel).toBeTruthy();
     fixture.componentInstance.popover().close();
     fixture.detectChanges();

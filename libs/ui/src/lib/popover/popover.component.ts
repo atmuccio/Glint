@@ -15,6 +15,9 @@ import { OverlayRef } from '@angular/cdk/overlay';
 import { TemplatePortal } from '@angular/cdk/portal';
 import { ZoneAwareOverlayService } from '../core/overlay/zone-aware-overlay.service';
 import { createPopoverOverlayConfig } from '../core/overlay/overlay-config-factory';
+import { POPOVER_ALIGN_POSITIONS } from '../core/overlay/overlay-positions';
+import type { GlintPopoverAlign } from '../core/overlay/overlay-positions';
+import type { OverlayTarget } from '../core/overlay/overlay-utils';
 
 /**
  * Popover for rich content triggered on click.
@@ -56,7 +59,9 @@ import { createPopoverOverlayConfig } from '../core/overlay/overlay-config-facto
 })
 export class GlintPopoverComponent {
   /** Target element to position against */
-  target = input<ElementRef | HTMLElement | undefined>(undefined);
+  target = input<OverlayTarget | undefined>(undefined);
+  /** Horizontal alignment of the popover relative to the target */
+  align = input<GlintPopoverAlign>('center');
 
   private overlay = inject(ZoneAwareOverlayService);
   private injector = inject(Injector);
@@ -79,7 +84,8 @@ export class GlintPopoverComponent {
     if (this.isOpen()) return;
 
     const targetEl = this.target() ?? this.elRef.nativeElement.previousElementSibling;
-    const config = createPopoverOverlayConfig(this.overlay, targetEl);
+    const positions = POPOVER_ALIGN_POSITIONS[this.align()];
+    const config = createPopoverOverlayConfig(this.overlay, targetEl, { positions });
 
     const { overlayRef } = this.overlay.createZoneAwareOverlay(config, this.injector);
     this.overlayRef = overlayRef;
