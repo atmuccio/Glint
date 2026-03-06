@@ -1,6 +1,6 @@
 {
   "name": "@glint-ng/core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Angular Style Zone UI component library — themeable components built on Angular CDK with signal-based cascading style customization",
   "license": "MIT",
   "author": "Anthony Muccio",
