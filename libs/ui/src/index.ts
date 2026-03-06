@@ -82,6 +82,7 @@ export { GlintContextMenuDirective } from './lib/context-menu/context-menu.direc
 export { GlintTieredMenuComponent } from './lib/tiered-menu/tiered-menu.component';
 export { GlintMenuBarComponent } from './lib/menubar/menubar.component';
 export { GlintPanelMenuComponent } from './lib/panel-menu/panel-menu.component';
+export { GlintTabMenuComponent } from './lib/tab-menu/tab-menu.component';
 export { GlintDockComponent } from './lib/dock/dock.component';
 export { GlintCascadeSelectComponent } from './lib/cascade-select/cascade-select.component';
 export { GlintSpeedDialComponent } from './lib/speed-dial/speed-dial.component';
