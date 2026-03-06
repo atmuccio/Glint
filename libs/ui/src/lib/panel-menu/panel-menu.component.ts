@@ -81,7 +81,7 @@ import { GlintIconComponent } from '../icon/icon.component';
       cursor: not-allowed;
     }
 
-    .panel-menu-icon {
+    .panel-menu-header > glint-icon {
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -135,8 +135,8 @@ import { GlintIconComponent } from '../icon/icon.component';
     }
 
     /* When icon is present, adjust child indent to align with icon */
-    .panel-menu-child .panel-menu-icon,
-    .panel-menu-grandchild .panel-menu-icon {
+    .panel-menu-child > glint-icon,
+    .panel-menu-grandchild > glint-icon {
       inline-size: 1rem;
       block-size: 1rem;
     }
@@ -171,11 +171,6 @@ import { GlintIconComponent } from '../icon/icon.component';
       padding-inline: var(--glint-spacing-xs);
     }
 
-    :host([data-collapsed]) .panel-menu-label,
-    :host([data-collapsed]) .chevron {
-      display: none;
-    }
-
     :host([data-collapsed]) .panel-menu-submenu {
       display: none;
     }
@@ -195,7 +190,7 @@ import { GlintIconComponent } from '../icon/icon.component';
             glintTooltipPosition="after"
           >
             @if (item.icon) { <glint-icon [name]="item.icon" /> }
-            <span class="panel-menu-label">{{ item.label }}</span>
+            @if (!isCollapsed()) { <span class="panel-menu-label">{{ item.label }}</span> }
           </a>
         } @else {
           <button
@@ -211,8 +206,8 @@ import { GlintIconComponent } from '../icon/icon.component';
             (click)="onToggle(item)"
           >
             @if (item.icon) { <glint-icon [name]="item.icon" /> }
-            <span class="panel-menu-label">{{ item.label }}</span>
-            @if (item.items?.length) {
+            @if (!isCollapsed()) { <span class="panel-menu-label">{{ item.label }}</span> }
+            @if (item.items?.length && !isCollapsed()) {
               <span class="chevron" [class.expanded]="isExpanded(item)" aria-hidden="true"><glint-icon name="chevronRight" /></span>
             }
           </button>
