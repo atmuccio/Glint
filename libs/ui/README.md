@@ -52,6 +52,39 @@ export class AppComponent {
 }
 ```
 
+## Replacing Native `confirm()`
+
+Use `GlintConfirmDialogService` for styled, async confirmation dialogs that inherit your theme:
+
+```typescript
+// Before — native confirm()
+if (confirm('Delete this item?')) {
+  this.delete(item);
+}
+
+// After — GlintConfirmDialogService
+import { GlintConfirmDialogService } from '@glint-ng/core';
+
+export class MyComponent {
+  private confirmDialog = inject(GlintConfirmDialogService);
+
+  async onDelete(item: Item): Promise<void> {
+    const confirmed = await this.confirmDialog.confirm({
+      header: 'Confirm Deletion',
+      message: 'Are you sure you want to delete this item?',
+      acceptLabel: 'Delete',
+      rejectLabel: 'Cancel',
+      severity: 'danger',
+    });
+    if (confirmed) {
+      this.delete(item);
+    }
+  }
+}
+```
+
+The service returns a `Promise<boolean>` — no callbacks needed.
+
 ## Theming with Style Zones
 
 Wrap any section of your app in a `<glint-style-zone>` to override theme tokens. Zones nest and inherit:
@@ -123,7 +156,7 @@ Then use them by name:
 |----------|-----------|
 | **Form** | Input, InputNumber, Textarea, Password, Select, MultiSelect, Checkbox, RadioButton, ToggleSwitch, ToggleButton, SelectButton, Slider, Knob, Rating, ColorPicker, DatePicker, AutoComplete, CascadeSelect, TreeSelect, InputMask, InputOTP, FileUpload, FloatLabel, InputGroup, ListBox |
 | **Data** | Table, TreeTable, DataView, Tree, OrganizationChart, Scroller, Timeline, Avatar, Badge, Tag, Chip, Card, Carousel, Galleria, Image, ImageCompare, MeterGroup |
-| **Navigation** | Menu, MenuBar, TieredMenu, ContextMenu, PanelMenu, Breadcrumb, Paginator, Dock, SpeedDial, SplitButton, Tabs, Stepper |
+| **Navigation** | Menu, MenuBar, TieredMenu, ContextMenu, PanelMenu, TabMenu, Breadcrumb, Paginator, Dock, SpeedDial, SplitButton, Tabs, Stepper |
 | **Overlay** | Dialog, ConfirmDialog, ConfirmPopup, Drawer, Popover, Tooltip, OverlayBadge |
 | **Feedback** | Toast, Message, ProgressBar, ProgressSpinner, Skeleton, BlockUI |
 | **Layout** | Shell, Divider, Splitter, ScrollPanel, Panel, Fieldset, Accordion, Toolbar, Inplace, ScrollTop |

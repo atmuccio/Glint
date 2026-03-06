@@ -6,6 +6,7 @@ import {
   GlintCascadeSelectComponent,
   GlintTreeSelectComponent,
   GlintDatepickerComponent,
+  GlintDatepickerDayDirective,
   GlintColorPickerComponent,
 } from '@glint-ng/core';
 import type { GlintMenuItem, GlintTreeNode } from '@glint-ng/core';
@@ -21,28 +22,27 @@ import type { GlintMenuItem, GlintTreeNode } from '@glint-ng/core';
     GlintCascadeSelectComponent,
     GlintTreeSelectComponent,
     GlintDatepickerComponent,
+    GlintDatepickerDayDirective,
     GlintColorPickerComponent,
   ],
+  host: { class: 'demo-page' },
   styles: `
     :host { display: block; }
-    h2 { margin-block: 0 0.25rem; font-size: 1.75rem; font-weight: 600; color: #1e293b; }
-    .page-desc { color: #64748b; margin-block: 0 2rem; font-size: 1.25rem; }
-    .demo-section {
-      background: white; border: 1px solid #e2e8f0; border-radius: 0.625rem;
-      padding: 2rem; margin-block-end: 1.5rem;
-    }
-    .demo-section h3 { margin-block: 0 1rem; font-size: 1rem; font-weight: 600; color: #334155; }
-    .row { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
-    .stack { display: flex; flex-direction: column; gap: 1rem; }
-    .output { margin-block-start: 1rem; padding: 0.75rem 1rem; background: #f8fafc;
-      border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.875rem; color: #64748b; }
-    .label-text {
-      margin-block: 0 0.25rem; font-size: 0.875rem; font-weight: 500; color: #475569;
-    }
     .color-preview {
       display: inline-block; inline-size: 1.25rem; block-size: 1.25rem;
       border-radius: 4px; border: 1px solid #e2e8f0; vertical-align: middle;
       margin-inline-end: 0.5rem;
+    }
+    .custom-day {
+      display: inline-flex; align-items: center; justify-content: center;
+      inline-size: 2rem; block-size: 2rem; border-radius: 50%; font-size: 0.8125rem;
+    }
+    .custom-day--today {
+      background: #3b82f6; color: white; font-weight: 700;
+    }
+    .custom-day--other { opacity: 0.35; }
+    .custom-day--selected:not(.custom-day--today) {
+      outline: 2px solid #3b82f6; outline-offset: -2px;
     }
   `,
   template: `
@@ -134,6 +134,25 @@ import type { GlintMenuItem, GlintTreeNode } from '@glint-ng/core';
             [formControl]="dateCtrl"
           />
           <div class="output">Value: {{ formatDate(dateCtrl.value) }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Datepicker Custom Day Template ───────────── -->
+    <div class="demo-section">
+      <h3>Datepicker — Custom Day Template</h3>
+      <p class="section-desc">Use the <code>glintDatepickerDay</code> structural directive to render custom day cells. This example highlights today and dims other-month days.</p>
+
+      <div class="stack">
+        <div>
+          <glint-datepicker placeholder="Custom day cells" [formControl]="customDayCtrl">
+            <ng-template glintDatepickerDay let-date let-today="today" let-otherMonth="otherMonth" let-selected="selected">
+              <span class="custom-day" [class.custom-day--today]="today" [class.custom-day--other]="otherMonth" [class.custom-day--selected]="selected">
+                {{ date.getDate() }}
+              </span>
+            </ng-template>
+          </glint-datepicker>
+          <div class="output">Value: {{ formatDate(customDayCtrl.value) }}</div>
         </div>
       </div>
     </div>
@@ -346,6 +365,7 @@ export class AdvancedSelectsDemoComponent {
 
   // ── Datepicker ─────────────────────────────────
   dateCtrl = new FormControl<Date | null>(null);
+  customDayCtrl = new FormControl<Date | null>(null);
 
   formatDate(value: unknown): string {
     if (value instanceof Date) {

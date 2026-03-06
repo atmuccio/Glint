@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import {
   GlintTieredMenuComponent,
   GlintMenuBarComponent,
@@ -6,6 +6,7 @@ import {
   GlintContextMenuDirective,
   GlintDockComponent,
   GlintSpeedDialComponent,
+  GlintTabMenuComponent,
 } from '@glint-ng/core';
 import type { GlintMenuItem } from '@glint-ng/core';
 
@@ -20,17 +21,28 @@ import type { GlintMenuItem } from '@glint-ng/core';
     GlintContextMenuDirective,
     GlintDockComponent,
     GlintSpeedDialComponent,
+    GlintTabMenuComponent,
   ],
+  host: { class: 'demo-page' },
   template: `
     <h2>Advanced Menus</h2>
-    <p class="page-desc">Tiered menus, menu bars, panel menus, context menus, docks, and speed dials.</p>
+    <p class="page-desc">Tiered menus, menu bars, panel menus, context menus, tab menus, docks, and speed dials.</p>
+
+    <div class="demo-section">
+      <h3>Tab Menu</h3>
+      <p class="section-desc">Horizontal tab-style navigation. Supports route-based links and command-based actions.</p>
+      <glint-tab-menu [items]="tabMenuItems" />
+      @if (lastAction()['tab']; as action) {
+        <div class="output">Last action: {{ action }}</div>
+      }
+    </div>
 
     <div class="demo-section">
       <h3>Tiered Menu (Inline)</h3>
       <p class="section-desc">Nested menu with submenus that expand on hover or keyboard navigation.</p>
       <glint-tiered-menu [items]="tieredMenuItems" />
-      @if (lastTieredAction) {
-        <div class="output">Last action: {{ lastTieredAction }}</div>
+      @if (lastAction()['tiered']; as action) {
+        <div class="output">Last action: {{ action }}</div>
       }
     </div>
 
@@ -38,8 +50,8 @@ import type { GlintMenuItem } from '@glint-ng/core';
       <h3>Menu Bar</h3>
       <p class="section-desc">Horizontal desktop-style menu bar with dropdown submenus.</p>
       <glint-menubar [items]="menuBarItems" />
-      @if (lastMenuBarAction) {
-        <div class="output">Last action: {{ lastMenuBarAction }}</div>
+      @if (lastAction()['menubar']; as action) {
+        <div class="output">Last action: {{ action }}</div>
       }
     </div>
 
@@ -49,8 +61,8 @@ import type { GlintMenuItem } from '@glint-ng/core';
       <div style="max-inline-size: 20rem;">
         <glint-panel-menu [items]="panelMenuItems" [multiple]="true" />
       </div>
-      @if (lastPanelAction) {
-        <div class="output">Last action: {{ lastPanelAction }}</div>
+      @if (lastAction()['panel']; as action) {
+        <div class="output">Last action: {{ action }}</div>
       }
     </div>
 
@@ -60,8 +72,8 @@ import type { GlintMenuItem } from '@glint-ng/core';
       <div class="context-target" [glintContextMenu]="contextMenuItems">
         Right-click here to open context menu
       </div>
-      @if (lastContextAction) {
-        <div class="output">Last action: {{ lastContextAction }}</div>
+      @if (lastAction()['context']; as action) {
+        <div class="output">Last action: {{ action }}</div>
       }
     </div>
 
@@ -71,8 +83,8 @@ import type { GlintMenuItem } from '@glint-ng/core';
       <div class="row">
         <glint-dock [items]="dockItems" position="bottom" />
       </div>
-      @if (lastDockAction) {
-        <div class="output">Last action: {{ lastDockAction }}</div>
+      @if (lastAction()['dock']; as action) {
+        <div class="output">Last action: {{ action }}</div>
       }
     </div>
 
@@ -105,25 +117,13 @@ import type { GlintMenuItem } from '@glint-ng/core';
           </div>
         </div>
       </div>
-      @if (lastSpeedDialAction) {
-        <div class="output">Last action: {{ lastSpeedDialAction }}</div>
+      @if (lastAction()['speedDial']; as action) {
+        <div class="output">Last action: {{ action }}</div>
       }
     </div>
   `,
   styles: `
     :host { display: block; }
-    h2 { margin-block: 0 0.25rem; font-size: 1.75rem; font-weight: 600; color: #1e293b; }
-    .page-desc { color: #64748b; margin-block: 0 2rem; font-size: 1.25rem; }
-    .demo-section {
-      background: white; border: 1px solid #e2e8f0; border-radius: 0.625rem;
-      padding: 2rem; margin-block-end: 1.5rem;
-    }
-    .demo-section h3 { margin-block: 0 1rem; font-size: 1rem; font-weight: 600; color: #334155; }
-    .section-desc { color: #64748b; font-size: 0.875rem; margin-block: -0.5rem 1rem; }
-    .row { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
-    .stack { display: flex; flex-direction: column; gap: 1rem; }
-    .output { margin-block-start: 1rem; padding: 0.75rem 1rem; background: #f8fafc;
-      border: 1px solid #e2e8f0; border-radius: 6px; font-size: 0.875rem; color: #64748b; }
     .context-target {
       display: flex;
       align-items: center;
@@ -181,116 +181,123 @@ import type { GlintMenuItem } from '@glint-ng/core';
   `,
 })
 export class AdvancedMenusDemoComponent {
-  lastTieredAction = '';
-  lastMenuBarAction = '';
-  lastPanelAction = '';
-  lastContextAction = '';
-  lastDockAction = '';
-  lastSpeedDialAction = '';
+  lastAction = signal<Record<string, string>>({});
+
+  private track(section: string, label: string): () => void {
+    return () => this.lastAction.update(a => ({ ...a, [section]: label }));
+  }
+
+  tabMenuItems: GlintMenuItem[] = [
+    { label: 'Overview', icon: 'home', command: this.track('tab', 'Overview') },
+    { label: 'Features', icon: 'star', command: this.track('tab', 'Features') },
+    { label: 'Pricing', icon: 'creditCard', command: this.track('tab', 'Pricing') },
+    { label: 'Documentation', icon: 'fileText', command: this.track('tab', 'Documentation') },
+    { label: 'Support', icon: 'messageCircle', disabled: true },
+  ];
 
   tieredMenuItems: GlintMenuItem[] = [
     {
       label: 'File',
       items: [
-        { label: 'New', command: () => { this.lastTieredAction = 'File > New'; } },
-        { label: 'Open', command: () => { this.lastTieredAction = 'File > Open'; } },
+        { label: 'New', command: this.track('tiered', 'File > New') },
+        { label: 'Open', command: this.track('tiered', 'File > Open') },
         {
           label: 'Export',
           items: [
-            { label: 'PDF', command: () => { this.lastTieredAction = 'File > Export > PDF'; } },
-            { label: 'CSV', command: () => { this.lastTieredAction = 'File > Export > CSV'; } },
-            { label: 'Excel', command: () => { this.lastTieredAction = 'File > Export > Excel'; } },
+            { label: 'PDF', command: this.track('tiered', 'File > Export > PDF') },
+            { label: 'CSV', command: this.track('tiered', 'File > Export > CSV') },
+            { label: 'Excel', command: this.track('tiered', 'File > Export > Excel') },
           ],
         },
-        { label: 'Save', separator: true, command: () => { this.lastTieredAction = 'File > Save'; } },
-        { label: 'Quit', command: () => { this.lastTieredAction = 'File > Quit'; } },
+        { label: 'Save', separator: true, command: this.track('tiered', 'File > Save') },
+        { label: 'Quit', command: this.track('tiered', 'File > Quit') },
       ],
     },
     {
       label: 'Edit',
       items: [
-        { label: 'Undo', command: () => { this.lastTieredAction = 'Edit > Undo'; } },
-        { label: 'Redo', command: () => { this.lastTieredAction = 'Edit > Redo'; } },
-        { label: 'Cut', separator: true, command: () => { this.lastTieredAction = 'Edit > Cut'; } },
-        { label: 'Copy', command: () => { this.lastTieredAction = 'Edit > Copy'; } },
-        { label: 'Paste', command: () => { this.lastTieredAction = 'Edit > Paste'; } },
+        { label: 'Undo', command: this.track('tiered', 'Edit > Undo') },
+        { label: 'Redo', command: this.track('tiered', 'Edit > Redo') },
+        { label: 'Cut', separator: true, command: this.track('tiered', 'Edit > Cut') },
+        { label: 'Copy', command: this.track('tiered', 'Edit > Copy') },
+        { label: 'Paste', command: this.track('tiered', 'Edit > Paste') },
       ],
     },
     {
       label: 'View',
       items: [
-        { label: 'Zoom In', command: () => { this.lastTieredAction = 'View > Zoom In'; } },
-        { label: 'Zoom Out', command: () => { this.lastTieredAction = 'View > Zoom Out'; } },
-        { label: 'Full Screen', command: () => { this.lastTieredAction = 'View > Full Screen'; } },
+        { label: 'Zoom In', command: this.track('tiered', 'View > Zoom In') },
+        { label: 'Zoom Out', command: this.track('tiered', 'View > Zoom Out') },
+        { label: 'Full Screen', command: this.track('tiered', 'View > Full Screen') },
       ],
     },
-    { label: 'Help', command: () => { this.lastTieredAction = 'Help'; } },
+    { label: 'Help', command: this.track('tiered', 'Help') },
   ];
 
   menuBarItems: GlintMenuItem[] = [
     {
       label: 'File',
       items: [
-        { label: 'New Project', command: () => { this.lastMenuBarAction = 'File > New Project'; } },
-        { label: 'Open Project', command: () => { this.lastMenuBarAction = 'File > Open Project'; } },
-        { label: 'Save', command: () => { this.lastMenuBarAction = 'File > Save'; } },
-        { label: 'Save As...', command: () => { this.lastMenuBarAction = 'File > Save As'; } },
-        { label: 'Exit', separator: true, command: () => { this.lastMenuBarAction = 'File > Exit'; } },
+        { label: 'New Project', command: this.track('menubar', 'File > New Project') },
+        { label: 'Open Project', command: this.track('menubar', 'File > Open Project') },
+        { label: 'Save', command: this.track('menubar', 'File > Save') },
+        { label: 'Save As...', command: this.track('menubar', 'File > Save As') },
+        { label: 'Exit', separator: true, command: this.track('menubar', 'File > Exit') },
       ],
     },
     {
       label: 'Edit',
       items: [
-        { label: 'Undo', command: () => { this.lastMenuBarAction = 'Edit > Undo'; } },
-        { label: 'Redo', command: () => { this.lastMenuBarAction = 'Edit > Redo'; } },
-        { label: 'Find & Replace', separator: true, command: () => { this.lastMenuBarAction = 'Edit > Find & Replace'; } },
-        { label: 'Preferences', command: () => { this.lastMenuBarAction = 'Edit > Preferences'; } },
+        { label: 'Undo', command: this.track('menubar', 'Edit > Undo') },
+        { label: 'Redo', command: this.track('menubar', 'Edit > Redo') },
+        { label: 'Find & Replace', separator: true, command: this.track('menubar', 'Edit > Find & Replace') },
+        { label: 'Preferences', command: this.track('menubar', 'Edit > Preferences') },
       ],
     },
     {
       label: 'View',
       items: [
-        { label: 'Sidebar', command: () => { this.lastMenuBarAction = 'View > Sidebar'; } },
-        { label: 'Terminal', command: () => { this.lastMenuBarAction = 'View > Terminal'; } },
-        { label: 'Status Bar', command: () => { this.lastMenuBarAction = 'View > Status Bar'; } },
+        { label: 'Sidebar', command: this.track('menubar', 'View > Sidebar') },
+        { label: 'Terminal', command: this.track('menubar', 'View > Terminal') },
+        { label: 'Status Bar', command: this.track('menubar', 'View > Status Bar') },
       ],
     },
     {
       label: 'Build',
       items: [
-        { label: 'Build Project', command: () => { this.lastMenuBarAction = 'Build > Build Project'; } },
-        { label: 'Clean Build', command: () => { this.lastMenuBarAction = 'Build > Clean Build'; } },
-        { label: 'Run Tests', command: () => { this.lastMenuBarAction = 'Build > Run Tests'; } },
+        { label: 'Build Project', command: this.track('menubar', 'Build > Build Project') },
+        { label: 'Clean Build', command: this.track('menubar', 'Build > Clean Build') },
+        { label: 'Run Tests', command: this.track('menubar', 'Build > Run Tests') },
       ],
     },
-    { label: 'Help', command: () => { this.lastMenuBarAction = 'Help'; } },
+    { label: 'Help', command: this.track('menubar', 'Help') },
   ];
 
   panelMenuItems: GlintMenuItem[] = [
     {
       label: 'Dashboard',
       items: [
-        { label: 'Analytics', command: () => { this.lastPanelAction = 'Dashboard > Analytics'; } },
-        { label: 'Reports', command: () => { this.lastPanelAction = 'Dashboard > Reports'; } },
-        { label: 'Real-time', command: () => { this.lastPanelAction = 'Dashboard > Real-time'; } },
+        { label: 'Analytics', command: this.track('panel', 'Dashboard > Analytics') },
+        { label: 'Reports', command: this.track('panel', 'Dashboard > Reports') },
+        { label: 'Real-time', command: this.track('panel', 'Dashboard > Real-time') },
       ],
     },
     {
       label: 'Users',
       items: [
-        { label: 'All Users', command: () => { this.lastPanelAction = 'Users > All Users'; } },
-        { label: 'Roles & Permissions', command: () => { this.lastPanelAction = 'Users > Roles & Permissions'; } },
-        { label: 'Invite User', command: () => { this.lastPanelAction = 'Users > Invite User'; } },
-        { label: 'Activity Log', command: () => { this.lastPanelAction = 'Users > Activity Log'; } },
+        { label: 'All Users', command: this.track('panel', 'Users > All Users') },
+        { label: 'Roles & Permissions', command: this.track('panel', 'Users > Roles & Permissions') },
+        { label: 'Invite User', command: this.track('panel', 'Users > Invite User') },
+        { label: 'Activity Log', command: this.track('panel', 'Users > Activity Log') },
       ],
     },
     {
       label: 'Settings',
       items: [
-        { label: 'General', command: () => { this.lastPanelAction = 'Settings > General'; } },
-        { label: 'Security', command: () => { this.lastPanelAction = 'Settings > Security'; } },
-        { label: 'Notifications', command: () => { this.lastPanelAction = 'Settings > Notifications'; } },
-        { label: 'Integrations', command: () => { this.lastPanelAction = 'Settings > Integrations'; } },
+        { label: 'General', command: this.track('panel', 'Settings > General') },
+        { label: 'Security', command: this.track('panel', 'Settings > Security') },
+        { label: 'Notifications', command: this.track('panel', 'Settings > Notifications') },
+        { label: 'Integrations', command: this.track('panel', 'Settings > Integrations') },
       ],
     },
     {
@@ -304,29 +311,29 @@ export class AdvancedMenusDemoComponent {
   ];
 
   contextMenuItems: GlintMenuItem[] = [
-    { label: 'Copy', command: () => { this.lastContextAction = 'Copy'; } },
-    { label: 'Paste', command: () => { this.lastContextAction = 'Paste'; } },
-    { label: 'Cut', separator: true, command: () => { this.lastContextAction = 'Cut'; } },
-    { label: 'Select All', command: () => { this.lastContextAction = 'Select All'; } },
-    { label: 'Inspect Element', separator: true, command: () => { this.lastContextAction = 'Inspect Element'; } },
-    { label: 'Delete', command: () => { this.lastContextAction = 'Delete'; } },
+    { label: 'Copy', command: this.track('context', 'Copy') },
+    { label: 'Paste', command: this.track('context', 'Paste') },
+    { label: 'Cut', separator: true, command: this.track('context', 'Cut') },
+    { label: 'Select All', command: this.track('context', 'Select All') },
+    { label: 'Inspect Element', separator: true, command: this.track('context', 'Inspect Element') },
+    { label: 'Delete', command: this.track('context', 'Delete') },
   ];
 
   dockItems: GlintMenuItem[] = [
-    { label: 'Finder', icon: '\uD83D\uDCC1', command: () => { this.lastDockAction = 'Finder'; } },
-    { label: 'Terminal', icon: '\uD83D\uDDA5\uFE0F', command: () => { this.lastDockAction = 'Terminal'; } },
-    { label: 'Browser', icon: '\uD83C\uDF10', command: () => { this.lastDockAction = 'Browser'; } },
-    { label: 'Mail', icon: '\u2709\uFE0F', command: () => { this.lastDockAction = 'Mail'; } },
-    { label: 'Calendar', icon: '\uD83D\uDCC5', command: () => { this.lastDockAction = 'Calendar'; } },
-    { label: 'Music', icon: '\uD83C\uDFB5', command: () => { this.lastDockAction = 'Music'; } },
-    { label: 'Photos', icon: '\uD83D\uDDBC\uFE0F', command: () => { this.lastDockAction = 'Photos'; } },
-    { label: 'Settings', icon: '\u2699\uFE0F', command: () => { this.lastDockAction = 'Settings'; } },
+    { label: 'Finder', icon: '📁', command: this.track('dock', 'Finder') },
+    { label: 'Terminal', icon: '🖥️', command: this.track('dock', 'Terminal') },
+    { label: 'Browser', icon: '🌐', command: this.track('dock', 'Browser') },
+    { label: 'Mail', icon: '✉️', command: this.track('dock', 'Mail') },
+    { label: 'Calendar', icon: '📅', command: this.track('dock', 'Calendar') },
+    { label: 'Music', icon: '🎵', command: this.track('dock', 'Music') },
+    { label: 'Photos', icon: '🖼️', command: this.track('dock', 'Photos') },
+    { label: 'Settings', icon: '⚙️', command: this.track('dock', 'Settings') },
   ];
 
   speedDialItems: GlintMenuItem[] = [
-    { label: 'Add', icon: '\u2795', command: () => { this.lastSpeedDialAction = 'Add'; } },
-    { label: 'Edit', icon: '\u270F\uFE0F', command: () => { this.lastSpeedDialAction = 'Edit'; } },
-    { label: 'Share', icon: '\uD83D\uDD17', command: () => { this.lastSpeedDialAction = 'Share'; } },
-    { label: 'Delete', icon: '\uD83D\uDDD1\uFE0F', command: () => { this.lastSpeedDialAction = 'Delete'; } },
+    { label: 'Add', icon: '➕', command: this.track('speedDial', 'Add') },
+    { label: 'Edit', icon: '✏️', command: this.track('speedDial', 'Edit') },
+    { label: 'Share', icon: '🔗', command: this.track('speedDial', 'Share') },
+    { label: 'Delete', icon: '🗑️', command: this.track('speedDial', 'Delete') },
   ];
 }
